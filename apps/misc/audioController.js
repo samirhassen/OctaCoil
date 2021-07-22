@@ -9,6 +9,7 @@ export const play = async (playbackObj, uri, lastPosition) => {
         { shouldPlay: true, progressUpdateIntervalMillis: 1000 }
       );
 
+    // but if there is lastPosition then we will play audio from the lastPosition
     await playbackObj.loadAsync(
       { uri },
       { progressUpdateIntervalMillis: 1000 }
@@ -61,6 +62,7 @@ export const selectAudio = async (audio, context, playListInfo = {}) => {
     onPlaybackStatusUpdate,
   } = context;
   try {
+    // playing audio for the first time.
     if (soundObj === null) {
       const status = await play(playbackObj, audio.uri, audio.lastPosition);
       const index = audioFiles.findIndex(({ id }) => id === audio.id);
