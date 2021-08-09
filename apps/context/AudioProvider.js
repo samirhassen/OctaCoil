@@ -25,6 +25,7 @@ export class AudioProvider extends Component {
       currentAudioIndex: null,
       playbackPosition: null,
       playbackDuration: null,
+      isLoop : false
     };
     this.totalAudioCount = 0;
   }
@@ -129,7 +130,7 @@ export class AudioProvider extends Component {
         const indexOnPlayList = this.state.activePlayList.audios.findIndex(
           ({ id }) => id === this.state.currentAudio.id
         );
-        const nextIndex = indexOnPlayList + 1;
+        const nextIndex = this.state.isLoop ? indexOnPlayList : indexOnPlayList + 1;
         audio = this.state.activePlayList.audios[nextIndex];
 
         if (!audio) audio = this.state.activePlayList.audios[0];
@@ -147,7 +148,7 @@ export class AudioProvider extends Component {
         });
       }
 
-      const nextAudioIndex = this.state.currentAudioIndex + 1;
+      const nextAudioIndex = this.state.isLoop ? this.state.currentAudioIndex : this.state.currentAudioIndex + 1;
       // there is no next audio to play or the current audio is the last
       if (nextAudioIndex >= this.totalAudioCount) {
         this.state.playbackObj.unloadAsync();

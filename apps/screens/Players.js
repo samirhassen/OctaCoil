@@ -3,6 +3,7 @@ import { View, StyleSheet, Text, Dimensions } from 'react-native';
 import Screen from '../components/Screen';
 import color from '../misc/color';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import Slider from '@react-native-community/slider';
 import PlayerButton from '../components/PlayerButton';
 import { AudioContext } from '../context/AudioProvider';
@@ -19,7 +20,8 @@ const { width } = Dimensions.get('window');
 const Player = () => {
   const [currentPosition, setCurrentPosition] = useState(0);
   const context = useContext(AudioContext);
-  const { playbackPosition, playbackDuration, currentAudio } = context;
+  const { playbackPosition, playbackDuration, currentAudio, updateState } = context;
+  const [ loop, setLoop ]= useState(false);
 
   const calculateSeebBar = () => {
     if (playbackPosition !== null && playbackDuration !== null) {
@@ -48,6 +50,16 @@ const Player = () => {
   const handlePrevious = async () => {
     await changeAudio(context, 'previous');
   };
+
+  const handleLoop = async () => {
+    if(loop == true) {
+      updateState({}, {isLoop : false});
+      setLoop(false);
+    } else {  
+      updateState({}, {isLoop : true});
+      setLoop(true);
+    }
+  }
 
   const renderCurrentTime = () => {
     if (!context.soundObj && currentAudio.lastPosition) {
@@ -85,6 +97,7 @@ const Player = () => {
           <Text numberOfLines={1} style={styles.audioTitle}>
             {context.currentAudio.filename}
           </Text>
+          <Text style={styles.audioTitle}>Singer: Jennifer Lopez, Song: {context.currentAudio.filename}</Text>
           <View
             style={{
               flexDirection: 'row',
@@ -131,6 +144,7 @@ const Player = () => {
               iconType={context.isPlaying ? 'PLAY' : 'PAUSE'}
             />
             <PlayerButton iconType='NEXT' onPress={handleNext} />
+               <Feather style={{ marginLeft:80, marginRight: -100}} name="repeat" size={24} color= {loop ? 'blue' : 'black'} onPress={handleLoop} />
           </View>
         </View>
       </View>

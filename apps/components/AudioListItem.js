@@ -82,6 +82,7 @@ const AudioListItem = ({
               <Text numberOfLines={1} style={styles.title}>
                 {title}
               </Text>
+              <Text numberOfLines={1} style={styles.description}>Singer: Jennifer Lopez, Song: {title}</Text>
               <Text style={styles.timeText}>{convertTime(duration)}</Text>
             </View>
           </View>
@@ -134,6 +135,10 @@ const styles = StyleSheet.create({
   titleContainer: {
     width: width - 180,
     paddingLeft: 10,
+  },
+  description: {
+    fontSize: 14,
+    color: color.FONT_MEDIUM
   },
   title: {
     fontSize: 16,
