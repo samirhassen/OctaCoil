@@ -21,7 +21,7 @@ const Player = () => {
   const [currentPosition, setCurrentPosition] = useState(0);
   const context = useContext(AudioContext);
   const { playbackPosition, playbackDuration, currentAudio, updateState } = context;
-  const [ loop, setLoop ]= useState(false);
+  const [ loop, setLoop ]= useState(true);
 
   const calculateSeebBar = () => {
     if (playbackPosition !== null && playbackDuration !== null) {

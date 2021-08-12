@@ -51,6 +51,7 @@ const renderPlayPauseIcon = isPlaying => {
 //Method to display audio list item
 const AudioListItem = ({
   title,
+  type,
   duration,
   onAudioPress,
   onOptionPress,
@@ -82,7 +83,7 @@ const AudioListItem = ({
               <Text numberOfLines={1} style={styles.title}>
                 {title}
               </Text>
-              <Text numberOfLines={1} style={styles.description}>Singer: Jennifer Lopez, Song: {title}</Text>
+              <Text numberOfLines={1} style={styles.description}>Type: {type}, Singer: Jennifer Lopez, Song: {title}</Text>
               <Text style={styles.timeText}>{convertTime(duration)}</Text>
             </View>
           </View>

@@ -6,11 +6,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Audio } from 'expo-av';
 import { storeAudioForNextOpening } from '../misc/helper';
 import { playNext } from '../misc/audioController';
+
 export const AudioContext = createContext();
+
 export class AudioProvider extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      filteredAudio : new DataProvider((r1, r2) => r1 !== r2),
       audioFiles: [],
       playList: [],
       addToPlayList: null,
@@ -25,10 +28,12 @@ export class AudioProvider extends Component {
       currentAudioIndex: null,
       playbackPosition: null,
       playbackDuration: null,
-      isLoop : false
+      isLoop : true
     };
     this.totalAudioCount = 0;
   }
+
+  arrType = ['rock', 'pop', 'jazz', 'blues'];
 
   permissionAllert = () => {
     Alert.alert('Permission Required', 'This app needs to read audio files!', [
@@ -44,22 +49,40 @@ export class AudioProvider extends Component {
   };
 
   getAudioFiles = async () => {
-    const { dataProvider, audioFiles } = this.state;
+    const { dataProvider, audioFiles, filteredAudio } = this.state;
     let media = await MediaLibrary.getAssetsAsync({
-      mediaType: 'audio',
+      mediaType: MediaLibrary.MediaType.audio,
     });
     media = await MediaLibrary.getAssetsAsync({
-      mediaType: 'audio',
+      mediaType: MediaLibrary.MediaType.audio,
       first: media.totalCount,
     });
     this.totalAudioCount = media.totalCount;
 
+    const dataProviderData = dataProvider.cloneWithRows([
+      ...audioFiles,
+      ...media.assets,
+    ]);
+
+    const filteredAudioData = filteredAudio.cloneWithRows([
+      ...audioFiles,
+      ...media.assets,
+    ]);
+
+    dataProviderData._data.map((audioFile) => {
+      audioFile.type = this.arrType[Math.floor(Math.random()*this.arrType.length)];
+      return audioFile;
+    });
+
+    filteredAudioData._data.map((audioFile) => {
+      audioFile.type = this.arrType[Math.floor(Math.random()*this.arrType.length)];
+      return audioFile;
+    });
+
     this.setState({
       ...this.state,
-      dataProvider: dataProvider.cloneWithRows([
-        ...audioFiles,
-        ...media.assets,
-      ]),
+      dataProvider: dataProviderData,
+      filteredAudio:  filteredAudioData,
       audioFiles: [...audioFiles, ...media.assets],
     });
   };
@@ -196,6 +219,7 @@ export class AudioProvider extends Component {
       playbackObj,
       soundObj,
       currentAudio,
+      filteredAudio,
       isPlaying,
       currentAudioIndex,
       playbackPosition,
@@ -225,6 +249,7 @@ export class AudioProvider extends Component {
           addToPlayList,
           dataProvider,
           playbackObj,
+          filteredAudio,
           soundObj,
           currentAudio,
           isPlaying,
