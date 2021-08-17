@@ -28,7 +28,8 @@ export class AudioProvider extends Component {
       currentAudioIndex: null,
       playbackPosition: null,
       playbackDuration: null,
-      isLoop : true
+      isLoop : true,
+      isLoggedIn: false
     };
     this.totalAudioCount = 0;
   }
@@ -217,6 +218,7 @@ export class AudioProvider extends Component {
       dataProvider,
       permissionError,
       playbackObj,
+      isLoggedIn,
       soundObj,
       currentAudio,
       filteredAudio,
@@ -250,6 +252,7 @@ export class AudioProvider extends Component {
           dataProvider,
           playbackObj,
           filteredAudio,
+          isLoggedIn,
           soundObj,
           currentAudio,
           isPlaying,

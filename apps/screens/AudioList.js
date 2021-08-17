@@ -4,6 +4,7 @@ import { AudioContext } from '../context/AudioProvider';
 import { RecyclerListView, LayoutProvider } from 'recyclerlistview';
 import AudioListItem from '../components/AudioListItem';
 import Screen from '../components/Screen';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import OptionModal from '../components/OptionModal';
 import {
   selectAudio,
@@ -40,7 +41,15 @@ export class AudioList extends Component {
     await selectAudio(audio, this.context);
   };
 
-  componentDidMount() {
+  async componentDidMount() {
+    const userDetails = {
+      email: 'cap@gmail.com',
+      password: '123456'
+    }
+    await AsyncStorage.setItem(
+      'user',
+      JSON.stringify(userDetails)
+    ); 
     this.context.loadPreviousAudio();
   }
 

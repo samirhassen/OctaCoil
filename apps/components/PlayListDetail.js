@@ -11,7 +11,7 @@ import { selectAudio } from '../misc/audioController';
 import color from '../misc/color';
 import AudioListItem from './AudioListItem';
 const PlayListDetail = ({ visible, playList, onClose }) => {
-  console.log(playList);
+  
   const playAudio = (audio) => {
     selectAudio(audio, )
   }
