@@ -1,236 +1,4 @@
-// Play Music / Sound in React Native App for Android and iOS
-// https://aboutreact.com/react-native-play-music-sound/
 
-// import React in our code
-import React, {useEffect} from 'react';
-
-// import all the components we are going to use
-import {
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  ScrollView,
-} from 'react-native';
-
-// import Sound Component
-import Sound from 'react-native-sound';
-
-const App = () => {
-  let sound1, sound2, sound3, sound4, sound5, sound6;
-
-  useEffect(() => {
-    Sound.setCategory('Playback', true); // true = mixWithOthers
-    return () => {
-      if (sound1) sound1.release();
-      if (sound2) sound2.release();
-      if (sound3) sound3.release();
-      if (sound4) sound4.release();
-      if (sound5) sound5.release();
-      if (sound6) sound6.release();
-    };
-  }, []);
-
-  //List of the dummy sound track
-  const audioList = [
-    {
-      title: 'Bone',
-      isRequire: true,
-      url: require('../../assets/Bone.wav'),
-    },
-    {
-      title: 'Circulation',
-      url: require('../../assets/Circulation.wav'),
-    },
-    {
-      title: 'Energize',
-      isRequire: true,
-      url: require('../../assets/Energize.wav'),
-    },
-    {
-      title: 'Focus',
-      url: require('../../assets/Focus.wav'),
-    },
-    {
-      title: 'Inflammation',
-      isRequire: true,
-      url: require('../../assets/Inflammation.wav'),
-    },
-    {
-      title: 'Performance',
-      url: require('../../assets/Performance.wav'),
-    }
-  ];
-
-  const playSound = (item, index) => {
-    if (index == 0) {
-      sound1 = new Sound(item.url, (error, _sound) => {
-        if (error) {
-          alert('error' + error.message);
-          return;
-        }
-        sound1.play(() => {
-          sound1.release();
-        });
-      });
-    } else if (index == 1) {
-      sound2 = new Sound(item.url, '', (error, _sound) => {
-        if (error) {
-          alert('error' + error.message);
-          return;
-        }
-        sound2.play(() => {
-          sound2.release();
-        });
-      });
-    } else if (index == 2) {
-      sound3 = new Sound(item.url, (error, _sound) => {
-        if (error) {
-          alert('error' + error.message);
-          return;
-        }
-        sound3.play(() => {
-          sound3.release();
-        });
-      });
-    } else if (index == 3) {
-      sound4 = new Sound(item.url, '', (error, _sound) => {
-        if (error) {
-          alert('error' + error.message);
-          return;
-        }
-        sound4.play(() => {
-          sound4.release();
-        });
-      });
-    } else if (index == 4) {
-      sound5 = new Sound(item.url, (error, _sound) => {
-        if (error) {
-          alert('error' + error.message);
-          return;
-        }
-        sound5.play(() => {
-          sound5.release();
-        });
-      });
-    } else if (index == 5) {
-      sound6 = new Sound(item.url, '', (error, _sound) => {
-        if (error) {
-          alert('error' + error.message);
-          return;
-        }
-        sound6.play(() => {
-          sound6.release();
-        });
-      });
-    }
-  };
-
-  const stopSound = (_item, index) => {
-    if (index == 0 && sound1) {
-      sound1.stop(() => {
-        console.log('Stop');
-      });
-    } else if (index == 1 && sound2) {
-      sound2.stop(() => {
-        console.log('Stop');
-      });
-    } else if (index == 2 && sound3) {
-      sound3.stop(() => {
-        console.log('Stop');
-      });
-    } else if (index == 3 && sound4) {
-      sound4.stop(() => {
-        console.log('Stop');
-      });
-    } else if (index == 4 && sound5) {
-      sound5.stop(() => {
-        console.log('Stop');
-      });
-    } else if (index == 5 && sound6) {
-      sound6.stop(() => {
-        console.log('Stop');
-      });
-    }
-  };
-
-  const ItemView = (item, index) => {
-    return (
-      <View style={styles.feature} key={index}>
-        <Text style={styles.textStyle}>{item.title}</Text>
-        <TouchableOpacity onPress={() => playSound(item, index)}>
-          <Text style={styles.buttonPlay}>Play</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => stopSound(item, index)}>
-          <Text style={styles.buttonStop}>Stop</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  };
-
-  return (
-    <SafeAreaView style={{flex: 1}}>
-      <View style={styles.container}>
-        <Text style={styles.titleText}>
-          Play Music / Sound in React Native App for Android and iOS
-        </Text>
-        <ScrollView style={{flex: 1}}>
-          {audioList.map(ItemView)}
-        </ScrollView>
-      </View>
-    </SafeAreaView>
-  );
-};
-
-export default App;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'white',
-    padding: 10,
-  },
-  titleText: {
-    fontSize: 22,
-    textAlign: 'center',
-    fontWeight: 'bold',
-  },
-  textStyle: {
-    flex: 1,
-    padding: 5,
-  },
-  buttonPlay: {
-    fontSize: 16,
-    color: 'white',
-    backgroundColor: 'rgba(00,80,00,1)',
-    borderWidth: 1,
-    borderColor: 'rgba(80,80,80,0.5)',
-    overflow: 'hidden',
-    paddingHorizontal: 15,
-    paddingVertical: 7,
-  },
-  buttonStop: {
-    fontSize: 16,
-    color: 'white',
-    backgroundColor: 'rgba(80,00,00,1)',
-    borderWidth: 1,
-    borderColor: 'rgba(80,80,80,0.5)',
-    overflow: 'hidden',
-    paddingHorizontal: 15,
-    paddingVertical: 7,
-  },
-  feature: {
-    flexDirection: 'row',
-    padding: 5,
-    marginTop: 7,
-    alignSelf: 'stretch',
-    alignItems: 'center',
-    borderTopWidth: 1,
-    borderTopColor: 'rgb(180,180,180)',
-  },
-});
-/*
 import React, { Component, createContext } from 'react';
 import { Text, View, Alert } from 'react-native';
 import * as MediaLibrary from 'expo-media-library';
@@ -243,24 +11,123 @@ import { playNext } from '../misc/audioController';
 export const AudioContext = createContext();
 
 export class AudioProvider extends Component {
+  audioItems = [
+    {
+      id: 3,
+      title: 'Energize',
+      isRequire: true,
+      url: require('../../assets/Energize.wav'),
+      duration: 30.00
+    },
+    {
+      id: 4,
+      title: 'Focus',
+      url: require('../../assets/Focus.wav'),
+      duration: 30.00
+    },
+    {
+      id: 5,
+      title: 'Relax',
+      isRequire: true,
+      url: require('../../assets/Relax.wav'),
+      duration: 20.00
+    },
+    {
+      id: 6,
+      title: 'Performance',
+      url: require('../../assets/Performance.wav'),
+      duration: 10.00
+    },
+    {
+      id: 7,
+      title: 'Shaky Shaky',
+      isRequire: true,
+      url: require('../../assets/shaky.mp3'),
+      duration: 11.00
+    },
+    {
+      id: 8,
+      title: 'Six days',
+      url: require('../../assets/sixdays.mp3'),
+      duration: 23.00
+    },
+    {
+      id: 9,
+      title: 'Ve mahi',
+      isRequire: true,
+      url: require('../../assets/vemahi.mp3'),
+      duration: 30.11
+    },
+    {
+      id: 10,
+      title: 'Tokyo Drift',
+      url: require('../../assets/tokyo.mp3'),
+      duration: 29.00
+    },
+    {
+      id: 11,
+      title: 'Let me Love you',
+      url: require('../../assets/letmelove.mp3'),
+      duration: 19.15
+    },
+    {
+      id: 12,
+      title: 'KGF maa',
+      isRequire: true,
+      url: require('../../assets/kgf.mp3'),
+      duration: 24.37
+    },
+    {
+      id: 13,
+      title: 'Shiv Tandav Storm',
+      url: require('../../assets/Shiv.mp3'),
+      duration: 18.12
+    },
+    {
+      id: 14,
+      title: 'Sample1',
+      isRequire: true,
+      url: require('../../assets/sample1.wav'),
+      duration: 121.20
+    },
+    {
+      id: 15,
+      title: 'Sample2',
+      url: require('../../assets/sample2.wav'),
+      duration: 13.10
+    },
+    {
+      id: 16,
+      title: 'Sample3',
+      isRequire: true,
+      url: require('../../assets/sample3.wav'),
+      duration: 87.00
+    },
+    {
+      id: 17,
+      title: 'Sample4',
+      url: require('../../assets/sample4.wav'),
+      duration: 148.20
+    },
+  ];
+
   constructor(props) {
     super(props);
     this.state = {
-      filteredAudio : new DataProvider((r1, r2) => r1 !== r2),
       audioFiles: [],
       playList: [],
       addToPlayList: null,
-      permissionError: false,
-      dataProvider: new DataProvider((r1, r2) => r1 !== r2),
+      dataProvider: new DataProvider((r1, r2) => r1.url !== r2.url),
       playbackObj: null,
       soundObj: null,
       currentAudio: {},
       isPlaying: false,
       isPlayListRunning: false,
       activePlayList: [],
-      currentAudioIndex: null,
+      currentAudioIndex: 0,
       playbackPosition: null,
       playbackDuration: null,
+      audioLists: this.audioItems,
       isLoop : true,
       isLoggedIn: false
     };
@@ -269,55 +136,14 @@ export class AudioProvider extends Component {
 
   arrType = ['rock', 'pop', 'jazz', 'blues'];
 
-  permissionAllert = () => {
-    Alert.alert('Permission Required', 'This app needs to read audio files!', [
-      {
-        text: 'I am ready',
-        onPress: () => this.getPermission(),
-      },
-      {
-        text: 'cancle',
-        onPress: () => this.permissionAllert(),
-      },
-    ]);
-  };
 
   getAudioFiles = async () => {
-    const { dataProvider, audioFiles, filteredAudio } = this.state;
-    let media = await MediaLibrary.getAssetsAsync({
-      mediaType: MediaLibrary.MediaType.audio,
-    });
-    media = await MediaLibrary.getAssetsAsync({
-      mediaType: MediaLibrary.MediaType.audio,
-      first: media.totalCount,
-    });
-    this.totalAudioCount = media.totalCount;
-
-    const dataProviderData = dataProvider.cloneWithRows([
-      ...audioFiles,
-      ...media.assets,
-    ]);
-
-    const filteredAudioData = filteredAudio.cloneWithRows([
-      ...audioFiles,
-      ...media.assets,
-    ]);
-
-    dataProviderData._data.map((audioFile) => {
-      audioFile.type = this.arrType[Math.floor(Math.random()*this.arrType.length)];
-      return audioFile;
-    });
-
-    filteredAudioData._data.map((audioFile) => {
-      audioFile.type = this.arrType[Math.floor(Math.random()*this.arrType.length)];
-      return audioFile;
-    });
-
+    const {dataProvider, audioFiles, audioLists } = this.state;
+    const dataProviderData = dataProvider.cloneWithRows([...audioFiles, ...audioLists]);
+    this.totalAudioCount = audioLists.length;
     this.setState({
-      ...this.state,
       dataProvider: dataProviderData,
-      filteredAudio:  filteredAudioData,
-      audioFiles: [...audioFiles, ...media.assets],
+      audioFiles: [...audioFiles, ...audioLists],
     });
   };
 
@@ -338,32 +164,6 @@ export class AudioProvider extends Component {
     this.setState({ ...this.state, currentAudio, currentAudioIndex });
   };
 
-  getPermission = async () => {
-    const permission = await MediaLibrary.getPermissionsAsync();
-    if (permission.granted) {
-      this.getAudioFiles();
-    }
-
-    if (!permission.canAskAgain && !permission.granted) {
-      this.setState({ ...this.state, permissionError: true });
-    }
-
-    if (!permission.granted && permission.canAskAgain) {
-      const { status, canAskAgain } =
-        await MediaLibrary.requestPermissionsAsync();
-      if (status === 'denied' && canAskAgain) {
-        this.permissionAllert();
-      }
-
-      if (status === 'granted') {
-        this.getAudioFiles();
-      }
-
-      if (status === 'denied' && !canAskAgain) {
-        this.setState({ ...this.state, permissionError: true });
-      }
-    }
-  };
 
   onPlaybackStatusUpdate = async playbackStatus => {
     if (playbackStatus.isLoaded && playbackStatus.isPlaying) {
@@ -405,10 +205,10 @@ export class AudioProvider extends Component {
         });
       }
 
-      const nextAudioIndex = this.state.isLoop ? this.state.currentAudioIndex : this.state.currentAudioIndex + 1;
+      const nextAudioIndex =  this.state.currentAudioIndex + 1;
       // there is no next audio to play or the current audio is the last
       if (nextAudioIndex >= this.totalAudioCount) {
-        this.state.playbackObj.unloadAsync();
+        this.state.soundObj.unloadAsync();
         this.updateState(this, {
           soundObj: null,
           currentAudio: this.state.audioFiles[0],
@@ -421,26 +221,48 @@ export class AudioProvider extends Component {
       }
       // otherwise we want to select the next audio
       const audio = this.state.audioFiles[nextAudioIndex];
-      const status = await playNext(this.state.playbackObj, audio.uri);
+      // const status = await playNext(this.state.soundObj, audio.url);
+
+      const uri = audio.url;
+      const { sound: soundObject } = await Audio.Sound.createAsync(
+        uri
+      );
+      if (this.state.isPlaying) {
+        await this.state.soundObj.stopAsync();
+        await this.state.soundObj.unloadAsync();
+      }
+      await soundObject.setStatusAsync({ shouldPlay: true });
+
       this.updateState(this, {
-        soundObj: status,
+        soundObj: soundObject,
         currentAudio: audio,
         isPlaying: true,
         currentAudioIndex: nextAudioIndex,
       });
+      soundObject.setOnPlaybackStatusUpdate(this.state.onPlaybackStatusUpdate);
       await storeAudioForNextOpening(audio, nextAudioIndex);
     }
   };
 
-  componentDidMount() {
-    this.getPermission();
+  playbackObjMethod = async () => {
     if (this.state.playbackObj === null) {
-      this.setState({ ...this.state, playbackObj: new Audio.Sound() });
+      this.setState({ ...this.state, playbackObj:  await Audio.Sound.createAsync(
+        require('../../assets/kgf.mp3')
+     ) });
     }
   }
 
+   componentDidMount() {
+    this.getAudioFiles();
+    setTimeout(()=> {
+      this.playbackObjMethod();
+    }, 2000);
+    
+  }
+
   updateState = (prevState, newState = {}) => {
-    this.setState({ ...prevState, ...newState });
+    this.setState({ ...prevState, ...newState },()=>{
+    });
   };
 
   render() {
@@ -449,12 +271,10 @@ export class AudioProvider extends Component {
       playList,
       addToPlayList,
       dataProvider,
-      permissionError,
       playbackObj,
       isLoggedIn,
       soundObj,
       currentAudio,
-      filteredAudio,
       isPlaying,
       currentAudioIndex,
       playbackPosition,
@@ -462,20 +282,7 @@ export class AudioProvider extends Component {
       isPlayListRunning,
       activePlayList,
     } = this.state;
-    if (permissionError)
-      return (
-        <View
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <Text style={{ fontSize: 25, textAlign: 'center', color: 'red' }}>
-            It looks like you haven't accept the permission.
-          </Text>
-        </View>
-      );
+
     return (
       <AudioContext.Provider
         value={{
@@ -484,7 +291,6 @@ export class AudioProvider extends Component {
           addToPlayList,
           dataProvider,
           playbackObj,
-          filteredAudio,
           isLoggedIn,
           soundObj,
           currentAudio,
@@ -507,4 +313,3 @@ export class AudioProvider extends Component {
 }
 
 export default AudioProvider;
-*/

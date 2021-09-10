@@ -15,14 +15,14 @@ const OptionModal = ({
   onClose,
   options
 }) => {
-  const { filename } = currentItem;
+  const { title } = currentItem;
   return (
     <>
       <StatusBar hidden />
       <Modal animationType='fade' transparent visible={visible}>
         <View style={styles.modal}>
           <Text style={styles.title} numberOfLines={2}>
-            {filename}
+            {title}
           </Text>
           <View style={styles.optionContainer}>
             {options.map(optn => {

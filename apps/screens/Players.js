@@ -95,9 +95,9 @@ const Player = () => {
         </View>
         <View style={styles.audioPlayerContainer}>
           <Text numberOfLines={1} style={styles.audioTitle}>
-            {context.currentAudio.filename}
+            {context.currentAudio.title}
           </Text>
-          <Text style={styles.audioTitle}>Singer: Jennifer Lopez, Song: {context.currentAudio.filename}</Text>
+          <Text style={styles.audioTitle}>Singer: Jennifer Lopez, Song: {context.currentAudio.title}</Text>
           <View
             style={{
               flexDirection: 'row',
@@ -137,13 +137,13 @@ const Player = () => {
             }}
           />
           <View style={styles.audioControllers}>
-            <PlayerButton iconType='PREV' onPress={handlePrevious} />
+            <PlayerButton iconType='PREV' />
             <PlayerButton
               onPress={handlePlayPause}
               style={{ marginHorizontal: 25 }}
               iconType={context.isPlaying ? 'PLAY' : 'PAUSE'}
             />
-            <PlayerButton iconType='NEXT' onPress={handleNext} />
+            <PlayerButton iconType='NEXT' />
                <Feather style={{ marginLeft:80, marginRight: -100}} name="repeat" size={24} color= {loop ? 'blue' : 'black'} onPress={handleLoop} />
           </View>
         </View>

@@ -56,11 +56,10 @@ export class AudioList extends Component {
   rowRenderer = (type, item, index, extendedState) => {
     return (
       <AudioListItem
-        title={item.filename}
-        type = {item.type}
+        title={item.title}
         isPlaying={extendedState.isPlaying}
-        activeListItem={this.context.currentAudioIndex === index}
         duration={item.duration}
+        activeListItem={this.context.currentAudioIndex === index}
         onAudioPress={() => this.handleAudioPress(item)}
         onOptionPress={() => {
           this.currentItem = item;
@@ -89,29 +88,12 @@ export class AudioList extends Component {
     
     return (
       <AudioContext.Consumer>
-        {({ dataProvider, isPlaying, filteredAudio }) => {
-          if (!filteredAudio._data.length) return null;
+        {({ dataProvider, isPlaying }) => {
+          if (!dataProvider._data.length) return null;
           return (
             <Screen>
-              <View style={styles.category}>
-              <TouchableOpacity style={styles.btnstyle} onPress = {() => this.onPressAudioType(dataProvider, 'all')}>
-                  <Text style={styles.btnText}>All</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.btnstyle} onPress = {() => this.onPressAudioType(dataProvider, 'rock')}>
-                  <Text style={styles.btnText}>Rock</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.btnstyle} onPress = {() => this.onPressAudioType(dataProvider, 'pop')}>
-                  <Text style={styles.btnText}>Pop</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.btnstyle} onPress = {() => this.onPressAudioType(dataProvider, 'jazz')}>
-                  <Text style={styles.btnText}>Jazz</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.btnstyle} onPress = {() => this.onPressAudioType(dataProvider, 'blues')}>
-                  <Text style={styles.btnText}>Blues</Text>
-                </TouchableOpacity>
-              </View>
               <RecyclerListView
-                dataProvider={filteredAudio}
+                dataProvider={dataProvider}
                 layoutProvider={this.layoutProvider}
                 rowRenderer={this.rowRenderer}
                 extendedState={{ isPlaying }}

@@ -1,32 +1,22 @@
 import { storeAudioForNextOpening } from './helper';
-
+import { Audio } from 'expo-av';
 // play audio
-export const play = async (playbackObj, uri, lastPosition) => {
+export const play = async ( uri) => {
   try {
-    if (!lastPosition)
-      return await playbackObj.loadAsync(
-        { uri },
-        { shouldPlay: true, progressUpdateIntervalMillis: 1000 }
-      );
-
-    // but if there is lastPosition then we will play audio from the lastPosition
-    await playbackObj.loadAsync(
-      { uri },
-      { progressUpdateIntervalMillis: 1000 }
-    );
-
-    return await playbackObj.playFromPositionAsync(lastPosition);
+    
+      return await Audio.Sound.createAsync(
+         uri 
+     );
+    
   } catch (error) {
     console.log('error inside play helper method', error.message);
   }
 };
 
 // pause audio
-export const pause = async playbackObj => {
+export const pause = async audio => {
   try {
-    return await playbackObj.setStatusAsync({
-      shouldPlay: false,
-    });
+    return await audio.pauseAsync();
   } catch (error) {
     console.log('error inside pause helper method', error.message);
   }
@@ -42,11 +32,17 @@ export const resume = async playbackObj => {
 };
 
 // select another audio
-export const playNext = async (playbackObj, uri) => {
+export const playNext = async (playbackObj, uri, lastPosition, isPlaying) => {
   try {
-    await playbackObj.stopAsync();
-    await playbackObj.unloadAsync();
-    return await play(playbackObj, uri);
+    const { sound: soundObject } = await Audio.Sound.createAsync(
+      uri
+    );
+    if (isPlaying) {
+      await playbackObj.stopAsync();
+      await playbackObj.unloadAsync();
+    }
+    return await soundObject.setStatusAsync({ shouldPlay: true });
+
   } catch (error) {
     console.log('error inside playNext helper method', error.message);
   }
@@ -57,6 +53,7 @@ export const selectAudio = async (audio, context, playListInfo = {}) => {
     soundObj,
     playbackObj,
     currentAudio,
+    isPlaying,
     updateState,
     audioFiles,
     onPlaybackStatusUpdate,
@@ -64,58 +61,71 @@ export const selectAudio = async (audio, context, playListInfo = {}) => {
   try {
     // playing audio for the first time.
     if (soundObj === null) {
-      const status = await play(playbackObj, audio.uri, audio.lastPosition);
+      const uri = audio.url;
+      const { sound: soundObject } = await Audio.Sound.createAsync(
+        uri
+      );
       const index = audioFiles.findIndex(({ id }) => id === audio.id);
       updateState(context, {
         currentAudio: audio,
-        soundObj: status,
+        soundObj: soundObject,
         isPlaying: true,
-        currentAudioIndex: index,
-        isPlayListRunning: false,
-        activePlayList: [],
-        ...playListInfo,
+        currentAudioIndex: index
       });
-      playbackObj.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
+      await soundObject.setStatusAsync({ shouldPlay: true });
+      soundObject.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
       return storeAudioForNextOpening(audio, index);
     }
-
     // pause audio
     if (
-      soundObj.isLoaded &&
-      soundObj.isPlaying &&
+      isPlaying &&
       currentAudio.id === audio.id
     ) {
-      const status = await pause(playbackObj);
+      console.log('--------pause-----------');
+      // await soundObject.unloadAsync();
+      const { sound: soundObject } = await soundObj.setStatusAsync({shouldPlay: false }); 
       return updateState(context, {
-        soundObj: status,
+        soundObj: soundObject,
         isPlaying: false,
-        playbackPosition: status.positionMillis,
       });
     }
 
     // resume audio
     if (
-      soundObj.isLoaded &&
-      !soundObj.isPlaying &&
+      !isPlaying &&
       currentAudio.id === audio.id
     ) {
-      const status = await resume(playbackObj);
-      return updateState(context, { soundObj: status, isPlaying: true });
+      const uri = audio.url;
+      console.log('--------resume-------');
+      const { sound: soundObject } = await Audio.Sound.createAsync(
+        uri 
+    );
+       await soundObject.setStatusAsync({shouldPlay: true }); 
+       updateState(context, { soundObj: soundObject, isPlaying: true });
+       soundObject.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
     }
 
     // select another audio
-    if (soundObj.isLoaded && currentAudio.id !== audio.id) {
-      const status = await playNext(playbackObj, audio.uri);
+    if (currentAudio.id !== audio.id) {
+      console.log('----------next-------------');
+      const uri = audio.url;
+      const { sound: soundObject } = await Audio.Sound.createAsync(
+        uri
+      );
+      if (isPlaying) {
+        await soundObj.stopAsync();
+        await soundObj.unloadAsync();
+      }
+
+      await soundObject.setStatusAsync({ shouldPlay: true });
       const index = audioFiles.findIndex(({ id }) => id === audio.id);
       updateState(context, {
         currentAudio: audio,
-        soundObj: status,
+        soundObj: soundObject,
         isPlaying: true,
-        currentAudioIndex: index,
-        isPlayListRunning: false,
-        activePlayList: [],
-        ...playListInfo,
+        currentAudioIndex: index
       });
+      soundObject.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
       return storeAudioForNextOpening(audio, index);
     }
   } catch (error) {

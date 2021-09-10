@@ -6,7 +6,7 @@ import {
   Dimensions,
   TouchableWithoutFeedback
 } from 'react-native';
-import { Entypo } from '@expo/vector-icons';
+import { Entypo, Ionicons  } from '@expo/vector-icons';
 import color from '../misc/color';
 
 const getThumbnailText = filename => filename[0].toUpperCase();
@@ -43,7 +43,7 @@ const convertTime = minutes => {
 const renderPlayPauseIcon = isPlaying => {
   if (isPlaying)
     return (
-      <Entypo name='controller-paus' size={24} color={color.ACTIVE_FONT} />
+      <Ionicons name="md-stop-sharp" size={24} color={color.ACTIVE_FONT} />
     );
   return <Entypo name='controller-play' size={24} color={color.ACTIVE_FONT} />;
 };
@@ -51,9 +51,8 @@ const renderPlayPauseIcon = isPlaying => {
 //Method to display audio list item
 const AudioListItem = ({
   title,
-  type,
-  duration,
   onAudioPress,
+  duration,
   onOptionPress,
   isPlaying,
   activeListItem,
@@ -83,7 +82,7 @@ const AudioListItem = ({
               <Text numberOfLines={1} style={styles.title}>
                 {title}
               </Text>
-              <Text numberOfLines={1} style={styles.description}>Type: {type}, Singer: Jennifer Lopez, Song: {title}</Text>
+              <Text numberOfLines={1} style={styles.description}>Type: POP, Singer: Jennifer Lopez, Song: {title}</Text>
               <Text style={styles.timeText}>{convertTime(duration)}</Text>
             </View>
           </View>
