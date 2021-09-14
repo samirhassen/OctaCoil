@@ -57,6 +57,7 @@ export class AudioList extends Component {
     return (
       <AudioListItem
         title={item.title}
+        type = {item.type}
         isPlaying={extendedState.isPlaying}
         duration={item.duration}
         activeListItem={this.context.currentAudioIndex === index}
@@ -88,12 +89,29 @@ export class AudioList extends Component {
     
     return (
       <AudioContext.Consumer>
-        {({ dataProvider, isPlaying }) => {
-          if (!dataProvider._data.length) return null;
+        {({ dataProvider, isPlaying, filteredAudio }) => {
+          if (!filteredAudio._data.length) return null;
           return (
             <Screen>
+              <View style={styles.category}>
+              <TouchableOpacity style={styles.btnstyle} onPress = {() => this.onPressAudioType(dataProvider, 'all')}>
+                  <Text style={styles.btnText}>All</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.btnstyle} onPress = {() => this.onPressAudioType(dataProvider, 'brain')}>
+                  <Text style={styles.btnText}>Brain</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.btnstyle} onPress = {() => this.onPressAudioType(dataProvider, 'heart')}>
+                  <Text style={styles.btnText}>Heart</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.btnstyle} onPress = {() => this.onPressAudioType(dataProvider, 'bone')}>
+                  <Text style={styles.btnText}>Bone</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.btnstyle} onPress = {() => this.onPressAudioType(dataProvider, 'blues')}>
+                  <Text style={styles.btnText}>Blues</Text>
+                </TouchableOpacity>
+              </View>
               <RecyclerListView
-                dataProvider={dataProvider}
+                dataProvider={filteredAudio}
                 layoutProvider={this.layoutProvider}
                 rowRenderer={this.rowRenderer}
                 extendedState={{ isPlaying }}
@@ -127,8 +145,8 @@ const styles = StyleSheet.create({
   },
   category: {
     height: 90,
-    marginLeft: 15,
-    marginTop: 40,
+    marginLeft: 24,
+    marginTop: 45,
     flexDirection: "row",
     flexWrap: "wrap",
   },
@@ -148,7 +166,7 @@ const styles = StyleSheet.create({
     marginTop: 10 
   },
   btnText: {
-    fontSize: 24,
+    fontSize: 20,
   }
 });
 

@@ -173,7 +173,10 @@ export const changeAudio = async (context, select) => {
     playbackObj,
     currentAudioIndex,
     totalAudioCount,
+    onPlaybackStatusUpdate,
     audioFiles,
+    isPlaying,
+    soundObj,
     updateState,
     isPlayListRunning,
   } = context;
@@ -181,34 +184,89 @@ export const changeAudio = async (context, select) => {
   if (isPlayListRunning) return selectAudioFromPlayList(context, select);
 
   try {
-    const { isLoaded } = await playbackObj.getStatusAsync();
+    const { isLoaded } = await soundObj.getStatusAsync();
     const isLastAudio = currentAudioIndex + 1 === totalAudioCount;
     const isFirstAudio = currentAudioIndex <= 0;
     let audio;
     let index;
-    let status;
 
     // for next
     if (select === 'next') {
       audio = audioFiles[currentAudioIndex + 1];
       if (!isLoaded && !isLastAudio) {
         index = currentAudioIndex + 1;
-        status = await play(playbackObj, audio.uri);
-        playbackObj.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
+        const { sound: soundObject } = await Audio.Sound.createAsync(
+          audio.url
+        );
+        await soundObject.setStatusAsync({ shouldPlay: true });
+        updateState(context, {
+          currentAudio: audio,
+          soundObj: soundObject,
+          isPlaying: true,
+          currentAudioIndex: index,
+          playbackPosition: null,
+          playbackDuration: null,
+        });
+        soundObject.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
+        
       }
 
       if (isLoaded && !isLastAudio) {
         index = currentAudioIndex + 1;
-        status = await playNext(playbackObj, audio.uri);
+        const { sound: soundObject } = await Audio.Sound.createAsync(
+          audio.url
+        );
+        if (isPlaying) {
+          await soundObj.stopAsync();
+          await soundObj.unloadAsync();
+        }
+         await soundObject.setStatusAsync({ shouldPlay: true });
+         updateState(context, {
+          currentAudio: audio,
+          soundObj: soundObject,
+          isPlaying: true,
+          currentAudioIndex: index,
+          playbackPosition: null,
+          playbackDuration: null,
+        });
+        soundObject.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
       }
 
       if (isLastAudio) {
         index = 0;
         audio = audioFiles[index];
         if (isLoaded) {
-          status = await playNext(playbackObj, audio.uri);
+          const { sound: soundObject } = await Audio.Sound.createAsync(
+            audio.url
+          );
+          if (isPlaying) {
+            await soundObj.stopAsync();
+            await soundObj.unloadAsync();
+          }
+           await soundObject.setStatusAsync({ shouldPlay: true });
+           updateState(context, {
+            currentAudio: audio,
+            soundObj: soundObject,
+            isPlaying: true,
+            currentAudioIndex: index,
+            playbackPosition: null,
+            playbackDuration: null,
+          });
+          soundObject.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
         } else {
-          status = await play(playbackObj, audio.uri);
+          const { sound: soundObject } = await Audio.Sound.createAsync(
+            audio.url
+          );
+          await soundObject.setStatusAsync({ shouldPlay: true });
+          updateState(context, {
+            currentAudio: audio,
+            soundObj: soundObject,
+            isPlaying: true,
+            currentAudioIndex: index,
+            playbackPosition: null,
+            playbackDuration: null,
+          });
+          soundObject.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
         }
       }
     }
@@ -218,37 +276,85 @@ export const changeAudio = async (context, select) => {
       audio = audioFiles[currentAudioIndex - 1];
       if (!isLoaded && !isFirstAudio) {
         index = currentAudioIndex - 1;
-        status = await play(playbackObj, audio.uri);
-        playbackObj.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
+        const { sound: soundObject } = await Audio.Sound.createAsync(
+          audio.url
+        );
+        await soundObject.setStatusAsync({ shouldPlay: true });
+        updateState(context, {
+          currentAudio: audio,
+          soundObj: soundObject,
+          isPlaying: true,
+          currentAudioIndex: index,
+          playbackPosition: null,
+          playbackDuration: null,
+        });
+        soundObject.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
+        
       }
 
       if (isLoaded && !isFirstAudio) {
         index = currentAudioIndex - 1;
-        status = await playNext(playbackObj, audio.uri);
+        const { sound: soundObject } = await Audio.Sound.createAsync(
+          audio.url
+        );
+        if (isPlaying) {
+          await soundObj.stopAsync();
+          await soundObj.unloadAsync();
+        }
+         await soundObject.setStatusAsync({ shouldPlay: true });
+         updateState(context, {
+          currentAudio: audio,
+          soundObj: soundObject,
+          isPlaying: true,
+          currentAudioIndex: index,
+          playbackPosition: null,
+          playbackDuration: null,
+        });
+        soundObject.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
       }
 
       if (isFirstAudio) {
         index = totalAudioCount - 1;
         audio = audioFiles[index];
         if (isLoaded) {
-          status = await playNext(playbackObj, audio.uri);
+          const { sound: soundObject } = await Audio.Sound.createAsync(
+            audio.url
+          );
+          if (isPlaying) {
+            await soundObj.stopAsync();
+            await soundObj.unloadAsync();
+          }
+           await soundObject.setStatusAsync({ shouldPlay: true });
+           updateState(context, {
+            currentAudio: audio,
+            soundObj: soundObject,
+            isPlaying: true,
+            currentAudioIndex: index,
+            playbackPosition: null,
+            playbackDuration: null,
+          });
+          soundObject.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
         } else {
-          status = await play(playbackObj, audio.uri);
+          const { sound: soundObject } = await Audio.Sound.createAsync(
+            audio.url
+          );
+          await soundObject.setStatusAsync({ shouldPlay: true });
+          updateState(context, {
+            currentAudio: audio,
+            soundObj: soundObject,
+            isPlaying: true,
+            currentAudioIndex: index,
+            playbackPosition: null,
+            playbackDuration: null,
+          });
+          soundObject.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
         }
       }
     }
 
-    updateState(context, {
-      currentAudio: audio,
-      soundObj: status,
-      isPlaying: true,
-      currentAudioIndex: index,
-      playbackPosition: null,
-      playbackDuration: null,
-    });
     storeAudioForNextOpening(audio, index);
   } catch (error) {
-    console.log('error inside cahnge audio method.', error.message);
+    console.log('error inside change audio method.', error.message);
   }
 };
 
@@ -257,15 +363,14 @@ export const moveAudio = async (context, value) => {
   if (soundObj === null || !isPlaying) return;
 
   try {
-    const status = await playbackObj.setPositionAsync(
+    const status = await soundObj.setPositionAsync(
       Math.floor(soundObj.durationMillis * value)
     );
     updateState(context, {
       soundObj: status,
       playbackPosition: status.positionMillis,
     });
-
-    await resume(playbackObj);
+    await soundObj.setStatusAsync({shouldPlay: true });
   } catch (error) {
     console.log('error inside onSlidingComplete callback', error);
   }

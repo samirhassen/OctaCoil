@@ -1,13 +1,13 @@
 import React from 'react';
-import { ImageBackground, View, StyleSheet, StatusBar } from 'react-native';
+import { ImageBackground, View, StyleSheet, StatusBar, SafeAreaView } from 'react-native';
 import color from '../misc/color';
 
 const Screen = ({ children }) => {
-  return <View style={styles.container}>
+  return <SafeAreaView style={styles.container}>
     <ImageBackground source={require('../../assets/bg.jpg')} resizeMode="cover" style={styles.image}>
     {children}
     </ImageBackground>
-    </View>;
+    </SafeAreaView>;
 };
 
 const styles = StyleSheet.create({

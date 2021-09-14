@@ -137,13 +137,13 @@ const Player = () => {
             }}
           />
           <View style={styles.audioControllers}>
-            <PlayerButton iconType='PREV' />
+            <PlayerButton iconType='PREV' onPress={handlePrevious}  />
             <PlayerButton
               onPress={handlePlayPause}
               style={{ marginHorizontal: 25 }}
               iconType={context.isPlaying ? 'PLAY' : 'PAUSE'}
             />
-            <PlayerButton iconType='NEXT' />
+            <PlayerButton iconType='NEXT' onPress={handleNext} />
                <Feather style={{ marginLeft:80, marginRight: -100}} name="repeat" size={24} color= {loop ? 'blue' : 'black'} onPress={handleLoop} />
           </View>
         </View>

@@ -17,97 +17,112 @@ export class AudioProvider extends Component {
       title: 'Energize',
       isRequire: true,
       url: require('../../assets/Energize.wav'),
-      duration: 30.00
+      duration: 30.00,
+      type: 'heart'
     },
     {
       id: 4,
       title: 'Focus',
       url: require('../../assets/Focus.wav'),
-      duration: 30.00
+      duration: 30.00,
+      type: 'bone'
     },
     {
       id: 5,
       title: 'Relax',
       isRequire: true,
       url: require('../../assets/Relax.wav'),
-      duration: 20.00
+      duration: 20.00,
+      type: 'brain'
     },
     {
       id: 6,
       title: 'Performance',
       url: require('../../assets/Performance.wav'),
-      duration: 10.00
+      duration: 10.00,
+      type: 'blues'
     },
     {
       id: 7,
       title: 'Shaky Shaky',
       isRequire: true,
       url: require('../../assets/shaky.mp3'),
-      duration: 11.00
+      duration: 11.00,
+      type: 'heart'
     },
     {
       id: 8,
       title: 'Six days',
       url: require('../../assets/sixdays.mp3'),
-      duration: 23.00
+      duration: 23.00,
+      type: 'bone'
     },
     {
       id: 9,
       title: 'Ve mahi',
       isRequire: true,
       url: require('../../assets/vemahi.mp3'),
-      duration: 30.11
+      duration: 30.11,
+      type: 'brain'
     },
     {
       id: 10,
       title: 'Tokyo Drift',
       url: require('../../assets/tokyo.mp3'),
-      duration: 29.00
+      duration: 29.00,
+      type: 'blues'
     },
     {
       id: 11,
       title: 'Let me Love you',
       url: require('../../assets/letmelove.mp3'),
-      duration: 19.15
+      duration: 19.15,
+      type: 'heart'
     },
     {
       id: 12,
       title: 'KGF maa',
       isRequire: true,
       url: require('../../assets/kgf.mp3'),
-      duration: 24.37
+      duration: 24.37,
+      type: 'bone'
     },
     {
       id: 13,
       title: 'Shiv Tandav Storm',
       url: require('../../assets/Shiv.mp3'),
-      duration: 18.12
+      duration: 18.12,
+      type: 'brain'
     },
     {
       id: 14,
       title: 'Sample1',
       isRequire: true,
       url: require('../../assets/sample1.wav'),
-      duration: 121.20
+      duration: 121.20,
+      type: 'blues'
     },
     {
       id: 15,
       title: 'Sample2',
       url: require('../../assets/sample2.wav'),
-      duration: 13.10
+      duration: 13.10,
+      type: 'heart'
     },
     {
       id: 16,
       title: 'Sample3',
       isRequire: true,
       url: require('../../assets/sample3.wav'),
-      duration: 87.00
+      duration: 87.00,
+      type: 'bone'
     },
     {
       id: 17,
       title: 'Sample4',
       url: require('../../assets/sample4.wav'),
-      duration: 148.20
+      duration: 148.20,
+      type: 'brain'
     },
   ];
 
@@ -118,6 +133,7 @@ export class AudioProvider extends Component {
       playList: [],
       addToPlayList: null,
       dataProvider: new DataProvider((r1, r2) => r1.url !== r2.url),
+      filteredAudio : new DataProvider((r1, r2) => r1 !== r2),
       playbackObj: null,
       soundObj: null,
       currentAudio: {},
@@ -138,11 +154,13 @@ export class AudioProvider extends Component {
 
 
   getAudioFiles = async () => {
-    const {dataProvider, audioFiles, audioLists } = this.state;
+    const {dataProvider, audioFiles, audioLists, filteredAudio } = this.state;
     const dataProviderData = dataProvider.cloneWithRows([...audioFiles, ...audioLists]);
+    const filterAudioData = filteredAudio.cloneWithRows([...audioFiles, ...audioLists]);
     this.totalAudioCount = audioLists.length;
     this.setState({
       dataProvider: dataProviderData,
+      filteredAudio:  filterAudioData,
       audioFiles: [...audioFiles, ...audioLists],
     });
   };
@@ -227,6 +245,7 @@ export class AudioProvider extends Component {
       const { sound: soundObject } = await Audio.Sound.createAsync(
         uri
       );
+      // console.log('soundObj---',this.state.soundObj);
       if (this.state.isPlaying) {
         await this.state.soundObj.stopAsync();
         await this.state.soundObj.unloadAsync();
@@ -271,6 +290,7 @@ export class AudioProvider extends Component {
       playList,
       addToPlayList,
       dataProvider,
+      filteredAudio,
       playbackObj,
       isLoggedIn,
       soundObj,
@@ -290,6 +310,7 @@ export class AudioProvider extends Component {
           playList,
           addToPlayList,
           dataProvider,
+          filteredAudio,
           playbackObj,
           isLoggedIn,
           soundObj,
