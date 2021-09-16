@@ -100,7 +100,7 @@ const PlayList = ({ navigation }) => {
       if (sameAudio) {
         Alert.alert(
           'Found same audio!',
-          `${addToPlayList.filename} is already inside the list.`
+          `${addToPlayList.title} is already inside the list.`
         );
         sameAudio = false;
         return updateState(context, { addToPlayList: null });
@@ -122,7 +122,7 @@ const PlayList = ({ navigation }) => {
       {playList.length
         ? playList.map(item => (
             <TouchableOpacity
-              key={item.id.toString()}
+              key={item.id}
               style={styles.playListBanner}
               onPress={() => handleBannerPress(item)}
             >

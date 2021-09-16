@@ -28,15 +28,14 @@ const PlayListDetail = ({ visible, playList, onClose }) => {
         <FlatList
           contentContainerStyle={styles.listContainer}
           data={playList.audios}
-          keyExtractor={item => item.id.toString()}
+          keyExtractor={item => item.id}
           renderItem={({ item }) => (
             <View style={{ marginBottom: 10 }}>
-              <AudioListItem title={item.filename} duration={item.duration} onAudioPress={()=> playAudio(item)} />
+              <AudioListItem title={item.title} duration={item.duration} onAudioPress={()=> playAudio(item)} />
             </View>
           )}
         />
-      </View>
-      <View style={[StyleSheet.absoluteFillObject, styles.modalBG]} />
+      </View>      <View style={[StyleSheet.absoluteFillObject, styles.modalBG]} />
     </Modal>
   );
 };

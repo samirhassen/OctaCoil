@@ -223,7 +223,7 @@ export class AudioProvider extends Component {
         });
       }
 
-      const nextAudioIndex =  this.state.currentAudioIndex + 1;
+      const nextAudioIndex = this.state.isLoop ? this.state.currentAudioIndex : this.state.currentAudioIndex + 1;
       // there is no next audio to play or the current audio is the last
       if (nextAudioIndex >= this.totalAudioCount) {
         this.state.soundObj.unloadAsync();

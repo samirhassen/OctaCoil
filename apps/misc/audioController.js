@@ -1,13 +1,21 @@
 import { storeAudioForNextOpening } from './helper';
 import { Audio } from 'expo-av';
 // play audio
-export const play = async ( uri) => {
+export const play = async (playbackObj, uri, lastPosition) => {
   try {
-    
-      return await Audio.Sound.createAsync(
-         uri 
-     );
-    
+    if (!lastPosition)
+      return await playbackObj.loadAsync(
+        { uri },
+        { shouldPlay: true, progressUpdateIntervalMillis: 1000 }
+      );
+
+    // but if there is lastPosition then we will play audio from the lastPosition
+    await playbackObj.loadAsync(
+      { uri },
+      { progressUpdateIntervalMillis: 1000 }
+    );
+
+    return await playbackObj.playFromPositionAsync(lastPosition);
   } catch (error) {
     console.log('error inside play helper method', error.message);
   }
@@ -32,17 +40,17 @@ export const resume = async playbackObj => {
 };
 
 // select another audio
-export const playNext = async (playbackObj, uri, lastPosition, isPlaying) => {
+export const playNext = async (playbackObj, uri, isPlaying) => {
   try {
-    const { sound: soundObject } = await Audio.Sound.createAsync(
-      uri
-    );
+    // const { sound: soundObject } = await Audio.Sound.createAsync(
+    //   uri
+    // );
     if (isPlaying) {
       await playbackObj.stopAsync();
       await playbackObj.unloadAsync();
     }
-    return await soundObject.setStatusAsync({ shouldPlay: true });
-
+    // return await soundObject.setStatusAsync({ shouldPlay: true });
+    return await play(playbackObj, uri);
   } catch (error) {
     console.log('error inside playNext helper method', error.message);
   }
@@ -85,7 +93,6 @@ export const selectAudio = async (audio, context, playListInfo = {}) => {
       // await soundObject.unloadAsync();
       const { sound: soundObject } = await soundObj.setStatusAsync({shouldPlay: false }); 
       return updateState(context, {
-        soundObj: soundObject,
         isPlaying: false,
       });
     }

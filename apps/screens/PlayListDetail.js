@@ -89,11 +89,11 @@ const PlayListDetail = props => {
           <FlatList
             contentContainerStyle={styles.listContainer}
             data={audios}
-            keyExtractor={item => item.id.toString()}
+            keyExtractor={item => item.id}
             renderItem={({ item }) => (
               <View style={{ marginBottom: 10 }}>
                 <AudioListItem
-                  title={item.filename}
+                  title={item.title}
                   duration={item.duration}
                   isPlaying={context.isPlaying}
                   activeListItem={item.id === context.currentAudio.id}

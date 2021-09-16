@@ -1,9 +1,15 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { ImageBackground, View, StyleSheet, StatusBar, SafeAreaView } from 'react-native';
 import color from '../misc/color';
 
 const Screen = ({ children }) => {
+
+  useEffect(()=> {
+      StatusBar.setHidden(false);
+  },[]);
+
   return <SafeAreaView style={styles.container}>
+    <StatusBar barStyle = {Platform.OS === 'ios' ? "dark-content" : "light-content"} /> 
     <ImageBackground source={require('../../assets/bg.jpg')} resizeMode="cover" style={styles.image}>
     {children}
     </ImageBackground>
