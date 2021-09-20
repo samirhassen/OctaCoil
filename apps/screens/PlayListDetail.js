@@ -89,7 +89,7 @@ const PlayListDetail = props => {
           <FlatList
             contentContainerStyle={styles.listContainer}
             data={audios}
-            keyExtractor={item => item.id}
+            keyExtractor={item => item.id.toString()}
             renderItem={({ item }) => (
               <View style={{ marginBottom: 10 }}>
                 <AudioListItem

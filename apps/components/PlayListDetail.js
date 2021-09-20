@@ -28,7 +28,7 @@ const PlayListDetail = ({ visible, playList, onClose }) => {
         <FlatList
           contentContainerStyle={styles.listContainer}
           data={playList.audios}
-          keyExtractor={item => item.id}
+          keyExtractor={item => item.id.toString()}
           renderItem={({ item }) => (
             <View style={{ marginBottom: 10 }}>
               <AudioListItem title={item.title} duration={item.duration} onAudioPress={()=> playAudio(item)} />

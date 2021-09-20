@@ -202,6 +202,7 @@ export class AudioProvider extends Component {
     if (playbackStatus.didJustFinish) {
       if (this.state.isPlayListRunning) {
         let audio;
+        
         const indexOnPlayList = this.state.activePlayList.audios.findIndex(
           ({ id }) => id === this.state.currentAudio.id
         );
@@ -214,7 +215,7 @@ export class AudioProvider extends Component {
           ({ id }) => id === audio.id
         );
 
-        const status = await playNext(this.state.playbackObj, audio.uri);
+        const status = await playNext(this.state.playbackObj, audio.url);
         return this.updateState(this, {
           soundObj: status,
           isPlaying: true,
@@ -226,7 +227,7 @@ export class AudioProvider extends Component {
       const nextAudioIndex = this.state.isLoop ? this.state.currentAudioIndex : this.state.currentAudioIndex + 1;
       // there is no next audio to play or the current audio is the last
       if (nextAudioIndex >= this.totalAudioCount) {
-        this.state.soundObj.unloadAsync();
+        this.state.playbackObj.unloadAsync();
         this.updateState(this, {
           soundObj: null,
           currentAudio: this.state.audioFiles[0],
@@ -239,35 +240,21 @@ export class AudioProvider extends Component {
       }
       // otherwise we want to select the next audio
       const audio = this.state.audioFiles[nextAudioIndex];
-      // const status = await playNext(this.state.soundObj, audio.url);
-
-      const uri = audio.url;
-      const { sound: soundObject } = await Audio.Sound.createAsync(
-        uri
-      );
-      // console.log('soundObj---',this.state.soundObj);
-      if (this.state.isPlaying) {
-        await this.state.soundObj.stopAsync();
-        await this.state.soundObj.unloadAsync();
-      }
-      await soundObject.setStatusAsync({ shouldPlay: true });
-
+      const status = await playNext(this.state.playbackObj, audio.url);
       this.updateState(this, {
-        soundObj: soundObject,
+        soundObj: status,
         currentAudio: audio,
         isPlaying: true,
         currentAudioIndex: nextAudioIndex,
       });
-      soundObject.setOnPlaybackStatusUpdate(this.state.onPlaybackStatusUpdate);
+
       await storeAudioForNextOpening(audio, nextAudioIndex);
     }
   };
 
-  playbackObjMethod = async () => {
+  playbackObjMethod = () => {
     if (this.state.playbackObj === null) {
-      this.setState({ ...this.state, playbackObj:  await Audio.Sound.createAsync(
-        require('../../assets/kgf.mp3')
-     ) });
+      this.setState({ ...this.state, playbackObj: new Audio.Sound() });
     }
   }
 
@@ -275,8 +262,7 @@ export class AudioProvider extends Component {
     this.getAudioFiles();
     setTimeout(()=> {
       this.playbackObjMethod();
-    }, 2000);
-    
+    }, 0);
   }
 
   updateState = (prevState, newState = {}) => {

@@ -122,7 +122,7 @@ const PlayList = ({ navigation }) => {
       {playList.length
         ? playList.map(item => (
             <TouchableOpacity
-              key={item.id}
+              key={item.id.toString()}
               style={styles.playListBanner}
               onPress={() => handleBannerPress(item)}
             >
