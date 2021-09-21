@@ -9,11 +9,11 @@ const Screen = ({ children }) => {
   },[]);
 
   return <SafeAreaView style={styles.container}>
-    <StatusBar barStyle = {Platform.OS === 'ios' ? "dark-content" : "light-content"} /> 
+    <StatusBar backgroundColor="#fff" barStyle="dark-content" />
     <ImageBackground source={require('../../assets/bg.jpg')} resizeMode="cover" style={styles.image}>
-    {children}
+      {children}
     </ImageBackground>
-    </SafeAreaView>;
+  </SafeAreaView>;
 };
 
 const styles = StyleSheet.create({

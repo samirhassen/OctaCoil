@@ -18,14 +18,14 @@ import PlayListDetail from '../screens/PlayListDetail';
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-const PlayListScreen = () => {
-  return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name='PlayList' component={PlayList} />
-      <Stack.Screen name='PlayListDetail' component={PlayListDetail} />
-    </Stack.Navigator>
-  );
-};
+// const PlayListScreen = () => {
+//   return (
+//     <Stack.Navigator screenOptions={{ headerShown: false }}>
+//       <Stack.Screen name='PlayList' component={PlayList} />
+//       <Stack.Screen name='PlayListDetail' component={PlayListDetail} />
+//     </Stack.Navigator>
+//   );
+// };
 
 
 const Logout = () => {
@@ -62,7 +62,7 @@ const AppNavigator = () => {
         component={AudioList}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name='headset' size={size} color={color} />
+            <MaterialIcons name='headset' size={28} color={color} />
           ),
         }}
       />
@@ -71,11 +71,11 @@ const AppNavigator = () => {
         component={Player}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <FontAwesome5 name='compact-disc' size={size} color={color} />
+            <FontAwesome5 name='compact-disc' size={28} color={color} />
           ),
         }}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name='PlayList'
         component={PlayListScreen}
         options={{
@@ -83,13 +83,13 @@ const AppNavigator = () => {
             <MaterialIcons name='library-music' size={size} color={color} />
           ),
         }}
-      />
+      /> */}
       <Tab.Screen
         name={isLoggedIn ? "Logout" : "Login"}
         component={isLoggedIn ? Logout : Login}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name ={isLoggedIn ? "logout" : "login"} size={size} color={color} />
+            <MaterialIcons name ={isLoggedIn ? "logout" : "login"} size={28} color={color} />
           ),
         }}
       />

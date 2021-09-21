@@ -53,6 +53,7 @@ const AudioListItem = ({
   title,
   onAudioPress,
   duration,
+  album,
   type,
   onOptionPress,
   isPlaying,
@@ -83,11 +84,11 @@ const AudioListItem = ({
               <Text numberOfLines={1} style={styles.title}>
                 {title}
               </Text>
-              <Text numberOfLines={1} style={styles.description}>Type: {type}, Singer: Jennifer Lopez, Song: {title}</Text>
+              <Text numberOfLines={1} style={styles.description}>Type: {type}, Album: {album}, Song: {title}</Text>
               <Text style={styles.timeText}>{convertTime(duration)}</Text>
             </View>
           </View>
-        <View style={styles.rightContainer}>
+        {/* <View style={styles.rightContainer}>
           <Entypo
              onPress={onOptionPress}
             name='dots-three-vertical'
@@ -95,7 +96,7 @@ const AudioListItem = ({
             color={color.FONT_MEDIUM}
             style={{ padding: 10 }}
           />
-        </View>
+        </View> */}
       </View>
       </TouchableWithoutFeedback>
       <View style={styles.separator} />
@@ -134,8 +135,8 @@ const styles = StyleSheet.create({
     color: color.FONT,
   },
   titleContainer: {
-    width: width - 180,
-    paddingLeft: 10,
+    width: width - 130,
+    paddingLeft: 10
   },
   description: {
     fontSize: 14,

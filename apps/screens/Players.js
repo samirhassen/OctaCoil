@@ -97,7 +97,7 @@ const Player = () => {
           <Text numberOfLines={1} style={styles.audioTitle}>
             {context.currentAudio.title}
           </Text>
-          <Text style={styles.audioTitle}>Singer: Jennifer Lopez, Song: {context.currentAudio.title}</Text>
+          <Text style={styles.audioSubTitle}>Album: {context.currentAudio.album}, Song: {context.currentAudio.title}</Text>
           <View
             style={{
               flexDirection: 'row',
@@ -179,10 +179,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   audioTitle: {
-    fontSize: 16,
+    fontSize: 24,
+    fontWeight: 'bold',
     color: color.FONT,
     padding: 15,
   },
+  audioSubTitle: {
+    fontSize: 18,
+    color: color.FONT,
+    padding: 15,
+  }
 });
 
 export default Player;

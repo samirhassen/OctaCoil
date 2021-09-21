@@ -58,6 +58,7 @@ export class AudioList extends Component {
       <AudioListItem
         title={item.title}
         type = {item.type}
+        album = {item.album}
         isPlaying={extendedState.isPlaying}
         duration={item.duration}
         activeListItem={this.context.currentAudioIndex === index}

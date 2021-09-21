@@ -13,117 +13,191 @@ export const AudioContext = createContext();
 export class AudioProvider extends Component {
   audioItems = [
     {
-      id: 3,
+      id: 1,
       title: 'Energize',
       isRequire: true,
       url: require('../../assets/Energize.wav'),
       duration: 30.00,
-      type: 'heart'
+      type: 'heart',
+      album: 'SE Therapies'
     },
     {
-      id: 4,
+      id: 2,
       title: 'Focus',
       url: require('../../assets/Focus.wav'),
       duration: 30.00,
-      type: 'bone'
+      type: 'bone',
+      album: 'SE Therapies'
     },
     {
-      id: 5,
+      id: 3,
       title: 'Relax',
       isRequire: true,
       url: require('../../assets/Relax.wav'),
       duration: 20.00,
-      type: 'brain'
+      type: 'brain',
+      album: 'SE Therapies'
     },
     {
-      id: 6,
-      title: 'Performance',
-      url: require('../../assets/Performance.wav'),
-      duration: 10.00,
-      type: 'blues'
+      id: 4,
+      title: 'Astronut',
+      url: require('../../assets/astronaut.mp3'),
+      duration: 25.00,
+      type: 'blues',
+      album: 'Masked Wolf'
     },
     {
-      id: 7,
+      id: 5,
       title: 'Shaky Shaky',
       isRequire: true,
       url: require('../../assets/shaky.mp3'),
       duration: 11.00,
-      type: 'heart'
+      type: 'heart',
+      album: 'Daddy Yenky'
     },
     {
-      id: 8,
+      id: 6,
       title: 'Six days',
       url: require('../../assets/sixdays.mp3'),
       duration: 23.00,
-      type: 'bone'
+      type: 'bone',
+      album: 'F&F Tokyo Drift'
     },
     {
-      id: 9,
+      id: 7,
       title: 'Ve mahi',
       isRequire: true,
       url: require('../../assets/vemahi.mp3'),
       duration: 30.11,
-      type: 'brain'
+      type: 'brain',
+      album: 'Keshari The Movie'
     },
     {
-      id: 10,
+      id: 8,
       title: 'Tokyo Drift',
       url: require('../../assets/tokyo.mp3'),
       duration: 29.00,
-      type: 'blues'
+      type: 'blues',
+      album: 'F&F3 Tokyo Drift'
     },
     {
-      id: 11,
+      id: 9,
       title: 'Let me Love you',
       url: require('../../assets/letmelove.mp3'),
       duration: 19.15,
-      type: 'heart'
+      type: 'heart',
+      album: 'Justin Bieber'
     },
     {
-      id: 12,
+      id: 10,
       title: 'KGF maa',
       isRequire: true,
       url: require('../../assets/kgf.mp3'),
       duration: 24.37,
-      type: 'bone'
+      type: 'bone',
+      album: 'KGF Capture 1'
     },
     {
-      id: 13,
+      id: 11,
       title: 'Shiv Tandav Storm',
       url: require('../../assets/Shiv.mp3'),
       duration: 18.12,
-      type: 'brain'
+      type: 'brain',
+      album: 'Shiva Tandav'
     },
     {
-      id: 14,
-      title: 'Sample1',
+      id: 12,
+      title: 'Bamboo',
       isRequire: true,
-      url: require('../../assets/sample1.wav'),
-      duration: 121.20,
-      type: 'blues'
+      url: require('../../assets/bamboo.mp3'),
+      duration: 30.01,
+      type: 'blues',
+      album: 'Shakira'
     },
     {
-      id: 15,
+      id: 13,
       title: 'Sample2',
       url: require('../../assets/sample2.wav'),
       duration: 13.10,
-      type: 'heart'
+      type: 'heart',
+      album: 'Unknown'
     },
     {
-      id: 16,
+      id: 14,
       title: 'Sample3',
       isRequire: true,
       url: require('../../assets/sample3.wav'),
       duration: 87.00,
-      type: 'bone'
+      type: 'bone',
+      album: 'Unknown'
+    },
+    {
+      id: 15,
+      title: 'deja Vu',
+      url: require('../../assets/dejaVU.mp3'),
+      duration: 148.20,
+      type: 'brain',
+      album: 'Shakira'
+    },
+    {
+      id: 16,
+      title: 'Despacito',
+      isRequire: true,
+      url: require('../../assets/despacito.mp3'),
+      duration: 29.12,
+      type: 'bone',
+      album: 'Daddy Yenky'
     },
     {
       id: 17,
-      title: 'Sample4',
-      url: require('../../assets/sample4.wav'),
-      duration: 148.20,
-      type: 'brain'
+      title: 'Get Low',
+      url: require('../../assets/getLow.mp3'),
+      duration: 30.02,
+      type: 'brain',
+      album: 'DJ Snake'
     },
+    {
+      id: 18,
+      title: 'Lean on',
+      isRequire: true,
+      url: require('../../assets/leanOn.mp3'),
+      duration: 20.01,
+      type: 'blues',
+      album: 'DJ Snake'
+    },
+    {
+      id: 19,
+      title: 'Middle rythm',
+      url: require('../../assets/middle.mp3'),
+      duration: 29.01,
+      type: 'heart',
+      album: 'DJ Snake'
+    },
+    {
+      id: 20,
+      title: 'Sleep',
+      isRequire: true,
+      url: require('../../assets/Sleep.wav'),
+      duration: 32.01,
+      type: 'Brain',
+      album: 'SE Therapies'
+    },
+    {
+      id: 21,
+      title: 'Taki Taki',
+      url: require('../../assets/taki.mp3'),
+      duration: 30.01,
+      type: 'brain',
+      album: 'Selena Gomez'
+    },
+    {
+      id: 22,
+      title: 'Yummy Yummy',
+      url: require('../../assets/yummy.mp3'),
+      duration: 26.01,
+      type: 'Bone',
+      album: 'Justin Bieber'
+    }
   ];
 
   constructor(props) {
@@ -158,6 +232,15 @@ export class AudioProvider extends Component {
     const dataProviderData = dataProvider.cloneWithRows([...audioFiles, ...audioLists]);
     const filterAudioData = filteredAudio.cloneWithRows([...audioFiles, ...audioLists]);
     this.totalAudioCount = audioLists.length;
+    await Audio.setAudioModeAsync({
+      allowsRecordingIOS: false,
+      staysActiveInBackground: true,
+      interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DUCK_OTHERS,
+      playsInSilentModeIOS: true,
+      shouldDuckAndroid: true,
+      interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
+      playThroughEarpieceAndroid: false
+    });
     this.setState({
       dataProvider: dataProviderData,
       filteredAudio:  filterAudioData,
@@ -262,7 +345,7 @@ export class AudioProvider extends Component {
     this.getAudioFiles();
     setTimeout(()=> {
       this.playbackObjMethod();
-    }, 0);
+    }, 0); 
   }
 
   updateState = (prevState, newState = {}) => {
