@@ -43,7 +43,7 @@ const convertTime = minutes => {
 const renderPlayPauseIcon = isPlaying => {
   if (isPlaying)
     return (
-      <Ionicons name="md-stop-sharp" size={24} color={color.ACTIVE_FONT} />
+      <Ionicons name="pause" size={24} color={color.ACTIVE_FONT} />
     );
   return <Entypo name='controller-play' size={24} color={color.ACTIVE_FONT} />;
 };

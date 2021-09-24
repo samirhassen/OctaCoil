@@ -13,19 +13,20 @@ import {
 import Screen from '../components/Screen';
 import { MaterialIcons, FontAwesome5, Entypo  } from '@expo/vector-icons';
 import PlayListDetail from '../screens/PlayListDetail';
+import Registration from '../screens/Registration';
 
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-// const PlayListScreen = () => {
-//   return (
-//     <Stack.Navigator screenOptions={{ headerShown: false }}>
-//       <Stack.Screen name='PlayList' component={PlayList} />
-//       <Stack.Screen name='PlayListDetail' component={PlayListDetail} />
-//     </Stack.Navigator>
-//   );
-// };
+const LoginScreen = () => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name='Login' component={Login} />
+      <Stack.Screen name='Registration' component={Registration} />
+    </Stack.Navigator>
+  );
+};
 
 
 const Logout = () => {
@@ -86,7 +87,7 @@ const AppNavigator = () => {
       /> */}
       <Tab.Screen
         name={isLoggedIn ? "Logout" : "Login"}
-        component={isLoggedIn ? Logout : Login}
+        component={isLoggedIn ? Logout : LoginScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name ={isLoggedIn ? "logout" : "login"} size={28} color={color} />

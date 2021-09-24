@@ -41,15 +41,7 @@ export class AudioList extends Component {
     await selectAudio(audio, this.context);
   };
 
-  async componentDidMount() {
-    const userDetails = {
-      email: 'cap@gmail.com',
-      password: '123456'
-    }
-    await AsyncStorage.setItem(
-      'user',
-      JSON.stringify(userDetails)
-    ); 
+  componentDidMount() {
     this.context.loadPreviousAudio();
   }
 

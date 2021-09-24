@@ -1,4 +1,4 @@
-import React, { useContext, useState} from 'react';
+import React, { useContext, useState, useEffect} from 'react';
 import color from '../misc/color';
 import {
   StyleSheet,
@@ -11,29 +11,49 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Screen from '../components/Screen';
 import { AudioContext } from '../context/AudioProvider';
+import { firebaseConfig } from '../misc/config';
+import firebase from 'firebase';
 
-const Login = (props) => {
+const Login = ({navigation}) => {
   const [loginForm, setLoginForm] = useState({email: '', password: ''});
- 
-
   const { isLoggedIn, updateState } = useContext(AudioContext);
 
+  useEffect(() => {
+    // Initialize Firebase
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+   }else {
+      firebase.app(); // if already initialized, use that one
+   } 
+  }, []);
+
   const onClickListener = async () => {
+    var userData = [];
     const userDetails = {
       email: loginForm.email,
       password: loginForm.password
     }
-    let userData = await AsyncStorage.getItem('user');
-    userData = JSON.parse(userData);
-    if(userDetails.email.toLowerCase() == userData.email.toLowerCase() && userDetails.password == userData.password) {
-      Alert.alert("Alert", "Login Successfull");
-      updateState({}, { isLoggedIn: true });
-    } else {
-      Alert.alert("Alert", "Login Failed");
-      updateState({}, { isLoggedIn: false });
-    }   
+    const myUsers = firebase.database().ref('users');
+    myUsers.on('value', dataSnap => {
+      userData = dataSnap.val();
+      var count = 0;
+      for (let user of userData) {
+        count++;
+        console.log(userDetails.email.toLowerCase() == user.email.toLowerCase() && userDetails.password.toLowerCase() == user.password.toLowerCase());
+        if (userDetails.email.toLowerCase() == user.email.toLowerCase() && userDetails.password.toLowerCase() == user.password.toLowerCase()) {
+          Alert.alert("Alert", "Login Successfull");
+          updateState({}, { isLoggedIn: true });
+          break;
+        } else {
+          if (count == userData.length) {
+            Alert.alert("Alert", "Login Failed");
+            updateState({}, { isLoggedIn: false });
+          }
+        }
+      }
+    })
   }
-
+  
     return (
         <Screen>
             <View style={styles.container}>
@@ -53,6 +73,9 @@ const Login = (props) => {
                 </View>
                 <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} onPress={() => onClickListener()}>
                     <Text style={styles.loginText}>Login</Text>
+                </TouchableHighlight>
+                <TouchableHighlight onPress={() => navigation.navigate('Registration')}>
+                    <Text style={styles.loginText}>Register Here</Text>
                 </TouchableHighlight>
             </View>
         </Screen>
