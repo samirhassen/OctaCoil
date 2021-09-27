@@ -1,5 +1,4 @@
 import React, { useContext, useState, useEffect} from 'react';
-import color from '../misc/color';
 import {
   StyleSheet,
   Text,
@@ -8,17 +7,15 @@ import {
   TouchableHighlight,
   Alert
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Screen from '../components/Screen';
-import { AudioContext } from '../context/AudioProvider';
 import firebase from 'firebase';
 import { firebaseConfig } from '../misc/config';
 
-var userArr = [];
 
-const Registration = (props) => {
+const Registration = ({navigation}) => {
     const [regForm, setRegForm] = useState({fullName: '', email: '', password: '', confirmPassword: ''});
-    
+    let dbRef = firebase.firestore().collection('users');
+
     useEffect(() => {
       // Initialize Firebase
       if (!firebase.apps.length) {
@@ -34,12 +31,14 @@ const Registration = (props) => {
             email: regForm.email,
             password: regForm.password
           }
-          userArr.push(userDetails);
-          firebase.database().ref('users').set(userArr);
-          await AsyncStorage.setItem(
-            'user',
-            JSON.stringify(userArr)
-          ); 
+          try {
+            dbRef.add(userDetails).then((res) => {
+              Alert.alert("Alert", "Registration Successfull");
+              navigation.navigate('Login')
+            }) 
+          } catch(err) {
+            Alert.alert("Alert", "Registration Failed!");
+          }
     }
 
     return (

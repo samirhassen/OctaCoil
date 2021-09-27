@@ -33,25 +33,25 @@ const Login = ({navigation}) => {
       email: loginForm.email,
       password: loginForm.password
     }
-    const myUsers = firebase.database().ref('users');
-    myUsers.on('value', dataSnap => {
-      userData = dataSnap.val();
-      var count = 0;
+    var count = 0;
+    firebase.firestore().collection('users').get()
+    .then(snapshot => {
+      userData = snapshot.docs;
       for (let user of userData) {
-        count++;
-        console.log(userDetails.email.toLowerCase() == user.email.toLowerCase() && userDetails.password.toLowerCase() == user.password.toLowerCase());
+          user = user.data();
+          count++;
         if (userDetails.email.toLowerCase() == user.email.toLowerCase() && userDetails.password.toLowerCase() == user.password.toLowerCase()) {
           Alert.alert("Alert", "Login Successfull");
           updateState({}, { isLoggedIn: true });
           break;
         } else {
-          if (count == userData.length) {
+          if (count === userData.length) {
             Alert.alert("Alert", "Login Failed");
             updateState({}, { isLoggedIn: false });
           }
         }
-      }
-    })
+        };
+    });
   }
   
     return (
@@ -75,7 +75,7 @@ const Login = ({navigation}) => {
                     <Text style={styles.loginText}>Login</Text>
                 </TouchableHighlight>
                 <TouchableHighlight onPress={() => navigation.navigate('Registration')}>
-                    <Text style={styles.loginText}>Register Here</Text>
+                    <Text style={styles.regText}>Register Here</Text>
                 </TouchableHighlight>
             </View>
         </Screen>
@@ -123,6 +123,10 @@ const styles = StyleSheet.create({
   },
   loginText: {
     color: 'white',
+  },
+  regText: {
+    color: '#666666',
+    fontSize: 16
   }
 });
 
