@@ -43,9 +43,9 @@ const convertTime = minutes => {
 const renderPlayPauseIcon = isPlaying => {
   if (isPlaying)
     return (
-      <Ionicons name="pause" size={24} color={color.ACTIVE_FONT} />
+      <Ionicons name="pause" size={30} color={color.ACTIVE_FONT} />
     );
-  return <Entypo name='controller-play' size={24} color={color.ACTIVE_FONT} />;
+  return <Entypo name='controller-play' size={30} color={color.ACTIVE_FONT} />;
 };
 
 //Method to display audio list item
@@ -88,15 +88,6 @@ const AudioListItem = ({
               <Text style={styles.timeText}>{convertTime(duration)}</Text>
             </View>
           </View>
-        {/* <View style={styles.rightContainer}>
-          <Entypo
-             onPress={onOptionPress}
-            name='dots-three-vertical'
-            size={20}
-            color={color.FONT_MEDIUM}
-            style={{ padding: 10 }}
-          />
-        </View> */}
       </View>
       </TouchableWithoutFeedback>
       <View style={styles.separator} />

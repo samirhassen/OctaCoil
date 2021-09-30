@@ -76,7 +76,7 @@ const Registration = ({navigation}) => {
     }
 
     const handleValidPassword = (val) => {
-      if(val === '') {
+      if(val === '' || val.length < 8) {
         setRegForm({...regForm, isValidPassword: false})
       } else {
         setRegForm({...regForm, isValidPassword: true})
@@ -84,10 +84,42 @@ const Registration = ({navigation}) => {
     }
 
     const handleValidConfirmPassword = (val) => {
-      if(val === '') {
+      if(val === '' || val.length < 8) {
         setRegForm({...regForm, isValidConfirmPassword: false})
       } else {
         setRegForm({...regForm, isValidConfirmPassword: true})
+      }
+    }
+
+    const onEditFullName = (fullName) => {
+      if(fullName === '') {
+        setRegForm({...regForm, fullName: fullName, isValidFullName: false})
+      } else {
+        setRegForm({...regForm, fullName: fullName, isValidFullName: true})
+      }
+    }
+    
+    const onEditEmail = (email) => {
+      if(email === '' || !(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))) {
+        setRegForm({...regForm, email: email, isValidEmail: false})
+      } else {
+        setRegForm({...regForm, email: email, isValidEmail: true})
+      }
+    }
+
+    const onEditPassword = (password) => {
+      if(password === '' || password.length < 8) {
+        setRegForm({...regForm, password: password, isValidPassword: false})
+      } else {
+        setRegForm({...regForm, password: password, isValidPassword: true})
+      }
+    }
+
+    const onEditConfirmPassword = (confirmPassword) => {
+      if(confirmPassword === '' || confirmPassword.length < 8) {
+        setRegForm({...regForm, confirmPassword: confirmPassword, isValidConfirmPassword: false})
+      } else {
+        setRegForm({...regForm, confirmPassword: confirmPassword, isValidConfirmPassword: true})
       }
     }
 
@@ -99,7 +131,7 @@ const Registration = ({navigation}) => {
                     <TextInput style={styles.inputs}
                         placeholder="Full Name"
                         underlineColorAndroid='transparent'
-                        onChangeText={(fullName) => setRegForm({...regForm, fullName: fullName})}
+                        onChangeText={(fullName) => onEditFullName(fullName)}
                         onEndEditing ={(e) => handleValidFullName(e.nativeEvent.text)} 
                          />
                 </View>
@@ -109,7 +141,7 @@ const Registration = ({navigation}) => {
                         placeholder="Email"
                         keyboardType="email-address"
                         underlineColorAndroid='transparent'
-                        onChangeText={(email) => setRegForm({...regForm, email: email})}
+                        onChangeText={(email) => onEditEmail(email)}
                         onEndEditing ={(e) => handleValidEmail(e.nativeEvent.text)} 
                          />
                 </View>
@@ -119,21 +151,21 @@ const Registration = ({navigation}) => {
                         placeholder="Password"
                         secureTextEntry={true}
                         underlineColorAndroid='transparent'
-                        onChangeText={(password) => setRegForm({...regForm, password: password})}
+                        onChangeText={(password) => onEditPassword(password)}
                         onEndEditing ={(e) => handleValidPassword(e.nativeEvent.text)} 
                          />
                 </View>
-                {regForm.isValidPassword ? null : <Text style={styles.errMsg}>Please Enter the Password.</Text>}
+                {regForm.isValidPassword ? null : <Text style={styles.errMsg}>Please Enter a Valid Password.</Text>}
                 <View style={styles.inputContainer}>
                     <TextInput style={styles.inputs}
                         placeholder="Confirm Password"
                         secureTextEntry={true}
                         underlineColorAndroid='transparent'
-                        onChangeText={(confirmPassword) => setRegForm({...regForm, confirmPassword: confirmPassword})}
+                        onChangeText={(confirmPassword) => onEditConfirmPassword(confirmPassword)}
                         onEndEditing ={(e) => handleValidConfirmPassword(e.nativeEvent.text)} 
                          />
                 </View>
-                {regForm.isValidConfirmPassword ? null : <Text style={styles.errMsg}>Please Enter the Confirm Password.</Text>}
+                {regForm.isValidConfirmPassword ? null : <Text style={styles.errMsg}>Please Enter the Valid Confirm Password.</Text>}
                 <TouchableHighlight disabled={regForm.fullName == '' || regForm.email == '' || regForm.password == '' || regForm.confirmPassword == '' ? true : false} style={[styles.buttonContainer, styles.signupButton]} onPress={() => onRegister()}>
                     {RegInProgress ? <ActivityIndicator style={styles.spinner} size={30} color="#ffffff" /> 
                     : <Text style={styles.signupText}>Sign Up</Text>}
