@@ -3,13 +3,16 @@ import {
   View,
   StyleSheet,
   Text,
+  Image,
   Dimensions,
   TouchableWithoutFeedback
 } from 'react-native';
 import { Entypo, Ionicons  } from '@expo/vector-icons';
 import color from '../misc/color';
 
-const getThumbnailText = filename => filename[0].toUpperCase();
+const getThumbnailText = (filename) => {
+  return <Image source = {require('../../assets/cg.png')} style = {{ width: 35, height: 35, paddingBottom:20 }}/>
+}
 
 //Audio time display in format mm:ss
 const convertTime = minutes => {
@@ -70,7 +73,7 @@ const AudioListItem = ({
                 {
                   backgroundColor: activeListItem
                     ? color.ACTIVE_BG
-                    : color.FONT_LIGHT,
+                    : '#d6d6d6',
                 },
               ]}
             >
@@ -121,7 +124,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
   },
   thumbnailText: {
-    fontSize: 22,
+    fontSize: 40,
     fontWeight: 'bold',
     color: color.FONT,
   },

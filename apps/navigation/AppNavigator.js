@@ -14,6 +14,7 @@ import Screen from '../components/Screen';
 import { MaterialIcons, FontAwesome5, Entypo  } from '@expo/vector-icons';
 import PlayListDetail from '../screens/PlayListDetail';
 import Registration from '../screens/Registration';
+import AboutUs from '../screens/AboutUs';
 
 
 const Tab = createBottomTabNavigator();
@@ -76,21 +77,21 @@ const AppNavigator = () => {
           ),
         }}
       />
-      {/* <Tab.Screen
-        name='PlayList'
-        component={PlayListScreen}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name='library-music' size={size} color={color} />
-          ),
-        }}
-      /> */}
       <Tab.Screen
         name={isLoggedIn ? "Logout" : "Login"}
         component={isLoggedIn ? Logout : LoginScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name ={isLoggedIn ? "logout" : "login"} size={28} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name='AboutUs'
+        component={AboutUs}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Entypo name="info-with-circle" size={size} color={color} />
           ),
         }}
       />
