@@ -87,8 +87,8 @@ const Player = () => {
           } / ${context.totalAudioCount}`}</Text>
         </View>
         <View style={styles.midBannerContainer}>
-          {!context.isPlaying ? <Image source = {require('../../assets/cg-black.png')} style = {{ width: 280, height: 280}} />
-          : <Image source = {require('../../assets/cg-color.png')} style = {{ width: 280, height: 280}} />}
+        {!context.isPlaying ? <Image source = {require('../../assets/yoga.png')} style = {{ width: 350, height: 280}} />
+          : <Image source = {require('../../assets/yoga.png')} style = {{ width: 350, height: 280}} />}
         </View>
         <View style={styles.audioPlayerContainer}>
           <Text numberOfLines={1} style={styles.audioTitle}>
@@ -102,8 +102,8 @@ const Player = () => {
               paddingHorizontal: 15,
             }}
           >
-            <Text>{convertTime(context.currentAudio.duration)}</Text>
-            <Text>
+            <Text style={{color: '#fff'}}>{convertTime(context.currentAudio.duration)}</Text>
+            <Text style={{color: '#fff'}}>
               {currentPosition ? currentPosition : renderCurrentTime()}
             </Text>
           </View>
@@ -141,7 +141,7 @@ const Player = () => {
               iconType={context.isPlaying ? 'PLAY' : 'PAUSE'}
             />
             <PlayerButton iconType='NEXT' onPress={handleNext} />
-               <Feather style={{ marginLeft:80, marginRight: -100}} name="repeat" size={24} color= {loop ? 'blue' : 'black'} onPress={handleLoop} />
+               <Feather style={{ marginLeft:80, marginRight: -100}} name="repeat" size={24} color= {loop ? 'blue' : 'white'} onPress={handleLoop} />
           </View>
         </View>
       </View>
@@ -167,6 +167,7 @@ const styles = StyleSheet.create({
   },
   audioCount: {
     textAlign: 'right',
+    marginTop:10,
     color: color.FONT_LIGHT,
     fontSize: 14,
   },
@@ -174,6 +175,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop:-30
   },
   audioTitle: {
     fontSize: 24,

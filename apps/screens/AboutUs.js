@@ -18,7 +18,7 @@ const AboutUs = () => {
                 <View style={styles.innerContainer}>
                     <Text style={styles.header}>OctaCoil Audio Player</Text>
                     <Text style={styles.version}>Version: 1.0.0</Text>
-                    <Text style={{fontSize: 20, marginTop: 10, fontWeight:'bold'}}>About Us</Text>
+                    <Text style={{fontSize: 20, marginTop: 10, fontWeight:'bold', color: '#fff'}}>About Us</Text>
                     <Text style={styles.info}>This Audio player have 3 screen.</Text>
                         <Text style={styles.info}>AudioList</Text>
                         <Text style={styles.info}>Players</Text>
@@ -51,15 +51,18 @@ const styles = StyleSheet.create({
     header: {
         marginTop:20,
         fontSize: 24,
+        color: '#fff',
         fontWeight: 'bold'
     },
     version: {
-        marginTop: 10
+        marginTop: 10,
+        color: '#fff'
     },
     info: {
         fontSize: 15,
         marginTop:10,
-        paddingRight:10
+        paddingRight:10,
+        color: '#fff'
     }
 });
 

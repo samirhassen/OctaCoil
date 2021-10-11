@@ -9,8 +9,8 @@ const Screen = ({ children }) => {
   },[]);
 
   return <SafeAreaView style={styles.container}>
-    <StatusBar backgroundColor="#fff" barStyle="dark-content" />
-    <ImageBackground source={require('../../assets/bg.jpg')} resizeMode="cover" style={styles.image}>
+    <StatusBar backgroundColor="#192438" barStyle="light-content" />
+    <ImageBackground source={require('../../assets/bg.png')} resizeMode="cover" style={styles.image}>
       {children}
     </ImageBackground>
   </SafeAreaView>;

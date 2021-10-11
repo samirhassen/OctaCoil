@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
   },
   thumbnailText: {
-    fontSize: 40,
+    fontSize: 50,
     fontWeight: 'bold',
     color: color.FONT,
   },
@@ -138,6 +138,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 16,
+    fontWeight: 'bold',
     color: color.FONT,
   },
   separator: {

@@ -80,7 +80,7 @@ const Login = ({navigation}) => {
         <Screen>
           
             <View style={styles.container}>
-            <FontAwesome style={styles.banner} name="user-circle" size={130} color='black' />
+            <FontAwesome style={styles.banner} name="user-circle" size={130} color='white' />
                 <View style={styles.inputContainer}>
                     <TextInput style={styles.inputs}
                         placeholder="Email"

@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     borderRadius: 4,
     elevation: 3,
-    opacity: 0.5,
+    opacity: 0.7,
     backgroundColor: 'white',
   },
   iconStyle: {

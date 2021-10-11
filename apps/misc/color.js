@@ -1,8 +1,8 @@
 export default {
   APP_BG: '#ebebeb',
-  FONT: '#303d49',
-  FONT_MEDIUM: '#636363',
-  FONT_LIGHT: '#b6b8b9',
+  FONT: '#fff',
+  FONT_MEDIUM: '#d6d6d6',
+  FONT_LIGHT: '#fff',
   MODAL_BG: 'rgba(0, 0, 0, 0.2)',
   ACTIVE_BG: '#5252ad',
   ACTIVE_FONT: '#fff',

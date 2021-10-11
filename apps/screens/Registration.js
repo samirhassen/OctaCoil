@@ -126,7 +126,7 @@ const Registration = ({navigation}) => {
     return (
         <Screen>
             <View style={styles.container}>
-            <FontAwesome style={styles.banner} name="user-circle" size={120} color={color} />
+            <FontAwesome style={styles.banner} name="user-circle" size={120} color='white' />
                 <View style={styles.inputContainer}>
                     <TextInput style={styles.inputs}
                         placeholder="Full Name"
