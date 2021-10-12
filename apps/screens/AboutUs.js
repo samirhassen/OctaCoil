@@ -3,6 +3,9 @@ import color from '../misc/color';
 import {
   StyleSheet,
   Text,
+  SafeAreaView,
+  ImageBackground,
+  StatusBar,
   View,
   Dimensions
 } from 'react-native';
@@ -13,8 +16,10 @@ const { width, height } = Dimensions.get('window');
 
 const AboutUs = () => {
     return (
-        <Screen>
-            <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
+            <StatusBar backgroundColor="#f2f2f2" barStyle="dark-content" />
+            <ImageBackground source={require('../../assets/yoga.png')} resizeMode="cover" style={styles.image}>
+            <View style={styles.maincontainer}>
                 <View style={styles.innerContainer}>
                     <Text style={styles.header}>OctaCoil Audio Player</Text>
                     <Text style={styles.version}>Version: 1.0.0</Text>
@@ -30,13 +35,17 @@ const AboutUs = () => {
                         <Text style={styles.info}>*  Registration screen is used to register the user. Required field is full Name, emailID, password and confirm Password. password and confirm password should be same.</Text>
                 </View>
             </View>
-        </Screen>
+            </ImageBackground>
+        </SafeAreaView>
     );
 }
 
 
 const styles = StyleSheet.create({
     container: {
+        flex:1
+    },
+    maincontainer: {
         flexDirection: 'row',
         justifyContent: 'center',
         width:  width-70,
@@ -44,6 +53,10 @@ const styles = StyleSheet.create({
         marginLeft: 35,
         backgroundColor: 'rgba(52, 52, 52, 0.6)'
     },
+      image: {
+        flex: 1,
+        justifyContent: "center"
+      },
     innerContainer: {
         textAlign: 'center',
         marginLeft: 35
