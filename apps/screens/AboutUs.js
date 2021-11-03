@@ -23,16 +23,15 @@ const AboutUs = () => {
                 <View style={styles.innerContainer}>
                     <Text style={styles.header}>OctaCoil Audio Player</Text>
                     <Text style={styles.version}>Version: 1.0.0</Text>
-                    <Text style={{fontSize: 20, marginTop: 10, fontWeight:'bold', color: '#fff'}}>About Us</Text>
-                    <Text style={styles.info}>This Audio player have 3 screen.</Text>
-                        <Text style={styles.info}>AudioList</Text>
-                        <Text style={styles.info}>Players</Text>
-                        <Text style={styles.info}>Login</Text>
-
-                        <Text style={styles.info}>*  AudioList is list of all audio fetching from assest folder. In audio list there are audio file name, time duration and audio details.User can play and pause audio from tap on audio list.</Text>
-                        <Text style={styles.info}>*  Players screen is used to control the audio like play, pause, next and previous. Looping functionality, seeking bar is also given in player screen.</Text>
-                        <Text style={styles.info}>*  Login screen used to login the user first the user. Required field is EmailID and Password.</Text>
-                        <Text style={styles.info}>*  Registration screen is used to register the user. Required field is full Name, emailID, password and confirm Password. password and confirm password should be same.</Text>
+                    <Text style={{fontSize: 20, marginTop: 10, fontWeight:'bold', color: '#fff'}}>About Us</Text>                        
+                        <Text style={styles.info}>Spectrum Energy Therapies is dedicated to bringing life-changing 
+                        therapeutic devices to everyone, so that they can take charge of their own health and well-being. 
+                        We feel passionate about making products that harness technologies that utilize energy to support 
+                        the body’s innate healing processes in a way that anyone can readily implement. 
+                        We believe in providing high-quality devices based on the most current scientific research at affordable prices so that 
+                        everyone can have access to these amazing healing technologies. With a highly qualified and dedicated team working 
+                        behind the scenes, we guarantee that any device you receive from us will be effective in recharging your cells and optimizing 
+                        your physiology, empowering you to live your life to the fullest.</Text>
                 </View>
             </View>
             </ImageBackground>

@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "goodNoise",
-    "slug": "goodNoise",
+    "name": "Spectrum-PEMF",
+    "slug": "Spectrum-PEMF",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/SE_Logo.png",
       "resizeMode": "contain",
-      "backgroundColor": "#2ea7ab"
+      "backgroundColor": "#FFF"
     },
     "updates": {
       "fallbackToCacheTimeout": 0

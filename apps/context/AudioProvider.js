@@ -35,168 +35,62 @@ export class AudioProvider extends Component {
       isRequire: true,
       url: require('../../assets/Relax.wav'),
       duration: 20.00,
-      type: 'brain',
+      type: 'healing',
       album: 'SE Therapies'
-    },
+    },    
     {
       id: 4,
-      title: 'Astronut',
-      url: require('../../assets/astronaut.mp3'),
-      duration: 25.00,
-      type: 'blues',
-      album: 'Masked Wolf'
-    },
-    {
-      id: 5,
-      title: 'Shaky Shaky',
-      isRequire: true,
-      url: require('../../assets/shaky.mp3'),
-      duration: 11.00,
-      type: 'heart',
-      album: 'Daddy Yenky'
-    },
-    {
-      id: 6,
-      title: 'Six days',
-      url: require('../../assets/sixdays.mp3'),
-      duration: 23.00,
-      type: 'bone',
-      album: 'F&F Tokyo Drift'
-    },
-    {
-      id: 7,
-      title: 'Ve mahi',
-      isRequire: true,
-      url: require('../../assets/vemahi.mp3'),
-      duration: 30.11,
-      type: 'brain',
-      album: 'Keshari The Movie'
-    },
-    {
-      id: 8,
-      title: 'Tokyo Drift',
-      url: require('../../assets/tokyo.mp3'),
-      duration: 29.00,
-      type: 'blues',
-      album: 'F&F3 Tokyo Drift'
-    },
-    {
-      id: 9,
-      title: 'Let me Love you',
-      url: require('../../assets/letmelove.mp3'),
-      duration: 19.15,
-      type: 'heart',
-      album: 'Justin Bieber'
-    },
-    {
-      id: 10,
-      title: 'KGF maa',
-      isRequire: true,
-      url: require('../../assets/kgf.mp3'),
-      duration: 24.37,
-      type: 'bone',
-      album: 'KGF Capture 1'
-    },
-    {
-      id: 11,
-      title: 'Shiv Tandav Storm',
-      url: require('../../assets/Shiv.mp3'),
-      duration: 18.12,
-      type: 'brain',
-      album: 'Shiva Tandav'
-    },
-    {
-      id: 12,
-      title: 'Bamboo',
-      isRequire: true,
-      url: require('../../assets/bamboo.mp3'),
-      duration: 30.01,
-      type: 'blues',
-      album: 'Shakira'
-    },
-    {
-      id: 13,
-      title: 'Sample2',
-      url: require('../../assets/sample2.wav'),
-      duration: 13.10,
-      type: 'heart',
-      album: 'Unknown'
-    },
-    {
-      id: 14,
-      title: 'Sample3',
-      isRequire: true,
-      url: require('../../assets/sample3.wav'),
-      duration: 87.00,
-      type: 'bone',
-      album: 'Unknown'
-    },
-    {
-      id: 15,
-      title: 'deja Vu',
-      url: require('../../assets/dejaVU.mp3'),
-      duration: 148.20,
-      type: 'brain',
-      album: 'Shakira'
-    },
-    {
-      id: 16,
-      title: 'Despacito',
-      isRequire: true,
-      url: require('../../assets/despacito.mp3'),
-      duration: 29.12,
-      type: 'bone',
-      album: 'Daddy Yenky'
-    },
-    {
-      id: 17,
-      title: 'Get Low',
-      url: require('../../assets/getLow.mp3'),
-      duration: 30.02,
-      type: 'brain',
-      album: 'DJ Snake'
-    },
-    {
-      id: 18,
-      title: 'Lean on',
-      isRequire: true,
-      url: require('../../assets/leanOn.mp3'),
-      duration: 20.01,
-      type: 'blues',
-      album: 'DJ Snake'
-    },
-    {
-      id: 19,
-      title: 'Middle rythm',
-      url: require('../../assets/middle.mp3'),
-      duration: 29.01,
-      type: 'heart',
-      album: 'DJ Snake'
-    },
-    {
-      id: 20,
       title: 'Sleep',
       isRequire: true,
       url: require('../../assets/Sleep.wav'),
+      duration: 32.00,
+      type: 'brain',
+      album: 'SE Therapies'
+    },    
+    {
+      id: 5,
+      title: 'Bone',
+      isRequire: true,
+      url: require('../../assets/Bone.wav'),
+      duration: 32.00,
+      type: 'Bone',
+      album: 'SE Therapies'
+    },    
+    {
+      id: 6,
+      title: 'Inflammation',
+      isRequire: true,
+      url: require('../../assets/Inflammation.wav'),
+      duration: 32.00,
+      type: 'brain',
+      album: 'SE Therapies'
+    },    
+    {
+      id: 7,
+      title: 'Performance',
+      isRequire: true,
+      url: require('../../assets/Performance.wav'),
+      duration: 32.00,
+      type: 'brain',
+      album: 'SE Therapies'
+    },    
+    {
+      id: 8,
+      title: 'Circulation',
+      isRequire: true,
+      url: require('../../assets/Circulation.wav'),
       duration: 32.01,
-      type: 'Brain',
+      type: 'brain',
       album: 'SE Therapies'
     },
     {
-      id: 21,
-      title: 'Taki Taki',
-      url: require('../../assets/taki.mp3'),
-      duration: 30.01,
+      id: 9,
+      title: 'Recovery',
+      isRequire: true,
+      url: require('../../assets/Recovery.wav'),
+      duration: 32.01,
       type: 'brain',
-      album: 'Selena Gomez'
-    },
-    {
-      id: 22,
-      title: 'Yummy Yummy',
-      url: require('../../assets/yummy.mp3'),
-      duration: 26.01,
-      type: 'Bone',
-      album: 'Justin Bieber'
+      album: 'SE Therapies'
     }
   ];
 
@@ -223,8 +117,6 @@ export class AudioProvider extends Component {
     };
     this.totalAudioCount = 0;
   }
-
-  arrType = ['rock', 'pop', 'jazz', 'blues'];
 
 
   getAudioFiles = async () => {

@@ -52,7 +52,7 @@ export class AudioList extends Component {
         type = {item.type}
         album = {item.album}
         isPlaying={extendedState.isPlaying}
-        duration={item.duration}
+        // duration={item.duration}
         activeListItem={this.context.currentAudioIndex === index}
         onAudioPress={() => this.handleAudioPress(item)}
         onOptionPress={() => {
@@ -77,15 +77,7 @@ export class AudioList extends Component {
         this.context.updateState({}, {filteredAudio : tempData1});
     }
   }
-
-  render() {
-    
-    return (
-      <AudioContext.Consumer>
-        {({ dataProvider, isPlaying, filteredAudio }) => {
-          if (!filteredAudio._data.length) return null;
-          return (
-            <Screen>
+/*
               <View style={styles.category}>
               <TouchableOpacity style={styles.btnstyle} onPress = {() => this.onPressAudioType(dataProvider, 'all')}>
                   <Text style={styles.btnText}>All</Text>
@@ -99,11 +91,21 @@ export class AudioList extends Component {
                 <TouchableOpacity style={styles.btnstyle} onPress = {() => this.onPressAudioType(dataProvider, 'bone')}>
                   <Text style={styles.btnText}>Bone</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.btnstyle} onPress = {() => this.onPressAudioType(dataProvider, 'blues')}>
-                  <Text style={styles.btnText}>Blues</Text>
+                <TouchableOpacity style={styles.btnstyle} onPress = {() => this.onPressAudioType(dataProvider, 'Healing')}>
+                  <Text style={styles.btnText}>Healing</Text>
                 </TouchableOpacity>
               </View>
+*/
+  render() {
+    
+    return (
+      <AudioContext.Consumer>
+        {({ dataProvider, isPlaying, filteredAudio }) => {
+          if (!filteredAudio._data.length) return null;
+          return (
+            <Screen>
               <RecyclerListView
+                style={styles.marginFromTop}
                 dataProvider={filteredAudio}
                 layoutProvider={this.layoutProvider}
                 rowRenderer={this.rowRenderer}
@@ -131,6 +133,9 @@ export class AudioList extends Component {
 }
 
 const styles = StyleSheet.create({
+  marginFromTop: {
+    marginTop: 50
+  },
   container: {
     flex: 1,
     justifyContent: 'center',

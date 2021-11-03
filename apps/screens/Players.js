@@ -51,6 +51,7 @@ const Player = () => {
     await changeAudio(context, 'previous');
   };
 
+  /*
   const handleLoop = async () => {
     if(loop == true) {
       updateState({}, {isLoop : false});
@@ -60,6 +61,8 @@ const Player = () => {
       setLoop(true);
     }
   }
+<Feather style={{ marginLeft:80, marginRight: -100}} name="repeat" size={24} color= {loop ? 'blue' : 'white'} onPress={handleLoop} />
+  */
 
   const renderCurrentTime = () => {
     if (!context.soundObj && currentAudio.lastPosition) {
@@ -141,7 +144,6 @@ const Player = () => {
               iconType={context.isPlaying ? 'PLAY' : 'PAUSE'}
             />
             <PlayerButton iconType='NEXT' onPress={handleNext} />
-               <Feather style={{ marginLeft:80, marginRight: -100}} name="repeat" size={24} color= {loop ? 'blue' : 'white'} onPress={handleLoop} />
           </View>
         </View>
       </View>

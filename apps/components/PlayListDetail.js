@@ -35,7 +35,8 @@ const PlayListDetail = ({ visible, playList, onClose }) => {
             </View>
           )}
         />
-      </View>      <View style={[StyleSheet.absoluteFillObject, styles.modalBG]} />
+      </View>      
+      <View style={[StyleSheet.absoluteFillObject, styles.modalBG]} />
     </Modal>
   );
 };
