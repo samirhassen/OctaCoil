@@ -52,7 +52,7 @@ export class AudioProvider extends Component {
       title: 'Bone',
       isRequire: true,
       url: require('../../assets/Bone.wav'),
-      duration: 32.00,
+      duration: 0.60,
       type: 'Bone',
       album: 'SE Therapies'
     },    
@@ -61,7 +61,7 @@ export class AudioProvider extends Component {
       title: 'Inflammation',
       isRequire: true,
       url: require('../../assets/Inflammation.wav'),
-      duration: 32.00,
+      duration: 0.00,
       type: 'brain',
       album: 'SE Therapies'
     },    
@@ -70,7 +70,7 @@ export class AudioProvider extends Component {
       title: 'Performance',
       isRequire: true,
       url: require('../../assets/Performance.wav'),
-      duration: 32.00,
+      duration: 0.60,
       type: 'brain',
       album: 'SE Therapies'
     },    
@@ -79,7 +79,7 @@ export class AudioProvider extends Component {
       title: 'Circulation',
       isRequire: true,
       url: require('../../assets/Circulation.wav'),
-      duration: 32.01,
+      duration: 0.00,
       type: 'brain',
       album: 'SE Therapies'
     },
@@ -88,7 +88,7 @@ export class AudioProvider extends Component {
       title: 'Recovery',
       isRequire: true,
       url: require('../../assets/Recovery.wav'),
-      duration: 32.01,
+      duration: 0.00,
       type: 'brain',
       album: 'SE Therapies'
     }
