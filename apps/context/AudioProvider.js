@@ -17,7 +17,7 @@ export class AudioProvider extends Component {
       title: 'Energize',
       isRequire: true,
       url: require('../../assets/Energize.wav'),
-      duration: 30.00,
+      duration: 30.01,
       type: 'heart',
       album: 'SE Therapies'
     },
@@ -25,7 +25,7 @@ export class AudioProvider extends Component {
       id: 2,
       title: 'Focus',
       url: require('../../assets/Focus.wav'),
-      duration: 30.00,
+      duration: 30.01,
       type: 'bone',
       album: 'SE Therapies'
     },
