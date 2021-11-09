@@ -77,6 +77,7 @@ const AppNavigator = () => {
           ),
         }}
       />
+      {/*
       <Tab.Screen
         name={isLoggedIn ? "Logout" : "Login"}
         component={isLoggedIn ? Logout : LoginScreen}
@@ -86,6 +87,7 @@ const AppNavigator = () => {
           ),
         }}
       />
+      */}
       <Tab.Screen
         name='AboutUs'
         component={AboutUs}
