@@ -173,8 +173,10 @@ export class AudioProvider extends Component {
         playbackStatus.positionMillis
       );
     }
+    let durationSeconds = playbackStatus.durationMillis/1000;
+    let positionSeconds = playbackStatus.positionMillis/1000;
 
-    if (playbackStatus.didJustFinish) {
+    if (playbackStatus.didJustFinish ||  (parseInt(durationSeconds)-2 === parseInt(positionSeconds))) {
       if (this.state.isPlayListRunning) {
         let audio;
         
