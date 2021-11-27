@@ -5,7 +5,7 @@ export const play = async (playbackObj, uri, lastPosition) => {
   try {
     if (!lastPosition)
       return await playbackObj.loadAsync(
-         uri ,
+         {uri: uri} ,
         { shouldPlay: true, progressUpdateIntervalMillis: 1000 }
       );
 
