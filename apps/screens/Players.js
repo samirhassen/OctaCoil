@@ -61,7 +61,11 @@ const Player = () => {
       setLoop(true);
     }
   }
+  
 <Feather style={{ marginLeft:80, marginRight: -100}} name="repeat" size={24} color= {loop ? 'blue' : 'white'} onPress={handleLoop} />
+
+<Text style={styles.audioSubTitle}>Album: {context.currentAudio.album}, Song: {context.currentAudio.title}</Text>
+
   */
 
   const renderCurrentTime = () => {
@@ -97,7 +101,6 @@ const Player = () => {
           <Text numberOfLines={1} style={styles.audioTitle}>
             {context.currentAudio.title}
           </Text>
-          <Text style={styles.audioSubTitle}>Album: {context.currentAudio.album}, Song: {context.currentAudio.title}</Text>
           <View
             style={{
               flexDirection: 'row',

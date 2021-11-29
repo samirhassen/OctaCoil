@@ -15,8 +15,7 @@ export class AudioProvider extends Component {
     {
       id: 1,
       title: 'Energize',
-      isRequire: true,
-      url: require('../../assets/Energize.wav'),
+      url: '../../assets/Pain-Inflammation.flac',
       duration: 30.00,
       type: 'heart',
       album: 'SE Therapies'
@@ -24,7 +23,7 @@ export class AudioProvider extends Component {
     {
       id: 2,
       title: 'Focus',
-      url: require('../../assets/Focus.wav'),
+      url: '../../assets/Focus.wav',
       duration: 30.00,
       type: 'bone',
       album: 'SE Therapies'
@@ -32,8 +31,7 @@ export class AudioProvider extends Component {
     {
       id: 3,
       title: 'Relax',
-      isRequire: true,
-      url: require('../../assets/Relax.wav'),
+      url: '../../assets/Relax.wav',
       duration: 20.00,
       type: 'healing',
       album: 'SE Therapies'
@@ -41,8 +39,7 @@ export class AudioProvider extends Component {
     {
       id: 4,
       title: 'Sleep',
-      isRequire: true,
-      url: require('../../assets/Sleep.wav'),
+      url: '../../assets/Sleep.wav',
       duration: 32.00,
       type: 'brain',
       album: 'SE Therapies'
@@ -50,8 +47,7 @@ export class AudioProvider extends Component {
     {
       id: 5,
       title: 'Bone',
-      isRequire: true,
-      url: require('../../assets/Bone.wav'),
+      url: '../../assets/Bone.wav',
       duration: 32.00,
       type: 'Bone',
       album: 'SE Therapies'
@@ -59,8 +55,7 @@ export class AudioProvider extends Component {
     {
       id: 6,
       title: 'Inflammation',
-      isRequire: true,
-      url: require('../../assets/Inflammation.wav'),
+      url: '../../assets/Inflammation.wav',
       duration: 32.00,
       type: 'brain',
       album: 'SE Therapies'
@@ -68,8 +63,7 @@ export class AudioProvider extends Component {
     {
       id: 7,
       title: 'Performance',
-      isRequire: true,
-      url: require('../../assets/Performance.wav'),
+      url: '../../assets/Performance.wav',
       duration: 32.00,
       type: 'brain',
       album: 'SE Therapies'
@@ -77,8 +71,7 @@ export class AudioProvider extends Component {
     {
       id: 8,
       title: 'Circulation',
-      isRequire: true,
-      url: require('../../assets/Circulation.wav'),
+      url: '../../assets/Circulation.wav',
       duration: 32.01,
       type: 'brain',
       album: 'SE Therapies'
@@ -86,8 +79,7 @@ export class AudioProvider extends Component {
     {
       id: 9,
       title: 'Recovery',
-      isRequire: true,
-      url: require('../../assets/Recovery.wav'),
+      url: '../../assets/Recovery.wav',
       duration: 32.01,
       type: 'brain',
       album: 'SE Therapies'

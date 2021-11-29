@@ -87,7 +87,7 @@ const AudioListItem = ({
               <Text numberOfLines={1} style={styles.title}>
                 {title}
               </Text>
-              <Text numberOfLines={1} style={styles.description}>Type: {type}, Album: {album}, Song: {title}</Text>
+              <Text numberOfLines={1} style={styles.description}>Tag: {type}, Album: {album}</Text>
               <Text style={styles.timeText}>{convertTime(duration)}</Text>
             </View>
           </View>
@@ -118,6 +118,7 @@ const styles = StyleSheet.create({
   thumbnail: {
     height: 50,
     flexBasis: 50,
+    paddingTop: 5,
     backgroundColor: color.FONT_LIGHT,
     justifyContent: 'center',
     alignItems: 'center',
