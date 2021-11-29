@@ -1,12 +1,11 @@
 
 import React, { Component, createContext } from 'react';
-import { Text, View, Alert } from 'react-native';
-import * as MediaLibrary from 'expo-media-library';
 import { DataProvider } from 'recyclerlistview';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Audio } from 'expo-av';
 import { storeAudioForNextOpening } from '../misc/helper';
 import { playNext } from '../misc/audioController';
+
 
 export const AudioContext = createContext();
 
@@ -15,23 +14,25 @@ export class AudioProvider extends Component {
     {
       id: 1,
       title: 'Energize',
-      url: '../../assets/Pain-Inflammation.flac',
-      duration: 30.00,
+      isRequire: true,
+      url: 'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Energize.wav?alt=media&token=171dd93b-c563-43f7-8109-3529f746f39f',
+      duration: 30.01,
       type: 'heart',
       album: 'SE Therapies'
     },
     {
       id: 2,
       title: 'Focus',
-      url: '../../assets/Focus.wav',
-      duration: 30.00,
+      url: 'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Focus.wav?alt=media&token=954b3b3f-4ca2-4fa8-b80c-9cdadc090685',
+      duration: 30.01,
       type: 'bone',
       album: 'SE Therapies'
     },
     {
       id: 3,
       title: 'Relax',
-      url: '../../assets/Relax.wav',
+      isRequire: true,
+      url: 'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Relax.wav?alt=media&token=44925134-2bf3-4ced-b103-4a2eda6b4879',
       duration: 20.00,
       type: 'healing',
       album: 'SE Therapies'
@@ -39,7 +40,8 @@ export class AudioProvider extends Component {
     {
       id: 4,
       title: 'Sleep',
-      url: '../../assets/Sleep.wav',
+      isRequire: true,
+      url: 'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Sleep.wav?alt=media&token=58b67a58-4d00-4b35-a3bd-046bd49f6ad6',
       duration: 32.00,
       type: 'brain',
       album: 'SE Therapies'
@@ -47,40 +49,45 @@ export class AudioProvider extends Component {
     {
       id: 5,
       title: 'Bone',
-      url: '../../assets/Bone.wav',
-      duration: 32.00,
+      isRequire: true,
+      url: 'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Bone.wav?alt=media&token=e92f107f-e55a-4b64-a836-12ccf202ac5e',
+      duration: 0.60,
       type: 'Bone',
       album: 'SE Therapies'
     },    
     {
       id: 6,
       title: 'Inflammation',
-      url: '../../assets/Inflammation.wav',
-      duration: 32.00,
+      isRequire: true,
+      url: 'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Inflammation.wav?alt=media&token=6cfbfda8-b44e-437e-81c9-58740e01306a',
+      duration: 0.00,
       type: 'brain',
       album: 'SE Therapies'
     },    
     {
       id: 7,
       title: 'Performance',
-      url: '../../assets/Performance.wav',
-      duration: 32.00,
+      isRequire: true,
+      url: 'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Performance.wav?alt=media&token=afa0ae22-154c-45a3-aeaf-1275e14a5b4f',
+      duration: 0.60,
       type: 'brain',
       album: 'SE Therapies'
     },    
     {
       id: 8,
       title: 'Circulation',
-      url: '../../assets/Circulation.wav',
-      duration: 32.01,
+      isRequire: true,
+      url: 'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Circulation.wav?alt=media&token=50088af6-c570-436e-86df-5ccce4907674',
+      duration: 0.00,
       type: 'brain',
       album: 'SE Therapies'
     },
     {
       id: 9,
       title: 'Recovery',
-      url: '../../assets/Recovery.wav',
-      duration: 32.01,
+      isRequire: true,
+      url: 'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Recovery.wav?alt=media&token=eb24f439-0dc2-483b-bde7-6582a30661a0',
+      duration: 0.00,
       type: 'brain',
       album: 'SE Therapies'
     }
@@ -165,8 +172,10 @@ export class AudioProvider extends Component {
         playbackStatus.positionMillis
       );
     }
+    let durationSeconds = playbackStatus.durationMillis/1000;
+    let positionSeconds = playbackStatus.positionMillis/1000;
 
-    if (playbackStatus.didJustFinish) {
+    if (playbackStatus.didJustFinish ||  (parseInt(durationSeconds)-2 === parseInt(positionSeconds))) {
       if (this.state.isPlayListRunning) {
         let audio;
         
@@ -225,11 +234,11 @@ export class AudioProvider extends Component {
     }
   }
 
-   componentDidMount() {
+  componentDidMount() {
     this.getAudioFiles();
-    setTimeout(()=> {
+    setTimeout(() => {
       this.playbackObjMethod();
-    }, 0); 
+    }, 0);
   }
 
   updateState = (prevState, newState = {}) => {

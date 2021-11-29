@@ -5,7 +5,7 @@ export const play = async (playbackObj, uri, lastPosition) => {
   try {
     if (!lastPosition)
       return await playbackObj.loadAsync(
-         uri ,
+         {uri: uri} ,
         { shouldPlay: true, progressUpdateIntervalMillis: 1000 }
       );
 
@@ -44,7 +44,6 @@ export const resume = async playbackObj => {
 // select another audio
 export const playNext = async (playbackObj, uri) => {
   try {
-    await playbackObj.stopAsync();
     await playbackObj.unloadAsync();
     return await play(playbackObj, uri);
   } catch (error) {
