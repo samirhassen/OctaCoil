@@ -21,9 +21,8 @@ const AboutUs = () => {
             <ImageBackground source={require('../../assets/yoga.png')} resizeMode="cover" style={styles.image}>
             <View style={styles.maincontainer}>
                 <View style={styles.innerContainer}>
-                    <Text style={styles.header}>OctaCoil Audio Player</Text>
-                    <Text style={styles.version}>Version: 1.0.0</Text>
-                    <Text style={{fontSize: 20, marginTop: 10, fontWeight:'bold', color: '#fff'}}>About Us</Text>                        
+                    <Text style={styles.header}></Text>
+                    <Text style={styles.version}></Text>
                         <Text style={styles.info}>Spectrum Energy Therapies is dedicated to bringing life-changing 
                         therapeutic devices to everyone, so that they can take charge of their own health and well-being. 
                         We feel passionate about making products that harness technologies that utilize energy to support 

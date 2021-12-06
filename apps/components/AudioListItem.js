@@ -88,7 +88,7 @@ const AudioListItem = ({
               <Text numberOfLines={1} style={styles.title}>
                 {title}
               </Text>
-              <Text numberOfLines={1} style={styles.description}>Tag: {type}, Album: {album}</Text>
+              <Text numberOfLines={1} style={styles.description}>Tag: {type}</Text>
               <Text style={styles.timeText}>{duration}</Text>
             </View>
           </View>

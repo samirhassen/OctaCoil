@@ -1,4 +1,3 @@
-
 import React, { Component, createContext } from 'react';
 import { DataProvider } from 'recyclerlistview';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -17,16 +16,14 @@ export class AudioProvider extends Component {
       isRequire: true,
       url: 'https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Energize.m4a?alt=media&token=ac26cc9d-338d-41db-9609-18268a398e76',
       duration: '12:00',
-      type: 'heart',
-      album: 'SE Therapies'
+      type: 'heart'
     },
     {
       id: 2,
       title: 'Focus',
       url: 'https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Focus.m4a?alt=media&token=3de11cd2-6008-4744-9f31-b0605a575f4e',
       duration: '09:00',
-      type: 'bone',
-      album: 'SE Therapies'
+      type: 'bone'
     },
     {
       id: 3,
@@ -34,8 +31,7 @@ export class AudioProvider extends Component {
       isRequire: true,
       url: 'https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Relax.m4a?alt=media&token=194185f7-3f02-49e4-8760-a33642260b75',
       duration: '06:00',
-      type: 'healing',
-      album: 'SE Therapies'
+      type: 'healing'
     },    
     {
       id: 4,
@@ -44,7 +40,6 @@ export class AudioProvider extends Component {
       url: 'https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Sleep.m4a?alt=media&token=16cd5ee4-48b2-4776-976a-6714ad6e36f8',
       duration: '12:00',
       type: 'brain',
-      album: 'SE Therapies'
     },    
     {
       id: 5,
@@ -52,8 +47,7 @@ export class AudioProvider extends Component {
       isRequire: true,
       url: 'https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Bones.m4a?alt=media&token=fae5e63c-e89e-4041-b874-8df67f62931e',
       duration: '03:00',
-      type: 'Bone',
-      album: 'SE Therapies'
+      type: 'Bone'
     },    
     {
       id: 6,
@@ -61,17 +55,15 @@ export class AudioProvider extends Component {
       isRequire: true,
       url: 'https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Inflammation.m4a?alt=media&token=ca76699d-20e0-4f8c-8486-fc34a43cd56d',
       duration: '03:12',
-      type: 'brain',
-      album: 'SE Therapies'
+      type: 'brain'
     },    
     {
       id: 7,
       title: 'Performance',
       isRequire: true,
       url: 'https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Performance.m4a?alt=media&token=2c8ae0ee-3a65-485b-a185-61f4be92d482',
-      duration: '03:10',
-      type: 'brain',
-      album: 'SE Therapies'
+      duration: '03:12',
+      type: 'brain'
     },    
     {
       id: 8,
@@ -79,8 +71,7 @@ export class AudioProvider extends Component {
       isRequire: true,
       url: 'https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Circulation.m4a?alt=media&token=5c7f6bb7-8c30-404a-9d22-e88db913dcf4',
       duration: '03:22',
-      type: 'brain',
-      album: 'SE Therapies'
+      type: 'brain'
     },
     {
       id: 9,
@@ -88,8 +79,7 @@ export class AudioProvider extends Component {
       isRequire: true,
       url: 'https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Recovery.m4a?alt=media&token=b19953a5-0302-4471-80f8-4b65b0de0a97',
       duration: '03:22',
-      type: 'brain',
-      album: 'SE Therapies'
+      type: 'brain'
     }
   ];
 
