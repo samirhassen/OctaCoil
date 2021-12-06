@@ -108,9 +108,11 @@ const Player = () => {
               paddingHorizontal: 15,
             }}
           >
-            <Text style={{color: '#fff'}}>{convertTime(context.currentAudio.duration)}</Text>
             <Text style={{color: '#fff'}}>
               {currentPosition ? currentPosition : renderCurrentTime()}
+            </Text>
+            <Text style={{color: '#fff'}}>
+              {/*convertTime(context.currentAudio.duration)*/context.currentAudio.duration}
             </Text>
           </View>
           <Slider
@@ -122,7 +124,8 @@ const Player = () => {
             maximumTrackTintColor={color.ACTIVE_BG}
             onValueChange={value => {
               setCurrentPosition(
-                convertTime(value * context.currentAudio.duration)
+                /*convertTime(value * context.currentAudio.duration)*/
+                value * context.currentAudio.duration
               );
             }}
             onSlidingStart={async () => {

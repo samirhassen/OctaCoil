@@ -13,7 +13,7 @@ import color from '../misc/color';
 const getThumbnailText = (filename) => {
   return <Image source = {require('../../assets/cg.png')} style = {{ width: 35, height: 35, paddingBottom:20 }}/>
 }
-
+/*
 //Audio time display in format mm:ss
 const convertTime = minutes => {
   if (minutes) {
@@ -37,6 +37,7 @@ const convertTime = minutes => {
     return `${minute}:${sec}`;
   }
 };
+*/
 
 /**
  * Method to show play/pause icon based on song play/pause
@@ -88,7 +89,7 @@ const AudioListItem = ({
                 {title}
               </Text>
               <Text numberOfLines={1} style={styles.description}>Tag: {type}, Album: {album}</Text>
-              <Text style={styles.timeText}>{convertTime(duration)}</Text>
+              <Text style={styles.timeText}>{duration}</Text>
             </View>
           </View>
       </View>
