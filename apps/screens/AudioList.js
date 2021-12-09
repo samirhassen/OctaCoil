@@ -48,9 +48,11 @@ export class AudioList extends Component {
   rowRenderer = (type, item, index, extendedState) => {
     return (
       <AudioListItem
-        title={item.title}
+        title={item.filename}
         type = {item.type}
         album = {item.album}
+        url = {Platform.OS == 'android' ? item.uri : item.iosURL}
+        isDownlaod = {item?.isDownloaded}
         isPlaying={extendedState.isPlaying}
         // duration={item.duration}
         activeListItem={this.context.currentAudioIndex === index}
@@ -106,7 +108,7 @@ export class AudioList extends Component {
             <Screen>
               <RecyclerListView
                 style={styles.marginFromTop}
-                dataProvider={filteredAudio}
+                dataProvider={dataProvider}
                 layoutProvider={this.layoutProvider}
                 rowRenderer={this.rowRenderer}
                 extendedState={{ isPlaying }}

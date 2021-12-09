@@ -1,5 +1,7 @@
 import { storeAudioForNextOpening } from './helper';
 import { Audio } from 'expo-av';
+const currentAudioUrl = Platform.OS == 'android' ? audio.urlAndroid : audio.urlIOS;
+;
 // play audio
 export const play = async (playbackObj, uri, lastPosition) => {
   try {
@@ -64,7 +66,7 @@ export const selectAudio = async (audio, context, playListInfo = {}) => {
   try {
     // playing audio for the first time.
     if (soundObj === null) {
-      const status = await play(playbackObj, audio.url, audio.lastPosition);
+      const status = await play(playbackObj, Platform.OS == 'android' ? audio.urlAndroid : audio.urlIOS, audio.lastPosition);
       const index = audioFiles.findIndex(({ id }) => id === audio.id);
       updateState(context, {
         currentAudio: audio,
@@ -109,7 +111,7 @@ export const selectAudio = async (audio, context, playListInfo = {}) => {
     // select another audio
     if (soundObj.isLoaded && currentAudio.id !== audio.id) {
       console.log('----------next-------------');
-      const status = await playNext(playbackObj, audio.url);
+      const status = await playNext(playbackObj, currentAudioUrl);
       const index = audioFiles.findIndex(({ id }) => id === audio.id);
       updateState(context, {
         currentAudio: audio,
@@ -152,7 +154,7 @@ const selectAudioFromPlayList = async (context, select) => {
   if (!audio) audio = activePlayList.audios[defaultIndex];
 
   const indexOnAllList = audioFiles.findIndex(({ id }) => id === audio.id);
-  const status = await playNext(playbackObj, audio.url);
+  const status = await playNext(playbackObj, currentAudioUrl);
   return updateState(context, {
     soundObj: status,
     isPlaying: true,
@@ -186,22 +188,22 @@ export const changeAudio = async (context, select) => {
       audio = audioFiles[currentAudioIndex + 1];
       if (!isLoaded && !isLastAudio) {
         index = currentAudioIndex + 1;
-        status = await play(playbackObj, audio.url);
+        status = await play(playbackObj, currentAudioUrl);
         playbackObj.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
       }
 
       if (isLoaded && !isLastAudio) {
         index = currentAudioIndex + 1;
-        status = await playNext(playbackObj, audio.url);
+        status = await playNext(playbackObj, currentAudioUrl);
       }
 
       if (isLastAudio) {
         index = 0;
         audio = audioFiles[index];
         if (isLoaded) {
-          status = await playNext(playbackObj, audio.url);
+          status = await playNext(playbackObj, currentAudioUrl);
         } else {
-          status = await play(playbackObj, audio.url);
+          status = await play(playbackObj, currentAudioUrl);
         }
       }
     }
@@ -211,22 +213,22 @@ export const changeAudio = async (context, select) => {
       audio = audioFiles[currentAudioIndex - 1];
       if (!isLoaded && !isFirstAudio) {
         index = currentAudioIndex - 1;
-        status = await play(playbackObj, audio.url);
+        status = await play(playbackObj, currentAudioUrl);
         playbackObj.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
       }
 
       if (isLoaded && !isFirstAudio) {
         index = currentAudioIndex - 1;
-        status = await playNext(playbackObj, audio.url);
+        status = await playNext(playbackObj, currentAudioUrl);
       }
 
       if (isFirstAudio) {
         index = totalAudioCount - 1;
         audio = audioFiles[index];
         if (isLoaded) {
-          status = await playNext(playbackObj, audio.url);
+          status = await playNext(playbackObj, currentAudioUrl);
         } else {
-          status = await play(playbackObj, audio.url);
+          status = await play(playbackObj, currentAudioUrl);
         }
       }
     }

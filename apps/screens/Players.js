@@ -85,7 +85,7 @@ const Player = () => {
             {context.isPlayListRunning && (
               <>
                 <Text style={{ fontWeight: 'bold' }}>From Playlist: </Text>
-                <Text>{context.activePlayList.title}</Text>
+                <Text>{context.activePlayList.filename}</Text>
               </>
             )}
           </View>
@@ -99,8 +99,9 @@ const Player = () => {
         </View>
         <View style={styles.audioPlayerContainer}>
           <Text numberOfLines={1} style={styles.audioTitle}>
-            {context.currentAudio.title}
+            {context.currentAudio.filename}
           </Text>
+          <Text style={styles.audioSubTitle}>Album: {currentAudio.album}, Song: {currentAudio.filename}</Text>
           <View
             style={{
               flexDirection: 'row',
@@ -108,11 +109,9 @@ const Player = () => {
               paddingHorizontal: 15,
             }}
           >
+            <Text style={{color: '#fff'}}>{convertTime(context.currentAudio.duration)}</Text>
             <Text style={{color: '#fff'}}>
               {currentPosition ? currentPosition : renderCurrentTime()}
-            </Text>
-            <Text style={{color: '#fff'}}>
-              {/*convertTime(context.currentAudio.duration)*/context.currentAudio.duration}
             </Text>
           </View>
           <Slider
@@ -124,8 +123,7 @@ const Player = () => {
             maximumTrackTintColor={color.ACTIVE_BG}
             onValueChange={value => {
               setCurrentPosition(
-                /*convertTime(value * context.currentAudio.duration)*/
-                value * context.currentAudio.duration
+                convertTime(value * context.currentAudio.duration)
               );
             }}
             onSlidingStart={async () => {
