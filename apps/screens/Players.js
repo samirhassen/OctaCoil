@@ -101,7 +101,7 @@ const Player = () => {
           <Text numberOfLines={1} style={styles.audioTitle}>
             {context.currentAudio.filename}
           </Text>
-          <Text style={styles.audioSubTitle}>Album: {context.currentAudio.album}, Song: {context.currentAudio.filename}</Text>
+          <Text style={styles.audioSubTitle}>Album: {currentAudio.album}, Song: {currentAudio.filename}</Text>
           <View
             style={{
               flexDirection: 'row',

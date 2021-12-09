@@ -153,7 +153,7 @@ export class AudioProvider extends Component {
 
     this.dataProviderData = dataProvider.cloneWithRows([...audioFiles, ...audioLists, ...this.media.assets]);
     this.filterAudioData = filteredAudio.cloneWithRows([...audioFiles, ...audioLists, ...this.media.assets]);
-    this.totalAudioCount = audioLists.length;
+    this.totalAudioCount = audioLists.length+this.media.assets.length;
     await Audio.setAudioModeAsync({
       allowsRecordingIOS: false,
       staysActiveInBackground: true,
@@ -207,14 +207,15 @@ export class AudioProvider extends Component {
     let durationSeconds = playbackStatus.durationMillis/1000;
     let positionSeconds = playbackStatus.positionMillis/1000;
 
-    if (playbackStatus.didJustFinish ||  (parseInt(durationSeconds)-2 === parseInt(positionSeconds))) {
+    if (playbackStatus.didJustFinish) {
       if (this.state.isPlayListRunning) {
         let audio;
         
         const indexOnPlayList = this.state.activePlayList.audios.findIndex(
           ({ id }) => id === this.state.currentAudio.id
         );
-        const nextIndex = this.state.isLoop ? indexOnPlayList : indexOnPlayList + 1;
+
+        const nextIndex =  indexOnPlayList;
         audio = this.state.activePlayList.audios[nextIndex];
 
         if (!audio) audio = this.state.activePlayList.audios[0];
@@ -232,7 +233,7 @@ export class AudioProvider extends Component {
         });
       }
 
-      const nextAudioIndex = this.state.isLoop ? this.state.currentAudioIndex : this.state.currentAudioIndex + 1;
+      const nextAudioIndex =  this.state.currentAudioIndex;
       // there is no next audio to play or the current audio is the last
       if (nextAudioIndex >= this.totalAudioCount) {
         this.state.playbackObj.unloadAsync();
