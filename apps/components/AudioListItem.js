@@ -43,6 +43,7 @@ const convertTime = minutes => {
   }
 };
 
+
 /**
  * Method to show play/pause icon based on song play/pause
  * @param {*} isPlaying 
@@ -131,7 +132,7 @@ const AudioListItem = ({
                 {title}
               </Text>
               
-              <Text numberOfLines={1} style={styles.description}>{isDownlaod ? <FontAwesome name="check-circle" size={20} color="white" /> : null}  Type: {type}, Album: {album}, Song: {title}</Text>
+              <Text numberOfLines={1} style={styles.description}>{isDownlaod ? <FontAwesome name="check-circle" size={20} color="white" /> : null}  Tag: {type}, Album: {album}, Song: {title}</Text>
               <Text style={styles.timeText}>{convertTime(duration)}</Text>
             </View>
           </View>
@@ -171,6 +172,7 @@ const styles = StyleSheet.create({
   thumbnail: {
     height: 50,
     flexBasis: 50,
+    paddingTop: 5,
     backgroundColor: color.FONT_LIGHT,
     justifyContent: 'center',
     alignItems: 'center',
