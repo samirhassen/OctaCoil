@@ -16,6 +16,7 @@ export class AudioProvider extends Component {
       filename: 'Energize',
       isRequire: true,
       uri: 'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Energize.wav?alt=media&token=171dd93b-c563-43f7-8109-3529f746f39f',
+      iOSURL: 'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Energize.m4a?alt=media&token=245f01a5-f091-4015-b83b-0631d1762092',
       duration: 30.01,
       type: 'heart',
       album: 'SE Therapies'
@@ -24,6 +25,7 @@ export class AudioProvider extends Component {
       id: 2,
       filename: 'Focus',
       uri: 'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Focus.wav?alt=media&token=954b3b3f-4ca2-4fa8-b80c-9cdadc090685',
+      iosURL: 'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Focus.m4a?alt=media&token=49fa5caa-76b3-42d3-96cf-4ee6a957935f',
       duration: 30.01,
       type: 'bone',
       album: 'SE Therapies'
@@ -33,6 +35,7 @@ export class AudioProvider extends Component {
       filename: 'Relax',
       isRequire: true,
       uri: 'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Relax.wav?alt=media&token=44925134-2bf3-4ced-b103-4a2eda6b4879',
+      iosURL: 'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Relax.m4a?alt=media&token=d618d1e2-7437-4379-af7f-2b02a1610425',
       duration: 20.00,
       type: 'healing',
       album: 'SE Therapies'
@@ -42,6 +45,7 @@ export class AudioProvider extends Component {
       filename: 'Sleep',
       isRequire: true,
       uri: 'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Sleep.wav?alt=media&token=58b67a58-4d00-4b35-a3bd-046bd49f6ad6',
+      iosURL:'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Sleep.m4a?alt=media&token=923c8e0a-39f1-4521-bebb-38481f87a5ea',
       duration: 32.00,
       type: 'brain',
       album: 'SE Therapies'
@@ -51,6 +55,7 @@ export class AudioProvider extends Component {
       filename: 'Bone',
       isRequire: true,
       uri: 'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Bone.wav?alt=media&token=e92f107f-e55a-4b64-a836-12ccf202ac5e',
+      iosURL:'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Bone.m4a?alt=media&token=008cab1e-ff27-4fc6-bf5b-0295109f30fe',
       duration: 0.60,
       type: 'Bone',
       album: 'SE Therapies'
@@ -60,6 +65,7 @@ export class AudioProvider extends Component {
       filename: 'Inflammation',
       isRequire: true,
       uri: 'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Inflammation.wav?alt=media&token=6cfbfda8-b44e-437e-81c9-58740e01306a',
+      iosURL:'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Inflammation.m4a?alt=media&token=6becda90-a0fc-49ff-822e-da80cff4a4c0',
       duration: 0.00,
       type: 'brain',
       album: 'SE Therapies'
@@ -68,6 +74,7 @@ export class AudioProvider extends Component {
       id: 7,
       filename: 'Performance',
       isRequire: true,
+      iosURL:'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Performance.m4a?alt=media&token=dc4f9e62-5db8-4514-a96a-376f72af4045',
       uri: 'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Performance.wav?alt=media&token=afa0ae22-154c-45a3-aeaf-1275e14a5b4f',
       duration: 0.60,
       type: 'brain',
@@ -78,6 +85,7 @@ export class AudioProvider extends Component {
       filename: 'Circulation',
       isRequire: true,
       uri: 'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Circulation.wav?alt=media&token=50088af6-c570-436e-86df-5ccce4907674',
+      iosURL:'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Circulation.m4a?alt=media&token=ff67f0c3-d9b2-4c75-bcc4-cffab70d0d9d',
       duration: 0.00,
       type: 'brain',
       album: 'SE Therapies'
@@ -87,6 +95,7 @@ export class AudioProvider extends Component {
       filename: 'Recovery',
       isRequire: true,
       uri: 'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Recovery.wav?alt=media&token=eb24f439-0dc2-483b-bde7-6582a30661a0',
+      iosURL:'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Recovery.m4a?alt=media&token=6d5f3e0b-73b4-4937-b1fd-5fb746cd5b96',
       duration: 0.00,
       type: 'brain',
       album: 'SE Therapies'
@@ -224,7 +233,7 @@ export class AudioProvider extends Component {
           ({ id }) => id === audio.id
         );
 
-        const status = await playNext(this.state.playbackObj, audio.uri);
+        const status = await playNext(this.state.playbackObj, Platform.OS == 'android' ? audio.uri : audio.iOSURL);
         return this.updateState(this, {
           soundObj: status,
           isPlaying: true,
@@ -249,7 +258,7 @@ export class AudioProvider extends Component {
       }
       // otherwise we want to select the next audio
       const audio = this.state.audioFiles[nextAudioIndex];
-      const status = await playNext(this.state.playbackObj, audio.uri);
+      const status = await playNext(this.state.playbackObj, Platform.OS == 'android' ? audio.uri : audio.iOSURL);
       this.updateState(this, {
         soundObj: status,
         currentAudio: audio,
