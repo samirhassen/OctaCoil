@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Audio } from 'expo-av';
 import { storeAudioForNextOpening } from '../misc/helper';
 import { playNext } from '../misc/audioController';
-
+import * as MediaLibrary from 'expo-media-library';
 
 export const AudioContext = createContext();
 
@@ -13,80 +13,80 @@ export class AudioProvider extends Component {
   audioItems = [
     {
       id: 1,
-      title: 'Energize',
+      filename: 'Energize',
       isRequire: true,
-      url: 'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Energize.wav?alt=media&token=171dd93b-c563-43f7-8109-3529f746f39f',
+      uri: 'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Energize.wav?alt=media&token=171dd93b-c563-43f7-8109-3529f746f39f',
       duration: 30.01,
       type: 'heart',
       album: 'SE Therapies'
     },
     {
       id: 2,
-      title: 'Focus',
-      url: 'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Focus.wav?alt=media&token=954b3b3f-4ca2-4fa8-b80c-9cdadc090685',
+      filename: 'Focus',
+      uri: 'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Focus.wav?alt=media&token=954b3b3f-4ca2-4fa8-b80c-9cdadc090685',
       duration: 30.01,
       type: 'bone',
       album: 'SE Therapies'
     },
     {
       id: 3,
-      title: 'Relax',
+      filename: 'Relax',
       isRequire: true,
-      url: 'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Relax.wav?alt=media&token=44925134-2bf3-4ced-b103-4a2eda6b4879',
+      uri: 'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Relax.wav?alt=media&token=44925134-2bf3-4ced-b103-4a2eda6b4879',
       duration: 20.00,
       type: 'healing',
       album: 'SE Therapies'
     },    
     {
       id: 4,
-      title: 'Sleep',
+      filename: 'Sleep',
       isRequire: true,
-      url: 'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Sleep.wav?alt=media&token=58b67a58-4d00-4b35-a3bd-046bd49f6ad6',
+      uri: 'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Sleep.wav?alt=media&token=58b67a58-4d00-4b35-a3bd-046bd49f6ad6',
       duration: 32.00,
       type: 'brain',
       album: 'SE Therapies'
     },    
     {
       id: 5,
-      title: 'Bone',
+      filename: 'Bone',
       isRequire: true,
-      url: 'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Bone.wav?alt=media&token=e92f107f-e55a-4b64-a836-12ccf202ac5e',
+      uri: 'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Bone.wav?alt=media&token=e92f107f-e55a-4b64-a836-12ccf202ac5e',
       duration: 0.60,
       type: 'Bone',
       album: 'SE Therapies'
     },    
     {
       id: 6,
-      title: 'Inflammation',
+      filename: 'Inflammation',
       isRequire: true,
-      url: 'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Inflammation.wav?alt=media&token=6cfbfda8-b44e-437e-81c9-58740e01306a',
+      uri: 'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Inflammation.wav?alt=media&token=6cfbfda8-b44e-437e-81c9-58740e01306a',
       duration: 0.00,
       type: 'brain',
       album: 'SE Therapies'
     },    
     {
       id: 7,
-      title: 'Performance',
+      filename: 'Performance',
       isRequire: true,
-      url: 'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Performance.wav?alt=media&token=afa0ae22-154c-45a3-aeaf-1275e14a5b4f',
+      uri: 'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Performance.wav?alt=media&token=afa0ae22-154c-45a3-aeaf-1275e14a5b4f',
       duration: 0.60,
       type: 'brain',
       album: 'SE Therapies'
     },    
     {
       id: 8,
-      title: 'Circulation',
+      filename: 'Circulation',
       isRequire: true,
-      url: 'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Circulation.wav?alt=media&token=50088af6-c570-436e-86df-5ccce4907674',
+      uri: 'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Circulation.wav?alt=media&token=50088af6-c570-436e-86df-5ccce4907674',
       duration: 0.00,
       type: 'brain',
       album: 'SE Therapies'
     },
     {
       id: 9,
-      title: 'Recovery',
+      filename: 'Recovery',
       isRequire: true,
-      url: 'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Recovery.wav?alt=media&token=eb24f439-0dc2-483b-bde7-6582a30661a0',
+      uri: 'https://firebasestorage.googleapis.com/v0/b/octacoil.appspot.com/o/Recovery.wav?alt=media&token=eb24f439-0dc2-483b-bde7-6582a30661a0',
       duration: 0.00,
       type: 'brain',
       album: 'SE Therapies'
@@ -116,12 +116,43 @@ export class AudioProvider extends Component {
     };
     this.totalAudioCount = 0;
   }
-
+  media;
+  album;
+  dataProviderData;
+  filterAudioData;
 
   getAudioFiles = async () => {
-    const {dataProvider, audioFiles, audioLists, filteredAudio } = this.state;
-    const dataProviderData = dataProvider.cloneWithRows([...audioFiles, ...audioLists]);
-    const filterAudioData = filteredAudio.cloneWithRows([...audioFiles, ...audioLists]);
+    let {dataProvider, audioFiles, audioLists, filteredAudio } = this.state;
+    audioFiles = [];
+    this.album = await MediaLibrary.getAlbumAsync("octaCoil");
+    this.media = await MediaLibrary.getAssetsAsync({
+      mediaType: 'audio',
+      album:this.album
+    });
+    this.media = await MediaLibrary.getAssetsAsync({
+      mediaType: 'audio',
+      album:this.album,
+      first: this.media.totalCount,
+    });
+
+    this.media.assets.map((item) => {
+      item.isDownloaded = true;
+      item.type= 'brain';
+      item.album = 'SE Therapies';
+      item.filename = item.filename.split('.').slice(0, -1).join('.');
+      return this.media.assets;
+    });
+
+    for( let i=this.media.assets.length - 1; i>=0; i--){
+      for( let j=0; j<audioLists.length; j++){
+          if(this.media.assets[i] && (this.media.assets[i].filename === audioLists[j].filename)){
+              audioLists.splice(j,1);
+          }
+      }
+    }
+
+    this.dataProviderData = dataProvider.cloneWithRows([...audioFiles, ...audioLists, ...this.media.assets]);
+    this.filterAudioData = filteredAudio.cloneWithRows([...audioFiles, ...audioLists, ...this.media.assets]);
     this.totalAudioCount = audioLists.length;
     await Audio.setAudioModeAsync({
       allowsRecordingIOS: false,
@@ -133,11 +164,12 @@ export class AudioProvider extends Component {
       playThroughEarpieceAndroid: false
     });
     this.setState({
-      dataProvider: dataProviderData,
-      filteredAudio:  filterAudioData,
-      audioFiles: [...audioFiles, ...audioLists],
+      dataProvider: this.dataProviderData,
+      filteredAudio:  this.filterAudioData,
+      audioFiles: [...audioFiles, ...audioLists, ...this.media.assets],
     });
   };
+
 
   loadPreviousAudio = async () => {
     let previousAudio = await AsyncStorage.getItem('previousAudio');
@@ -191,7 +223,7 @@ export class AudioProvider extends Component {
           ({ id }) => id === audio.id
         );
 
-        const status = await playNext(this.state.playbackObj, audio.url);
+        const status = await playNext(this.state.playbackObj, audio.uri);
         return this.updateState(this, {
           soundObj: status,
           isPlaying: true,
@@ -216,7 +248,7 @@ export class AudioProvider extends Component {
       }
       // otherwise we want to select the next audio
       const audio = this.state.audioFiles[nextAudioIndex];
-      const status = await playNext(this.state.playbackObj, audio.url);
+      const status = await playNext(this.state.playbackObj, audio.uri);
       this.updateState(this, {
         soundObj: status,
         currentAudio: audio,
@@ -285,6 +317,7 @@ export class AudioProvider extends Component {
           isPlayListRunning,
           activePlayList,
           updateState: this.updateState,
+          getAudioFiles:this.getAudioFiles,
           loadPreviousAudio: this.loadPreviousAudio,
           onPlaybackStatusUpdate: this.onPlaybackStatusUpdate,
         }}

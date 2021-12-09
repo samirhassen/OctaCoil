@@ -1,17 +1,22 @@
-import React from 'react';
+import React, { useState, useContext } from 'react';
 import {
   View,
   StyleSheet,
   Text,
+  ActivityIndicator,
   Image,
   Dimensions,
   TouchableWithoutFeedback
 } from 'react-native';
-import { Entypo, Ionicons  } from '@expo/vector-icons';
+import { Entypo, Ionicons, Feather,FontAwesome  } from '@expo/vector-icons';
 import color from '../misc/color';
+import * as FileSystem from 'expo-file-system';
+import * as MediaLibrary from 'expo-media-library';
+import { Camera } from 'expo-camera';
+import { AudioContext } from '../context/AudioProvider';
 
 const getThumbnailText = (filename) => {
-  return <Image source = {require('../../assets/cg.png')} style = {{ width: 35, height: 35, paddingBottom:20 }}/>
+  return <Image source={require('../../assets/cg.png')} style={{ width: 35, height: 35, paddingBottom: 20 }} />
 }
 
 //Audio time display in format mm:ss
@@ -51,21 +56,59 @@ const renderPlayPauseIcon = isPlaying => {
   return <Entypo name='controller-play' size={30} color={color.ACTIVE_FONT} />;
 };
 
+
+
+
 //Method to display audio list item
 const AudioListItem = ({
   title,
   onAudioPress,
   duration,
   album,
+  isDownlaod,
   type,
+  url,
   onOptionPress,
   isPlaying,
   activeListItem,
 }) => {
+  const [loader, setLoader] = useState(false);
+  const {getAudioFiles } = useContext(AudioContext);
+  const saveFile = async (fileUri) => {
+    const { status } = await Camera.requestCameraPermissionsAsync();
+    if (status === 'granted') {
+      const asset = await MediaLibrary.createAssetAsync(fileUri);
+      await MediaLibrary.createAlbumAsync('octaCoil', asset, true);
+    }
+  };
+  
+  const onDownloadPress = async (url, title) => {
+    const callback = downloadProgress => {
+      const progress = downloadProgress.totalBytesWritten / downloadProgress.totalBytesExpectedToWrite;
+    };
+    const downloadResumable = FileSystem.createDownloadResumable(
+      url,
+      FileSystem.documentDirectory + title + '.wav',
+      {},
+      callback
+    );
+    try {
+      setLoader(true);
+      const { uri } = await downloadResumable.downloadAsync();
+      await saveFile(uri).then((rs) => {
+        setLoader(false);
+        getAudioFiles();
+        alert('File Download Sucessfully!');
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
   return (
     <>
-    <TouchableWithoutFeedback onPress={onAudioPress}>
-      <View style={styles.container}>
+      <TouchableWithoutFeedback onPress={onAudioPress}>
+        <View style={styles.container}>
           <View style={styles.leftContainer}>
             <View
               style={[
@@ -83,15 +126,25 @@ const AudioListItem = ({
                   : getThumbnailText(title)}
               </Text>
             </View>
-            <View style={styles.titleContainer}>
+            <View style={[isDownlaod ? styles.titleDownloadContainer : styles.titleContainer]} >
               <Text numberOfLines={1} style={styles.title}>
                 {title}
               </Text>
-              <Text numberOfLines={1} style={styles.description}>Type: {type}, Album: {album}, Song: {title}</Text>
+              
+              <Text numberOfLines={1} style={styles.description}>{isDownlaod ? <FontAwesome name="check-circle" size={20} color="white" /> : null}  Type: {type}, Album: {album}, Song: {title}</Text>
               <Text style={styles.timeText}>{convertTime(duration)}</Text>
             </View>
           </View>
-      </View>
+          {!isDownlaod ? <View style={styles.rightContainer}>
+            {!loader ? <Feather
+              onPress={() => onDownloadPress(url, title)}
+              id="downlink"
+              name="download" size={24}
+              color={color.FONT_MEDIUM}
+              style={{ padding: 10 }} /> : <ActivityIndicator size="small" color="#fff" />}
+            
+          </View> : null}
+        </View>
       </TouchableWithoutFeedback>
       <View style={styles.separator} />
     </>
@@ -129,8 +182,12 @@ const styles = StyleSheet.create({
     color: color.FONT,
   },
   titleContainer: {
-    width: width - 130,
+    width: width - 180,
     paddingLeft: 10
+  },
+  titleDownloadContainer: {
+    width: width-130,
+    paddingLeft:10
   },
   description: {
     fontSize: 14,
@@ -143,11 +200,11 @@ const styles = StyleSheet.create({
   },
   separator: {
     width: width - 80,
-    backgroundColor: '#333',
+    backgroundColor: '#fff',
     opacity: 0.3,
-    height: 0.5,
+    height: 1,
     alignSelf: 'center',
-    marginTop: 10,
+    marginTop: 3,
   },
   timeText: {
     fontSize: 14,

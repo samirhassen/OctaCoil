@@ -81,7 +81,7 @@ const Player = () => {
             {context.isPlayListRunning && (
               <>
                 <Text style={{ fontWeight: 'bold' }}>From Playlist: </Text>
-                <Text>{context.activePlayList.title}</Text>
+                <Text>{context.activePlayList.filename}</Text>
               </>
             )}
           </View>
@@ -95,9 +95,9 @@ const Player = () => {
         </View>
         <View style={styles.audioPlayerContainer}>
           <Text numberOfLines={1} style={styles.audioTitle}>
-            {context.currentAudio.title}
+            {context.currentAudio.filename}
           </Text>
-          <Text style={styles.audioSubTitle}>Album: {context.currentAudio.album}, Song: {context.currentAudio.title}</Text>
+          <Text style={styles.audioSubTitle}>Album: {context.currentAudio.album}, Song: {context.currentAudio.filename}</Text>
           <View
             style={{
               flexDirection: 'row',
