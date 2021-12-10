@@ -12,7 +12,7 @@ import { Entypo, Ionicons, Feather,FontAwesome  } from '@expo/vector-icons';
 import color from '../misc/color';
 import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
-import { Camera } from 'expo-camera';
+import {Audio} from 'expo-av';
 import { AudioContext } from '../context/AudioProvider';
 
 const getThumbnailText = (filename) => {
@@ -76,7 +76,7 @@ const AudioListItem = ({
   const [loader, setLoader] = useState(false);
   const {getAudioFiles } = useContext(AudioContext);
   const saveFile = async (fileUri) => {
-    const { status } = await Camera.requestCameraPermissionsAsync();
+    const { status } = await Audio.requestPermissionsAsync();
     if (status === 'granted') {
       const asset = await MediaLibrary.createAssetAsync(fileUri);
       await MediaLibrary.createAlbumAsync('octaCoil', asset, true);
