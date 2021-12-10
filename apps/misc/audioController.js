@@ -1,7 +1,6 @@
 import { storeAudioForNextOpening } from './helper';
 import { Audio } from 'expo-av';
-const currentAudioUrl = Platform.OS == 'android' ? audio.urlAndroid : audio.urlIOS;
-;
+
 // play audio
 export const play = async (playbackObj, uri, lastPosition) => {
   try {
@@ -64,6 +63,8 @@ export const selectAudio = async (audio, context, playListInfo = {}) => {
     onPlaybackStatusUpdate,
   } = context;
   try {
+    const currentAudioUrl = Platform.OS == 'android' ? audio.urlAndroid : audio.urlIOS;
+
     // playing audio for the first time.
     if (soundObj === null) {
       const status = await play(playbackObj, Platform.OS == 'android' ? audio.urlAndroid : audio.urlIOS, audio.lastPosition);
@@ -130,6 +131,8 @@ export const selectAudio = async (audio, context, playListInfo = {}) => {
 };
 
 const selectAudioFromPlayList = async (context, select) => {
+  const currentAudioUrl = Platform.OS == 'android' ? audio.urlAndroid : audio.urlIOS;
+
   const { activePlayList, currentAudio, audioFiles, playbackObj, updateState } =
     context;
   let audio;
@@ -186,6 +189,7 @@ export const changeAudio = async (context, select) => {
     // for next
     if (select === 'next') {
       audio = audioFiles[currentAudioIndex + 1];
+      const currentAudioUrl = Platform.OS == 'android' ? audio.urlAndroid : audio.urlIOS;
       if (!isLoaded && !isLastAudio) {
         index = currentAudioIndex + 1;
         status = await play(playbackObj, currentAudioUrl);
@@ -211,6 +215,8 @@ export const changeAudio = async (context, select) => {
     // for previous
     if (select === 'previous') {
       audio = audioFiles[currentAudioIndex - 1];
+      const currentAudioUrl = Platform.OS == 'android' ? audio.urlAndroid : audio.urlIOS;
+
       if (!isLoaded && !isFirstAudio) {
         index = currentAudioIndex - 1;
         status = await play(playbackObj, currentAudioUrl);
