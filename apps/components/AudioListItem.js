@@ -76,7 +76,10 @@ const AudioListItem = ({
   const [loader, setLoader] = useState(false);
   const {getAudioFiles } = useContext(AudioContext);
   const saveFile = async (fileUri) => {
-    const { status } = await Audio.requestPermissionsAsync();
+    const { status } = await Permissions.askAsync(
+      Permissions.CAMERA,
+      Permissions.MEDIA_LIBRARY
+    );
     if (status === 'granted') {
       const asset = await MediaLibrary.createAssetAsync(fileUri);
       await MediaLibrary.createAlbumAsync('octaCoil', asset, true);
