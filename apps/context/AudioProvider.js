@@ -5,6 +5,7 @@ import { Audio } from 'expo-av';
 import { storeAudioForNextOpening } from '../misc/helper';
 import { playNext } from '../misc/audioController';
 import * as MediaLibrary from 'expo-media-library';
+import { Alert } from 'react-native';
 
 export const AudioContext = createContext();
 
@@ -266,8 +267,14 @@ export class AudioProvider extends Component {
     }
   }
 
-  componentDidMount() {
-    this.getAudioFiles();
+  async componentDidMount() {
+    const status = await MediaLibrary.requestPermissionsAsync();
+    if (status.granted) {
+      this.getAudioFiles();
+    } else {
+      Alert("Media permission not granted");
+    }
+    
     setTimeout(() => {
       this.playbackObjMethod();
     }, 0);

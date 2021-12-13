@@ -51,7 +51,7 @@ export class AudioList extends Component {
         title={item.filename}
         type = {item.type}
         album = {item.album}
-        url = {Platform.OS == 'android' ? item.uri : item.iosURL}
+        url = {Platform.OS == 'android' ? item.urlAndroid : item.urlIOS}
         isDownlaod = {item?.isDownloaded}
         isPlaying={extendedState.isPlaying}
         // duration={item.duration}
