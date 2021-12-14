@@ -101,7 +101,10 @@ const Player = () => {
           <Text numberOfLines={1} style={styles.audioTitle}>
             {context.currentAudio.filename}
           </Text>
-          <Text style={styles.audioSubTitle}>Album: {currentAudio.album}, Song: {currentAudio.filename}</Text>
+          <Text style={styles.audioSubTitle}>
+            <Text style={{fontWeight:'bold'}}>Tag: </Text> {currentAudio.type},
+            <Text style={{fontWeight:'bold'}}> Song: </Text> {currentAudio.filename}
+          </Text>
           <View
             style={{
               flexDirection: 'row',
@@ -109,7 +112,7 @@ const Player = () => {
               paddingHorizontal: 15,
             }}
           >
-            <Text style={{color: '#fff'}}>{convertTime(context.currentAudio.duration)}</Text>
+            <Text style={{color: '#fff'}}>{convertTime(currentAudio.duration)}</Text>
             <Text style={{color: '#fff'}}>
               {currentPosition ? currentPosition : renderCurrentTime()}
             </Text>
@@ -123,7 +126,7 @@ const Player = () => {
             maximumTrackTintColor={color.ACTIVE_BG}
             onValueChange={value => {
               setCurrentPosition(
-                convertTime(value * context.currentAudio.duration)
+                convertTime(value * currentAudio.duration)
               );
             }}
             onSlidingStart={async () => {
@@ -184,7 +187,7 @@ const styles = StyleSheet.create({
     marginTop:-30
   },
   audioTitle: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
     color: color.FONT,
     padding: 15,

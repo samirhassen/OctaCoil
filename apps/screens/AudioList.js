@@ -54,7 +54,7 @@ export class AudioList extends Component {
         url = {Platform.OS == 'android' ? item.urlAndroid : item.urlIOS}
         isDownlaod = {item?.isDownloaded}
         isPlaying={extendedState.isPlaying}
-        // duration={item.duration}
+        duration={item.duration}
         activeListItem={this.context.currentAudioIndex === index}
         onAudioPress={() => this.handleAudioPress(item)}
         onOptionPress={() => {
