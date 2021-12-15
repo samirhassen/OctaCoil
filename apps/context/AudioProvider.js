@@ -61,7 +61,7 @@ export class AudioProvider extends Component {
       isRequire: true,
       urlIOS: 'https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Inflammation.m4a?alt=media&token=ca76699d-20e0-4f8c-8486-fc34a43cd56d',
       urlAndroid: 'https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Flac%2FInflammation.flac?alt=media&token=9f39a5c8-d7d9-445a-8c3d-61e40650428b',
-      duration: 0.00,
+      duration: 0.60,
       type: 'Reduce inflammation for pain management and tissue healing'
     },    
     {
@@ -79,7 +79,7 @@ export class AudioProvider extends Component {
       isRequire: true,
       urlIOS: 'https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Circulation.m4a?alt=media&token=5c7f6bb7-8c30-404a-9d22-e88db913dcf4',
       urlAndroid: 'https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Flac%2FCirculation.flac?alt=media&token=61eac8c1-68c8-4fb3-9bc5-acb84de9c3f0',
-      duration: 0.00,
+      duration: 0.60,
       type: 'Heart and blood vessel support for circulation'
     },
     {
@@ -88,7 +88,7 @@ export class AudioProvider extends Component {
       isRequire: true,
       urlIOS: 'https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Recovery.m4a?alt=media&token=b19953a5-0302-4471-80f8-4b65b0de0a97',
       urlAndroid: 'https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Flac%2FRecovery.flac?alt=media&token=82f27073-e6f5-4704-b483-421d0cf26c1c',
-      duration: 0.00,
+      duration: 0.60,
       type: 'Boost anabolic cellular activity for tissue growth and recovery'
     }
   ];
@@ -224,7 +224,7 @@ export class AudioProvider extends Component {
           ({ id }) => id === audio.id
         );
 
-        const status = await playNext(this.state.playbackObj, Platform.OS == 'android' ? audio.uri : audio.iOSURL);
+        const status = await playNext(this.state.playbackObj, Platform.OS == 'android' ? audio.urlAndroid : audio.urlIOS);
         return this.updateState(this, {
           soundObj: status,
           isPlaying: true,
@@ -249,7 +249,7 @@ export class AudioProvider extends Component {
       }
       // otherwise we want to select the next audio
       const audio = this.state.audioFiles[nextAudioIndex];
-      const status = await playNext(this.state.playbackObj, Platform.OS == 'android' ? audio.uri : audio.iOSURL);
+      const status = await playNext(this.state.playbackObj, Platform.OS == 'android' ? audio.urlAndroid : audio.urlIOS);
       this.updateState(this, {
         soundObj: status,
         currentAudio: audio,

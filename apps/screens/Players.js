@@ -51,23 +51,6 @@ const Player = () => {
     await changeAudio(context, 'previous');
   };
 
-  /*
-  const handleLoop = async () => {
-    if(loop == true) {
-      updateState({}, {isLoop : false});
-      setLoop(false);
-    } else {  
-      updateState({}, {isLoop : true});
-      setLoop(true);
-    }
-  }
-  
-<Feather style={{ marginLeft:80, marginRight: -100}} name="repeat" size={24} color= {loop ? 'blue' : 'white'} onPress={handleLoop} />
-
-<Text style={styles.audioSubTitle}>Album: {context.currentAudio.album}, Song: {context.currentAudio.title}</Text>
-
-  */
-
   const renderCurrentTime = () => {
     if (!context.soundObj && currentAudio.lastPosition) {
       return convertTime(currentAudio.lastPosition / 1000);
