@@ -189,14 +189,16 @@ export const changeAudio = async (context, select) => {
     // for next
     if (select === 'next') {
       audio = audioFiles[currentAudioIndex + 1];
-      const currentAudioUrl = Platform.OS == 'android' ? audio.urlAndroid : audio.urlIOS;
+      let currentAudioUrl = '';
       if (!isLoaded && !isLastAudio) {
+        currentAudioUrl = Platform.OS == 'android' ? audio.urlAndroid : audio.urlIOS;
         index = currentAudioIndex + 1;
         status = await play(playbackObj, currentAudioUrl);
         playbackObj.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
       }
 
       if (isLoaded && !isLastAudio) {
+        currentAudioUrl = Platform.OS == 'android' ? audio.urlAndroid : audio.urlIOS;
         index = currentAudioIndex + 1;
         status = await playNext(playbackObj, currentAudioUrl);
       }
@@ -204,6 +206,7 @@ export const changeAudio = async (context, select) => {
       if (isLastAudio) {
         index = 0;
         audio = audioFiles[index];
+        currentAudioUrl = Platform.OS == 'android' ? audio.urlAndroid : audio.urlIOS;
         if (isLoaded) {
           status = await playNext(playbackObj, currentAudioUrl);
         } else {
@@ -215,15 +218,17 @@ export const changeAudio = async (context, select) => {
     // for previous
     if (select === 'previous') {
       audio = audioFiles[currentAudioIndex - 1];
-      const currentAudioUrl = Platform.OS == 'android' ? audio.urlAndroid : audio.urlIOS;
+      let currentAudioUrl = '';
 
       if (!isLoaded && !isFirstAudio) {
+        currentAudioUrl = Platform.OS == 'android' ? audio.urlAndroid : audio.urlIOS;
         index = currentAudioIndex - 1;
         status = await play(playbackObj, currentAudioUrl);
         playbackObj.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
       }
 
       if (isLoaded && !isFirstAudio) {
+        currentAudioUrl = Platform.OS == 'android' ? audio.urlAndroid : audio.urlIOS;
         index = currentAudioIndex - 1;
         status = await playNext(playbackObj, currentAudioUrl);
       }
@@ -231,6 +236,7 @@ export const changeAudio = async (context, select) => {
       if (isFirstAudio) {
         index = totalAudioCount - 1;
         audio = audioFiles[index];
+        currentAudioUrl = Platform.OS == 'android' ? audio.urlAndroid : audio.urlIOS;
         if (isLoaded) {
           status = await playNext(playbackObj, currentAudioUrl);
         } else {

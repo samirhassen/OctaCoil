@@ -116,7 +116,7 @@ const Player = () => {
               if (!context.isPlaying) return;
 
               try {
-                await pause(context.playbackObj);
+                // await pause(context.playbackObj);
               } catch (error) {
                 console.log('error inside onSlidingStart callback', error);
               }
