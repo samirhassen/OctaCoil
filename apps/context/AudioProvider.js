@@ -139,6 +139,9 @@ export class AudioProvider extends Component {
       item.isDownloaded = true;
       item.type= 'brain';
       item.album = 'SE Therapies';
+      item.urlAndroid = item.uri;
+      item.urlIOS = item.uri;
+      delete item.uri;
       item.filename = item.filename.split('.').slice(0, -1).join('.');
       return this.media.assets;
     });
