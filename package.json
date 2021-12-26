@@ -14,7 +14,7 @@
     "@react-navigation/bottom-tabs": "^5.11.11",
     "@react-navigation/native": "^5.9.4",
     "@react-navigation/stack": "^5.14.5",
-    "expo": "~42.0.1",
+    "expo": "^1.0.0",
     "expo-av": "~8.7.0",
     "expo-file-system": "^13.0.3",
     "expo-media-library": "^12.1.2",
@@ -27,7 +27,7 @@
     "react-native-reanimated": "~2.2.0",
     "react-native-safe-area-context": "3.2.0",
     "react-native-screens": "~3.4.0",
-    "react-native-web": "~0.13.12",
+    "react-native-web": "^0.17.5",
     "recyclerlistview": "^3.0.5",
     "unimodules-permissions-interface": "^6.1.0"
   },

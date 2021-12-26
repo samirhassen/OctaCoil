@@ -29,6 +29,8 @@ export const convertTime = minutes => {
       return `${minute}:0${sec}`;
     }
 
+    console.log("minute: " + minute);
+
     return `${minute}:${sec}`;
   }
 };
