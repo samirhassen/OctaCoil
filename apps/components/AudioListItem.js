@@ -14,6 +14,10 @@ import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
 import {Audio} from 'expo-av';
 import { AudioContext } from '../context/AudioProvider';
+import RNFetchBlob from 'rn-fetch-blob';
+import Sound from 'react-native-sound';
+  
+const playbackObject = new Audio.Sound();
 
 const getThumbnailText = (filename) => {
   return <Image source={require('../../assets/cg.png')} style={{ width: 35, height: 35, paddingBottom: 20 }} />
@@ -84,19 +88,16 @@ const AudioListItem = ({
   };
   
   const onDownloadPress = async (url, title) => {
-    const callback = downloadProgress => {
-      const progress = downloadProgress.totalBytesWritten / downloadProgress.totalBytesExpectedToWrite;
-    };
-    console.log('downloading', url, title)
-    const downloadResumable = FileSystem.createDownloadResumable(
-      'https://soundbible.com/grab.php?id=2218&type=wav',
-      FileSystem.documentDirectory + title + '.wav',
-      {},
-      callback
-    );
     try {
       setLoader(true);
-      const { uri } = await downloadResumable.downloadAsync();
+      console.log('title', title)
+       const res = await RNFetchBlob.config({
+      fileCache: true,
+      path: RNFetchBlob.fs.dirs.DocumentDir + `/${title}`,
+    })
+      .fetch('GET', url)
+      setLoader(false);
+      const uri = res.path() + '.wav'
       await saveFile(uri).then((rs) => {
         setLoader(false);
         getAudioFiles();
