@@ -87,8 +87,9 @@ const AudioListItem = ({
     const callback = downloadProgress => {
       const progress = downloadProgress.totalBytesWritten / downloadProgress.totalBytesExpectedToWrite;
     };
+    console.log('downloading', url, title)
     const downloadResumable = FileSystem.createDownloadResumable(
-      url,
+      'https://soundbible.com/grab.php?id=2218&type=wav',
       FileSystem.documentDirectory + title + '.wav',
       {},
       callback
@@ -102,6 +103,7 @@ const AudioListItem = ({
         alert('File Download Sucessfully!');
       });
     } catch (e) {
+      console.log('error while downloading', e)
       console.error(e);
     }
   }
