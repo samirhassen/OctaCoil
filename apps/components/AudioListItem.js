@@ -98,11 +98,11 @@ const AudioListItem = ({
       .fetch('GET', url)
       setLoader(false);
       const uri = res.path() + '.wav'
-      await saveFile(uri).then((rs) => {
+      // await saveFile(uri).then((rs) => {
         setLoader(false);
         getAudioFiles();
         alert('File Download Sucessfully!');
-      });
+      // });
     } catch (e) {
       console.log('error while downloading', e)
       console.error(e);
