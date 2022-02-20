@@ -14,6 +14,10 @@ import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
 import {Audio} from 'expo-av';
 import { AudioContext } from '../context/AudioProvider';
+import RNFetchBlob from 'rn-fetch-blob';
+import Sound from 'react-native-sound';
+  
+const playbackObject = new Audio.Sound();
 
 const getThumbnailText = (filename) => {
   return <Image source={require('../../assets/cg.png')} style={{ width: 35, height: 35, paddingBottom: 20 }} />
@@ -84,24 +88,23 @@ const AudioListItem = ({
   };
   
   const onDownloadPress = async (url, title) => {
-    const callback = downloadProgress => {
-      const progress = downloadProgress.totalBytesWritten / downloadProgress.totalBytesExpectedToWrite;
-    };
-    const downloadResumable = FileSystem.createDownloadResumable(
-      url,
-      FileSystem.documentDirectory + title + '.wav',
-      {},
-      callback
-    );
     try {
       setLoader(true);
-      const { uri } = await downloadResumable.downloadAsync();
-      await saveFile(uri).then((rs) => {
+      console.log('title', title)
+       const res = await RNFetchBlob.config({
+      fileCache: true,
+      path: RNFetchBlob.fs.dirs.DocumentDir + `/${title}`,
+    })
+      .fetch('GET', url)
+      setLoader(false);
+      const uri = res.path() + '.wav'
+      // await saveFile(uri).then((rs) => {
         setLoader(false);
         getAudioFiles();
         alert('File Download Sucessfully!');
-      });
+      // });
     } catch (e) {
+      console.log('error while downloading', e)
       console.error(e);
     }
   }
