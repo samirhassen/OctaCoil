@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -66,6 +66,7 @@ const renderPlayPauseIcon = isPlaying => {
 
 //Method to display audio list item
 const AudioListItem = ({
+  item,
   title,
   onAudioPress,
   duration,
@@ -86,6 +87,16 @@ const AudioListItem = ({
       await MediaLibrary.createAlbumAsync('octaCoil', asset, true);
     }
   };
+  const [isDownloaded, setisDownloaded] = useState(false);
+
+  useEffect(() => {
+    checkIfDownloaded()
+  },[])
+
+  const checkIfDownloaded = async () => {
+    const exists = await RNFetchBlob.fs.exists(RNFetchBlob.fs.dirs.MusicDir + `/${title}`);
+    exists && setisDownloaded(exists)
+  }
   
   const onDownloadPress = async (url, title) => {
     try {
@@ -93,11 +104,12 @@ const AudioListItem = ({
       console.log('title', title)
        const res = await RNFetchBlob.config({
       fileCache: true,
-      path: RNFetchBlob.fs.dirs.DocumentDir + `/${title}`,
+      path: RNFetchBlob.fs.dirs.MusicDir + `/${title}`,
     })
       .fetch('GET', url)
       setLoader(false);
       const uri = res.path() + '.wav'
+      console.log('downloaded at', uri)
       // await saveFile(uri).then((rs) => {
         setLoader(false);
         getAudioFiles();
@@ -108,6 +120,7 @@ const AudioListItem = ({
       console.error(e);
     }
   }
+
 
   return (
     <>
@@ -130,16 +143,16 @@ const AudioListItem = ({
                   : getThumbnailText(title)}
               </Text>
             </View>
-            <View style={[isDownlaod ? styles.titleDownloadContainer : styles.titleContainer]} >
+            <View style={[isDownloaded ? styles.titleDownloadContainer : styles.titleContainer]} >
               <Text numberOfLines={1} style={styles.title}>
                 {title}
               </Text>
               
-              <Text numberOfLines={1} style={styles.description}>{isDownlaod ? <FontAwesome name="check-circle" size={20} color="white" /> : null}  Tag: {type}, Album: {album}, Song: {title}</Text>
+              <Text numberOfLines={1} style={styles.description}>{isDownloaded ? <FontAwesome name="check-circle" size={20} color="white" /> : null}  Tag: {type}, Album: {album}, Song: {title}</Text>
               <Text style={styles.timeText}>{convertTime(duration)}</Text>
             </View>
           </View>
-          {!isDownlaod ? <View style={styles.rightContainer}>
+          {!isDownloaded ? <View style={styles.rightContainer}>
             {!loader ? <Feather
               onPress={() => onDownloadPress(url, title)}
               id="downlink"

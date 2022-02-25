@@ -23,7 +23,8 @@ export class AudioProvider extends Component {
     {
       id: 2,
       filename: 'Focus',
-      urlIOS: 'https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Focus.m4a?alt=media&token=3de11cd2-6008-4744-9f31-b0605a575f4e',
+      // urlIOS: 'https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Focus.m4a?alt=media&token=3de11cd2-6008-4744-9f31-b0605a575f4e',
+      urlIOS: '/Users/manavkasare/Library/Developer/CoreSimulator/Devices/F82D20C0-E0EC-4652-B6A6-578315E2D6E9/data/Containers/Data/Application/EFCEE4F2-99C1-41DA-8ECC-5A99B03C5E0F/Music/Focus',
       urlAndroid: 'https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Flac%2FFocus.flac?alt=media&token=c80a9eed-8709-48f3-8392-419cae34e396',
       duration: 30.01,
       type: 'Beta brainwaves for attention and focus'

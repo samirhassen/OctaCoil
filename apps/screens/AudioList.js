@@ -48,6 +48,7 @@ export class AudioList extends Component {
   rowRenderer = (type, item, index, extendedState) => {
     return (
       <AudioListItem
+      item={item}
         title={item.filename}
         type = {item.type}
         album = {item.album}

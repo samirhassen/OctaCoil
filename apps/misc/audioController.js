@@ -1,22 +1,33 @@
 import { storeAudioForNextOpening } from './helper';
 import { Audio } from 'expo-av';
+import Sound from 'react-native-sound';
+
+Sound.setCategory('Playback')
 
 // play audio
 export const play = async (playbackObj, uri, lastPosition) => {
   try {
-    if (!lastPosition)
-      return await playbackObj.loadAsync(
-         {uri: uri} ,
-        { shouldPlay: true, progressUpdateIntervalMillis: 1000 }
-      );
+    if (!lastPosition) {
+      var sound = new Sound(uri, '', (error) => {
+        if (error) {
+          console.log('failed to load the sound', error);
+          return;
+        }
+        sound.play(); 
+      }); 
+      return
+    }
 
     // but if there is lastPosition then we will play audio from the lastPosition
-    await playbackObj.loadAsync(
-       uri ,
-      { progressUpdateIntervalMillis: 1000 }
-    );
-
-    return await playbackObj.playFromPositionAsync(lastPosition);
+    var sound = new Sound(uri, '', (error) => {
+      if (error) {
+        console.log('failed to load the sound', error);se
+        return;
+      }
+      sound.setCurrentTime(lastPosition)
+      sound.play(); 
+      return
+    }); 
   } catch (error) {
     console.log('error inside play helper method', error.message);
   }
