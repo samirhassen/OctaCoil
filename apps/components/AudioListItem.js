@@ -66,15 +66,7 @@ const renderPlayPauseIcon = (isPlaying) => {
 };
 
 //Method to display audio list item
-const AudioListItem = ({
-  item,
-  title,
-  isSoundPlaying,
-  setIsSoundPlaying,
-  duration,
-  url,
-  activeListItem,
-}) => {
+const AudioListItem = ({ item, title, duration, url, activeListItem }) => {
   const [loader, setLoader] = useState(false);
   const { getAudioFiles } = useContext(AudioContext);
   const context = useContext(AudioContext);
@@ -82,7 +74,6 @@ const AudioListItem = ({
     context;
 
   const [isDownloaded, setisDownloaded] = useState(false);
-  // const sound = useRef(null);
 
   useEffect(() => {
     checkIfDownloaded();
@@ -114,25 +105,22 @@ const AudioListItem = ({
   };
 
   const playSoundWithUri = (uri, index) => {
-    setIsSoundPlaying(true);
-    updateState(context, {
-      currentAudioIndex: index,
-      isAudioPlaying: true,
-    });
     sound.current = new Sound(uri, "", (error) => {
       if (error) {
         console.log("failed to load the sound", error);
         return;
       }
       sound.current.play();
+      updateState(context, {
+        currentAudioIndex: index,
+        currentAudio: { ...item, realDuration: sound.current.getDuration() },
+        isAudioPlaying: true,
+      });
     });
   };
 
   const stopPlayingSound = async () => {
-    console.log("stopping sound", sound.current);
     await sound.current.pause();
-
-    setIsSoundPlaying(false);
     await updateState(context, {
       isAudioPlaying: false,
     });
@@ -144,7 +132,6 @@ const AudioListItem = ({
       ? url
       : RNFetchBlob.fs.dirs.MusicDir + `/${title}`;
     const index = audioFiles.findIndex(({ id }) => id === item.id);
-    console.log("handlePlayAudio isAudioPlaying:", isAudioPlaying);
     if (currentAudioIndex === null) {
       return playSoundWithUri(uri, index);
     }
@@ -180,7 +167,7 @@ const AudioListItem = ({
             >
               <Text style={styles.thumbnailText}>
                 {activeListItem
-                  ? renderPlayPauseIcon(isSoundPlaying)
+                  ? renderPlayPauseIcon(isAudioPlaying)
                   : getThumbnailText(title)}
               </Text>
             </View>

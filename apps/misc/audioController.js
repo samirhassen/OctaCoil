@@ -86,8 +86,6 @@ export const selectAudio = async (
     const currentAudioUrl =
       Platform.OS == "android" ? audio.urlAndroid : audio.urlIOS;
 
-    console.log("soundObj", soundObj);
-
     // playing audio for the first time.
     if (soundObj === null) {
       const status = await play(
