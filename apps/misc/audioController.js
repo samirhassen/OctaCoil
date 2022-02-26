@@ -1,55 +1,59 @@
-import { storeAudioForNextOpening } from './helper';
-import { Audio } from 'expo-av';
-import Sound from 'react-native-sound';
+import { storeAudioForNextOpening } from "./helper";
+import { Audio } from "expo-av";
+import Sound from "react-native-sound";
 
-Sound.setCategory('Playback')
+Sound.setCategory("Playback");
 
 // play audio
-export const play = async (playbackObj, uri, lastPosition) => {
+export const play = async (playbackObj, uri, lastPosition, newPlaybackObj) => {
+  console.log("playing from", uri);
   try {
     if (!lastPosition) {
-      var sound = new Sound(uri, '', (error) => {
+      console.log("playbackObj", newPlaybackObj);
+      var sound = new Sound(uri, "", (error) => {
         if (error) {
-          console.log('failed to load the sound', error);
+          console.log("failed to load the sound", error);
           return;
         }
-        sound.play(); 
-      }); 
-      return
+        sound.play();
+      });
+      return;
     }
 
     // but if there is lastPosition then we will play audio from the lastPosition
-    var sound = new Sound(uri, '', (error) => {
+    var sound = new Sound(uri, "", (error) => {
       if (error) {
-        console.log('failed to load the sound', error);se
+        console.log("failed to load the sound", error);
+        se;
         return;
       }
-      sound.setCurrentTime(lastPosition)
-      sound.play(); 
-      return
-    }); 
+      sound.setCurrentTime(lastPosition);
+      sound.play();
+      return;
+    });
   } catch (error) {
-    console.log('error inside play helper method', error.message);
+    console.log("error inside play helper method", error.message);
   }
 };
 
 // pause audio
-export const pause = async playbackObj => {
+export const pause = async (playbackObj) => {
   try {
-    return await playbackObj.setStatusAsync({
-      shouldPlay: false,
-    });
+    // return await playbackObj.setStatusAsync({
+    //   shouldPlay: false,
+    // });
+    return playbackObj.pause();
   } catch (error) {
-    console.log('error inside pause helper method', error.message);
+    console.log("error inside pause helper method", error.message);
   }
 };
 
 // resume audio
-export const resume = async playbackObj => {
+export const resume = async (playbackObj) => {
   try {
     return await playbackObj.playAsync();
   } catch (error) {
-    console.log('error inside resume helper method', error.message);
+    console.log("error inside resume helper method", error.message);
   }
 };
 
@@ -59,11 +63,16 @@ export const playNext = async (playbackObj, uri) => {
     await playbackObj.unloadAsync();
     return await play(playbackObj, uri);
   } catch (error) {
-    console.log('error inside playNext helper method', error.message);
+    console.log("error inside playNext helper method", error.message);
   }
 };
 
-export const selectAudio = async (audio, context, playListInfo = {}) => {
+export const selectAudio = async (
+  audio,
+  context,
+  playListInfo = {},
+  newPlaybackObj
+) => {
   const {
     soundObj,
     playbackObj,
@@ -74,15 +83,23 @@ export const selectAudio = async (audio, context, playListInfo = {}) => {
     onPlaybackStatusUpdate,
   } = context;
   try {
-    const currentAudioUrl = Platform.OS == 'android' ? audio.urlAndroid : audio.urlIOS;
+    const currentAudioUrl =
+      Platform.OS == "android" ? audio.urlAndroid : audio.urlIOS;
+
+    console.log("soundObj", soundObj);
 
     // playing audio for the first time.
     if (soundObj === null) {
-      const status = await play(playbackObj, Platform.OS == 'android' ? audio.urlAndroid : audio.urlIOS, audio.lastPosition);
+      const status = await play(
+        playbackObj,
+        Platform.OS == "android" ? audio.urlAndroid : audio.urlIOS,
+        audio.lastPosition,
+        newPlaybackObj
+      );
       const index = audioFiles.findIndex(({ id }) => id === audio.id);
       updateState(context, {
         currentAudio: audio,
-        soundObj: status,
+        soundObj: newPlaybackObj,
         isPlaying: true,
         currentAudioIndex: index,
         isPlayListRunning: false,
@@ -99,10 +116,11 @@ export const selectAudio = async (audio, context, playListInfo = {}) => {
       soundObj.isPlaying &&
       currentAudio.id === audio.id
     ) {
-      console.log('--------pause-----------');
-      const status = await pause(playbackObj);
+      console.log("--------pause-----------");
+      newPlaybackObj.pause();
+      const status = await pause(newPlaybackObj);
       return updateState(context, {
-        soundObj: status,
+        soundObj: newPlaybackObj,
         isPlaying: false,
         playbackPosition: status.positionMillis,
       });
@@ -114,15 +132,14 @@ export const selectAudio = async (audio, context, playListInfo = {}) => {
       !soundObj.isPlaying &&
       currentAudio.id === audio.id
     ) {
-      
-      console.log('--------resume-------');
+      console.log("--------resume-------");
       const status = await resume(playbackObj);
       return updateState(context, { soundObj: status, isPlaying: true });
     }
 
     // select another audio
     if (soundObj.isLoaded && currentAudio.id !== audio.id) {
-      console.log('----------next-------------');
+      console.log("----------next-------------");
       const status = await playNext(playbackObj, currentAudioUrl);
       const index = audioFiles.findIndex(({ id }) => id === audio.id);
       updateState(context, {
@@ -137,12 +154,13 @@ export const selectAudio = async (audio, context, playListInfo = {}) => {
       return storeAudioForNextOpening(audio, index);
     }
   } catch (error) {
-    console.log('error inside select audio method.', error.message);
+    console.log("error inside select audio method.", error.message);
   }
 };
 
 const selectAudioFromPlayList = async (context, select) => {
-  const currentAudioUrl = Platform.OS == 'android' ? audio.urlAndroid : audio.urlIOS;
+  const currentAudioUrl =
+    Platform.OS == "android" ? audio.urlAndroid : audio.urlIOS;
 
   const { activePlayList, currentAudio, audioFiles, playbackObj, updateState } =
     context;
@@ -154,12 +172,12 @@ const selectAudioFromPlayList = async (context, select) => {
     ({ id }) => id === currentAudio.id
   );
 
-  if (select === 'next') {
+  if (select === "next") {
     nextIndex = indexOnPlayList + 1;
     defaultIndex = 0;
   }
 
-  if (select === 'previous') {
+  if (select === "previous") {
     nextIndex = indexOnPlayList - 1;
     defaultIndex = activePlayList.audios.length - 1;
   }
@@ -198,18 +216,20 @@ export const changeAudio = async (context, select) => {
     let status;
 
     // for next
-    if (select === 'next') {
+    if (select === "next") {
       audio = audioFiles[currentAudioIndex + 1];
-      let currentAudioUrl = '';
+      let currentAudioUrl = "";
       if (!isLoaded && !isLastAudio) {
-        currentAudioUrl = Platform.OS == 'android' ? audio.urlAndroid : audio.urlIOS;
+        currentAudioUrl =
+          Platform.OS == "android" ? audio.urlAndroid : audio.urlIOS;
         index = currentAudioIndex + 1;
         status = await play(playbackObj, currentAudioUrl);
         playbackObj.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
       }
 
       if (isLoaded && !isLastAudio) {
-        currentAudioUrl = Platform.OS == 'android' ? audio.urlAndroid : audio.urlIOS;
+        currentAudioUrl =
+          Platform.OS == "android" ? audio.urlAndroid : audio.urlIOS;
         index = currentAudioIndex + 1;
         status = await playNext(playbackObj, currentAudioUrl);
       }
@@ -217,7 +237,8 @@ export const changeAudio = async (context, select) => {
       if (isLastAudio) {
         index = 0;
         audio = audioFiles[index];
-        currentAudioUrl = Platform.OS == 'android' ? audio.urlAndroid : audio.urlIOS;
+        currentAudioUrl =
+          Platform.OS == "android" ? audio.urlAndroid : audio.urlIOS;
         if (isLoaded) {
           status = await playNext(playbackObj, currentAudioUrl);
         } else {
@@ -227,19 +248,21 @@ export const changeAudio = async (context, select) => {
     }
 
     // for previous
-    if (select === 'previous') {
+    if (select === "previous") {
       audio = audioFiles[currentAudioIndex - 1];
-      let currentAudioUrl = '';
+      let currentAudioUrl = "";
 
       if (!isLoaded && !isFirstAudio) {
-        currentAudioUrl = Platform.OS == 'android' ? audio.urlAndroid : audio.urlIOS;
+        currentAudioUrl =
+          Platform.OS == "android" ? audio.urlAndroid : audio.urlIOS;
         index = currentAudioIndex - 1;
         status = await play(playbackObj, currentAudioUrl);
         playbackObj.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
       }
 
       if (isLoaded && !isFirstAudio) {
-        currentAudioUrl = Platform.OS == 'android' ? audio.urlAndroid : audio.urlIOS;
+        currentAudioUrl =
+          Platform.OS == "android" ? audio.urlAndroid : audio.urlIOS;
         index = currentAudioIndex - 1;
         status = await playNext(playbackObj, currentAudioUrl);
       }
@@ -247,7 +270,8 @@ export const changeAudio = async (context, select) => {
       if (isFirstAudio) {
         index = totalAudioCount - 1;
         audio = audioFiles[index];
-        currentAudioUrl = Platform.OS == 'android' ? audio.urlAndroid : audio.urlIOS;
+        currentAudioUrl =
+          Platform.OS == "android" ? audio.urlAndroid : audio.urlIOS;
         if (isLoaded) {
           status = await playNext(playbackObj, currentAudioUrl);
         } else {
@@ -266,7 +290,7 @@ export const changeAudio = async (context, select) => {
     });
     storeAudioForNextOpening(audio, index);
   } catch (error) {
-    console.log('error inside cahnge audio method.', error.message);
+    console.log("error inside cahnge audio method.", error.message);
   }
 };
 
@@ -285,6 +309,6 @@ export const moveAudio = async (context, value) => {
 
     await resume(playbackObj);
   } catch (error) {
-    console.log('error inside onSlidingComplete callback', error);
+    console.log("error inside onSlidingComplete callback", error);
   }
 };

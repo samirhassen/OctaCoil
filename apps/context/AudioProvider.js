@@ -1,11 +1,11 @@
-import React, { Component, createContext } from 'react';
-import { DataProvider } from 'recyclerlistview';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Audio } from 'expo-av';
-import { storeAudioForNextOpening } from '../misc/helper';
-import { playNext } from '../misc/audioController';
-import * as MediaLibrary from 'expo-media-library';
-import { Alert } from 'react-native';
+import React, { Component, createContext, createRef } from "react";
+import { DataProvider } from "recyclerlistview";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Audio } from "expo-av";
+import { storeAudioForNextOpening } from "../misc/helper";
+import { playNext } from "../misc/audioController";
+import * as MediaLibrary from "expo-media-library";
+import { Alert } from "react-native";
 
 export const AudioContext = createContext();
 
@@ -13,85 +13,103 @@ export class AudioProvider extends Component {
   audioItems = [
     {
       id: 1,
-      filename: 'Energize',
+      filename: "Energize",
       isRequire: true,
-      urlIOS: 'https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Energize.m4a?alt=media&token=ac26cc9d-338d-41db-9609-18268a398e76',
-      urlAndroid: 'https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Flac%2FEnergize.flac?alt=media&token=0712342c-54d5-4d65-96a3-9366b53a895d',
+      urlIOS:
+        "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Energize.m4a?alt=media&token=ac26cc9d-338d-41db-9609-18268a398e76",
+      urlAndroid:
+        "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Flac%2FEnergize.flac?alt=media&token=0712342c-54d5-4d65-96a3-9366b53a895d",
       duration: 30.01,
-      type: 'Gamma brainwaves for alertness and mental processing'
+      type: "Gamma brainwaves for alertness and mental processing",
     },
     {
       id: 2,
-      filename: 'Focus',
+      filename: "Focus",
       // urlIOS: 'https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Focus.m4a?alt=media&token=3de11cd2-6008-4744-9f31-b0605a575f4e',
-      urlIOS: '/Users/manavkasare/Library/Developer/CoreSimulator/Devices/F82D20C0-E0EC-4652-B6A6-578315E2D6E9/data/Containers/Data/Application/EFCEE4F2-99C1-41DA-8ECC-5A99B03C5E0F/Music/Focus',
-      urlAndroid: 'https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Flac%2FFocus.flac?alt=media&token=c80a9eed-8709-48f3-8392-419cae34e396',
+      urlIOS:
+        "/Users/manavkasare/Library/Developer/CoreSimulator/Devices/F82D20C0-E0EC-4652-B6A6-578315E2D6E9/data/Containers/Data/Application/EFCEE4F2-99C1-41DA-8ECC-5A99B03C5E0F/Music/Focus",
+      urlAndroid:
+        "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Flac%2FFocus.flac?alt=media&token=c80a9eed-8709-48f3-8392-419cae34e396",
       duration: 30.01,
-      type: 'Beta brainwaves for attention and focus'
+      type: "Beta brainwaves for attention and focus",
     },
     {
       id: 3,
-      filename: 'Relax',
+      filename: "Relax",
       isRequire: true,
-      urlIOS: 'https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Relax.m4a?alt=media&token=194185f7-3f02-49e4-8760-a33642260b75',
-      urlAndroid: 'https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Flac%2FRelax.flac?alt=media&token=eb71c46f-1f42-4780-835f-10e20d3605ea',
-      duration: 20.00,
-      type: 'Theta brainwaves for meditation and creativity'
-    },    
+      urlIOS:
+        "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Relax.m4a?alt=media&token=194185f7-3f02-49e4-8760-a33642260b75",
+      urlAndroid:
+        "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Flac%2FRelax.flac?alt=media&token=eb71c46f-1f42-4780-835f-10e20d3605ea",
+      duration: 20.0,
+      type: "Theta brainwaves for meditation and creativity",
+    },
     {
       id: 4,
-      filename: 'Sleep',
+      filename: "Sleep",
       isRequire: true,
-      urlIOS: 'https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Sleep.m4a?alt=media&token=16cd5ee4-48b2-4776-976a-6714ad6e36f8',
-      urlAndroid: 'https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Flac%2FSleep.flac?alt=media&token=92517e44-c911-4f61-b859-41ee3b9a63d0',
-      duration: 32.00,
-      type: 'Delta brainwaves for deep sleep and relaxation',
-    },    
+      urlIOS:
+        "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Sleep.m4a?alt=media&token=16cd5ee4-48b2-4776-976a-6714ad6e36f8",
+      urlAndroid:
+        "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Flac%2FSleep.flac?alt=media&token=92517e44-c911-4f61-b859-41ee3b9a63d0",
+      duration: 32.0,
+      type: "Delta brainwaves for deep sleep and relaxation",
+    },
     {
       id: 5,
-      filename: 'Bones',
+      filename: "Bones",
       isRequire: true,
-      urlIOS: 'https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Bones.m4a?alt=media&token=fae5e63c-e89e-4041-b874-8df67f62931e',
-      urlAndroid: 'https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Flac%2FBones.flac?alt=media&token=448b7d2e-d0a7-4d9c-a5ba-17d7da8ef96f',
-      duration: 0.60,
-      type: 'Stimulate bone growth for fracture repair and increased density'
-    },    
+      urlIOS:
+        "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Bones.m4a?alt=media&token=fae5e63c-e89e-4041-b874-8df67f62931e",
+      urlAndroid:
+        "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Flac%2FBones.flac?alt=media&token=448b7d2e-d0a7-4d9c-a5ba-17d7da8ef96f",
+      duration: 0.6,
+      type: "Stimulate bone growth for fracture repair and increased density",
+    },
     {
       id: 6,
-      filename: 'Inflammation',
+      filename: "Inflammation",
       isRequire: true,
-      urlIOS: 'https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Inflammation.m4a?alt=media&token=ca76699d-20e0-4f8c-8486-fc34a43cd56d',
-      urlAndroid: 'https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Flac%2FInflammation.flac?alt=media&token=9f39a5c8-d7d9-445a-8c3d-61e40650428b',
-      duration: 0.60,
-      type: 'Reduce inflammation for pain management and tissue healing'
-    },    
+      urlIOS:
+        "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Inflammation.m4a?alt=media&token=ca76699d-20e0-4f8c-8486-fc34a43cd56d",
+      urlAndroid:
+        "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Flac%2FInflammation.flac?alt=media&token=9f39a5c8-d7d9-445a-8c3d-61e40650428b",
+      duration: 0.6,
+      type: "Reduce inflammation for pain management and tissue healing",
+    },
     {
       id: 7,
-      filename: 'Performance',
+      filename: "Performance",
       isRequire: true,
-      urlIOS: 'https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Performance.m4a?alt=media&token=2c8ae0ee-3a65-485b-a185-61f4be92d482',
-      urlAndroid: 'https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Flac%2FPerformance.flac?alt=media&token=b67f091a-9e35-44e5-bf98-51a04c2befa5',
-      duration: 0.60,
-      type: 'Nitric Oxide production for performance and health'
-    },    
+      urlIOS:
+        "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Performance.m4a?alt=media&token=2c8ae0ee-3a65-485b-a185-61f4be92d482",
+      urlAndroid:
+        "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Flac%2FPerformance.flac?alt=media&token=b67f091a-9e35-44e5-bf98-51a04c2befa5",
+      duration: 0.6,
+      type: "Nitric Oxide production for performance and health",
+    },
     {
       id: 8,
-      filename: 'Circulation',
+      filename: "Circulation",
       isRequire: true,
-      urlIOS: 'https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Circulation.m4a?alt=media&token=5c7f6bb7-8c30-404a-9d22-e88db913dcf4',
-      urlAndroid: 'https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Flac%2FCirculation.flac?alt=media&token=61eac8c1-68c8-4fb3-9bc5-acb84de9c3f0',
-      duration: 0.60,
-      type: 'Heart and blood vessel support for circulation'
+      urlIOS:
+        "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Circulation.m4a?alt=media&token=5c7f6bb7-8c30-404a-9d22-e88db913dcf4",
+      urlAndroid:
+        "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Flac%2FCirculation.flac?alt=media&token=61eac8c1-68c8-4fb3-9bc5-acb84de9c3f0",
+      duration: 0.6,
+      type: "Heart and blood vessel support for circulation",
     },
     {
       id: 9,
-      filename: 'Recovery',
+      filename: "Recovery",
       isRequire: true,
-      urlIOS: 'https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Recovery.m4a?alt=media&token=b19953a5-0302-4471-80f8-4b65b0de0a97',
-      urlAndroid: 'https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Flac%2FRecovery.flac?alt=media&token=82f27073-e6f5-4704-b483-421d0cf26c1c',
-      duration: 0.60,
-      type: 'Boost anabolic cellular activity for tissue growth and recovery'
-    }
+      urlIOS:
+        "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Recovery.m4a?alt=media&token=b19953a5-0302-4471-80f8-4b65b0de0a97",
+      urlAndroid:
+        "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Flac%2FRecovery.flac?alt=media&token=82f27073-e6f5-4704-b483-421d0cf26c1c",
+      duration: 0.6,
+      type: "Boost anabolic cellular activity for tissue growth and recovery",
+    },
   ];
 
   constructor(props) {
@@ -101,21 +119,24 @@ export class AudioProvider extends Component {
       playList: [],
       addToPlayList: null,
       dataProvider: new DataProvider((r1, r2) => r1.url !== r2.url),
-      filteredAudio : new DataProvider((r1, r2) => r1 !== r2),
+      filteredAudio: new DataProvider((r1, r2) => r1 !== r2),
       playbackObj: null,
       soundObj: null,
       currentAudio: {},
       isPlaying: false,
       isPlayListRunning: false,
       activePlayList: [],
-      currentAudioIndex: 0,
+      currentAudioIndex: null,
       playbackPosition: null,
       playbackDuration: null,
       audioLists: this.audioItems,
-      isLoop : true,
-      isLoggedIn: false
+      isLoop: true,
+      isLoggedIn: false,
+      isAudioPlaying: false,
     };
     this.totalAudioCount = 0;
+
+    this.sound = createRef(null);
   }
   media;
   album;
@@ -123,41 +144,52 @@ export class AudioProvider extends Component {
   filterAudioData;
 
   getAudioFiles = async () => {
-    let {dataProvider, audioFiles, audioLists, filteredAudio } = this.state;
+    let { dataProvider, audioFiles, audioLists, filteredAudio } = this.state;
     audioFiles = [];
     this.album = await MediaLibrary.getAlbumAsync("octaCoil");
     this.media = await MediaLibrary.getAssetsAsync({
-      mediaType: 'audio',
-      album:this.album
+      mediaType: "audio",
+      album: this.album,
     });
     this.media = await MediaLibrary.getAssetsAsync({
-      mediaType: 'audio',
-      album:this.album,
+      mediaType: "audio",
+      album: this.album,
       first: this.media.totalCount,
     });
 
     this.media.assets.map((item) => {
       item.isDownloaded = true;
-      item.type= 'brain';
-      item.album = 'SE Therapies';
+      item.type = "brain";
+      item.album = "SE Therapies";
       item.urlAndroid = item.uri;
       item.urlIOS = item.uri;
       delete item.uri;
-      item.filename = item.filename.split('.').slice(0, -1).join('.');
+      item.filename = item.filename.split(".").slice(0, -1).join(".");
       return this.media.assets;
     });
 
-    for( let i=this.media.assets.length - 1; i>=0; i--){
-      for( let j=0; j<audioLists.length; j++){
-          if(this.media.assets[i] && (this.media.assets[i].filename === audioLists[j].filename)){
-              audioLists.splice(j,1);
-          }
+    for (let i = this.media.assets.length - 1; i >= 0; i--) {
+      for (let j = 0; j < audioLists.length; j++) {
+        if (
+          this.media.assets[i] &&
+          this.media.assets[i].filename === audioLists[j].filename
+        ) {
+          audioLists.splice(j, 1);
+        }
       }
     }
 
-    this.dataProviderData = dataProvider.cloneWithRows([...audioFiles, ...audioLists, ...this.media.assets]);
-    this.filterAudioData = filteredAudio.cloneWithRows([...audioFiles, ...audioLists, ...this.media.assets]);
-    this.totalAudioCount = audioLists.length+this.media.assets.length;
+    this.dataProviderData = dataProvider.cloneWithRows([
+      ...audioFiles,
+      ...audioLists,
+      ...this.media.assets,
+    ]);
+    this.filterAudioData = filteredAudio.cloneWithRows([
+      ...audioFiles,
+      ...audioLists,
+      ...this.media.assets,
+    ]);
+    this.totalAudioCount = audioLists.length + this.media.assets.length;
     await Audio.setAudioModeAsync({
       allowsRecordingIOS: false,
       staysActiveInBackground: true,
@@ -165,18 +197,17 @@ export class AudioProvider extends Component {
       playsInSilentModeIOS: true,
       shouldDuckAndroid: true,
       interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
-      playThroughEarpieceAndroid: false
+      playThroughEarpieceAndroid: false,
     });
     this.setState({
       dataProvider: this.dataProviderData,
-      filteredAudio:  this.filterAudioData,
+      filteredAudio: this.filterAudioData,
       audioFiles: [...audioFiles, ...audioLists, ...this.media.assets],
     });
   };
 
-
   loadPreviousAudio = async () => {
-    let previousAudio = await AsyncStorage.getItem('previousAudio');
+    let previousAudio = await AsyncStorage.getItem("previousAudio");
     let currentAudio;
     let currentAudioIndex;
 
@@ -192,8 +223,7 @@ export class AudioProvider extends Component {
     this.setState({ ...this.state, currentAudio, currentAudioIndex });
   };
 
-
-  onPlaybackStatusUpdate = async playbackStatus => {
+  onPlaybackStatusUpdate = async (playbackStatus) => {
     if (playbackStatus.isLoaded && playbackStatus.isPlaying) {
       this.updateState(this, {
         playbackPosition: playbackStatus.positionMillis,
@@ -208,18 +238,18 @@ export class AudioProvider extends Component {
         playbackStatus.positionMillis
       );
     }
-    let durationSeconds = playbackStatus.durationMillis/1000;
-    let positionSeconds = playbackStatus.positionMillis/1000;
+    let durationSeconds = playbackStatus.durationMillis / 1000;
+    let positionSeconds = playbackStatus.positionMillis / 1000;
 
     if (playbackStatus.didJustFinish) {
       if (this.state.isPlayListRunning) {
         let audio;
-        
+
         const indexOnPlayList = this.state.activePlayList.audios.findIndex(
           ({ id }) => id === this.state.currentAudio.id
         );
 
-        const nextIndex =  indexOnPlayList;
+        const nextIndex = indexOnPlayList;
         audio = this.state.activePlayList.audios[nextIndex];
 
         if (!audio) audio = this.state.activePlayList.audios[0];
@@ -228,7 +258,10 @@ export class AudioProvider extends Component {
           ({ id }) => id === audio.id
         );
 
-        const status = await playNext(this.state.playbackObj, Platform.OS == 'android' ? audio.urlAndroid : audio.urlIOS);
+        const status = await playNext(
+          this.state.playbackObj,
+          Platform.OS == "android" ? audio.urlAndroid : audio.urlIOS
+        );
         return this.updateState(this, {
           soundObj: status,
           isPlaying: true,
@@ -237,7 +270,7 @@ export class AudioProvider extends Component {
         });
       }
 
-      const nextAudioIndex =  this.state.currentAudioIndex;
+      const nextAudioIndex = this.state.currentAudioIndex;
       // there is no next audio to play or the current audio is the last
       if (nextAudioIndex >= this.totalAudioCount) {
         this.state.playbackObj.unloadAsync();
@@ -253,7 +286,10 @@ export class AudioProvider extends Component {
       }
       // otherwise we want to select the next audio
       const audio = this.state.audioFiles[nextAudioIndex];
-      const status = await playNext(this.state.playbackObj, Platform.OS == 'android' ? audio.urlAndroid : audio.urlIOS);
+      const status = await playNext(
+        this.state.playbackObj,
+        Platform.OS == "android" ? audio.urlAndroid : audio.urlIOS
+      );
       this.updateState(this, {
         soundObj: status,
         currentAudio: audio,
@@ -269,7 +305,7 @@ export class AudioProvider extends Component {
     if (this.state.playbackObj === null) {
       this.setState({ ...this.state, playbackObj: new Audio.Sound() });
     }
-  }
+  };
 
   async componentDidMount() {
     const status = await MediaLibrary.requestPermissionsAsync();
@@ -278,15 +314,14 @@ export class AudioProvider extends Component {
     } else {
       Alert("Media permission not granted");
     }
-    
+
     setTimeout(() => {
       this.playbackObjMethod();
     }, 0);
   }
 
   updateState = (prevState, newState = {}) => {
-    this.setState({ ...prevState, ...newState },()=>{
-    });
+    this.setState({ ...prevState, ...newState }, () => {});
   };
 
   render() {
@@ -306,6 +341,7 @@ export class AudioProvider extends Component {
       playbackDuration,
       isPlayListRunning,
       activePlayList,
+      isAudioPlaying,
     } = this.state;
 
     return (
@@ -327,8 +363,10 @@ export class AudioProvider extends Component {
           playbackDuration,
           isPlayListRunning,
           activePlayList,
+          isAudioPlaying,
+          sound: this.sound,
           updateState: this.updateState,
-          getAudioFiles:this.getAudioFiles,
+          getAudioFiles: this.getAudioFiles,
           loadPreviousAudio: this.loadPreviousAudio,
           onPlaybackStatusUpdate: this.onPlaybackStatusUpdate,
         }}

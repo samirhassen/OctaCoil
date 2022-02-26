@@ -1,14 +1,19 @@
-import React, { Component } from 'react';
-import { Text, View, StyleSheet, Dimensions, TouchableOpacity, ImageBackground } from 'react-native';
-import { AudioContext } from '../context/AudioProvider';
-import { RecyclerListView, LayoutProvider } from 'recyclerlistview';
-import AudioListItem from '../components/AudioListItem';
-import Screen from '../components/Screen';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import OptionModal from '../components/OptionModal';
+import React, { Component, useContext, useEffect, useState } from "react";
 import {
-  selectAudio,
-} from '../misc/audioController';
+  Text,
+  View,
+  StyleSheet,
+  Dimensions,
+  TouchableOpacity,
+  ImageBackground,
+} from "react-native";
+import { AudioContext } from "../context/AudioProvider";
+import { RecyclerListView, LayoutProvider } from "recyclerlistview";
+import AudioListItem from "../components/AudioListItem";
+import Screen from "../components/Screen";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import OptionModal from "../components/OptionModal";
+import { selectAudio } from "../misc/audioController";
 
 export class AudioList extends Component {
   static contextType = AudioContext;
@@ -22,11 +27,11 @@ export class AudioList extends Component {
   }
 
   layoutProvider = new LayoutProvider(
-    i => 'audio',
+    (i) => "audio",
     (type, dim) => {
       switch (type) {
-        case 'audio':
-          dim.width = Dimensions.get('window').width;
+        case "audio":
+          dim.width = Dimensions.get("window").width;
           dim.height = 70;
           break;
         default:
@@ -36,8 +41,7 @@ export class AudioList extends Component {
     }
   );
 
-
-  handleAudioPress = async audio => {
+  handleAudioPress = async (audio) => {
     await selectAudio(audio, this.context);
   };
 
@@ -47,16 +51,11 @@ export class AudioList extends Component {
 
   rowRenderer = (type, item, index, extendedState) => {
     return (
-      <AudioListItem
-      item={item}
-        title={item.filename}
-        type = {item.type}
-        album = {item.album}
-        url = {Platform.OS == 'android' ? item.urlAndroid : item.urlIOS}
-        isDownlaod = {item?.isDownloaded}
-        isPlaying={extendedState.isPlaying}
-        duration={item.duration}
-        activeListItem={this.context.currentAudioIndex === index}
+      <Functional
+        type={type}
+        item={item}
+        index={index}
+        extendedState={extendedState}
         onAudioPress={() => this.handleAudioPress(item)}
         onOptionPress={() => {
           this.currentItem = item;
@@ -70,17 +69,22 @@ export class AudioList extends Component {
     this.context.updateState(this.context, {
       addToPlayList: this.currentItem,
     });
-    this.props.navigation.navigate('PlayList');
+    this.props.navigation.navigate("PlayList");
   };
 
   onPressAudioType = (dataProvider, type) => {
-    if(dataProvider._data.length > 0) {
-        var filteredSong = dataProvider._data.filter((song) => song.type === type);
-        const tempData1 = filteredSong.length == 0 ? dataProvider : dataProvider.cloneWithRows([...filteredSong])
-        this.context.updateState({}, {filteredAudio : tempData1});
+    if (dataProvider._data.length > 0) {
+      var filteredSong = dataProvider._data.filter(
+        (song) => song.type === type
+      );
+      const tempData1 =
+        filteredSong.length == 0
+          ? dataProvider
+          : dataProvider.cloneWithRows([...filteredSong]);
+      this.context.updateState({}, { filteredAudio: tempData1 });
     }
-  }
-/*
+  };
+  /*
               <View style={styles.category}>
               <TouchableOpacity style={styles.btnstyle} onPress = {() => this.onPressAudioType(dataProvider, 'all')}>
                   <Text style={styles.btnText}>All</Text>
@@ -100,7 +104,6 @@ export class AudioList extends Component {
               </View>
 */
   render() {
-    
     return (
       <AudioContext.Consumer>
         {({ dataProvider, isPlaying, filteredAudio }) => {
@@ -117,7 +120,7 @@ export class AudioList extends Component {
               <OptionModal
                 options={[
                   {
-                    title: 'Add to playlist',
+                    title: "Add to playlist",
                     onPress: this.navigateToPlaylist,
                   },
                 ]}
@@ -135,14 +138,44 @@ export class AudioList extends Component {
   }
 }
 
+const Functional = ({
+  type,
+  item,
+  index,
+  extendedState,
+  onAudioPress,
+  onOptionPress,
+}) => {
+  const context = useContext(AudioContext);
+  const [isSoundPlaying, setIsSoundPlaying] = useState(false);
+
+  return (
+    <AudioListItem
+      isSoundPlaying={isSoundPlaying}
+      setIsSoundPlaying={setIsSoundPlaying}
+      item={item}
+      title={item.filename}
+      type={item.type}
+      album={item.album}
+      url={Platform.OS == "android" ? item.urlAndroid : item.urlIOS}
+      isDownlaod={item?.isDownloaded}
+      isPlaying={extendedState.isPlaying}
+      duration={item.duration}
+      activeListItem={context.currentAudioIndex === index}
+      onAudioPress={onAudioPress}
+      onOptionPress={onOptionPress}
+    />
+  );
+};
+
 const styles = StyleSheet.create({
   marginFromTop: {
-    marginTop: 50
+    marginTop: 50,
   },
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   category: {
     height: 90,
@@ -152,23 +185,23 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
   },
   btnstyle: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingHorizontal: 12,
     paddingBottom: 2,
     marginLeft: 5,
     borderRadius: 4,
     elevation: 3,
     opacity: 0.7,
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
   iconStyle: {
     marginLeft: 20,
-    marginTop: 10 
+    marginTop: 10,
   },
   btnText: {
     fontSize: 20,
-  }
+  },
 });
 
 export default AudioList;
