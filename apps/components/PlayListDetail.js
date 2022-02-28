@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from "react";
 import {
   View,
   StyleSheet,
@@ -6,20 +6,21 @@ import {
   FlatList,
   Text,
   Dimensions,
-} from 'react-native';
-import { selectAudio } from '../misc/audioController';
-import color from '../misc/color';
-import AudioListItem from './AudioListItem';
+} from "react-native";
+import { selectAudio } from "../misc/audioController";
+import color from "../misc/color";
+import AudioListItem from "./AudioListItem";
 const PlayListDetail = ({ visible, playList, onClose }) => {
-  
   const playAudio = (audio) => {
-    selectAudio(audio, )
-  }
-  
+    selectAudio(audio);
+  };
+
+  const [isSoundPlaying, setIsSoundPlaying] = useState(false);
+
   return (
     <Modal
       visible={visible}
-      animationType='slide'
+      animationType="slide"
       transparent
       onRequestClose={onClose}
     >
@@ -28,29 +29,36 @@ const PlayListDetail = ({ visible, playList, onClose }) => {
         <FlatList
           contentContainerStyle={styles.listContainer}
           data={playList.audios}
-          keyExtractor={item => item.id.toString()}
+          keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <View style={{ marginBottom: 10 }}>
-              <AudioListItem title={item.title} duration={item.duration} onAudioPress={()=> playAudio(item)} />
+              <AudioListItem
+                item={item}
+                isSoundPlaying={isSoundPlaying}
+                setIsSoundPlaying={setIsSoundPlaying}
+                title={item.title}
+                duration={item.duration}
+                onAudioPress={() => playAudio(item)}
+              />
             </View>
           )}
         />
-      </View>      
+      </View>
       <View style={[StyleSheet.absoluteFillObject, styles.modalBG]} />
     </Modal>
   );
 };
 
-const { width, height } = Dimensions.get('window');
+const { width, height } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
-    alignSelf: 'center',
+    alignSelf: "center",
     height: height - 150,
     width: width - 15,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderTopRightRadius: 30,
     borderTopLeftRadius: 30,
   },
@@ -62,10 +70,10 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   title: {
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 20,
     paddingVertical: 5,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: color.ACTIVE_BG,
   },
 });

@@ -1,36 +1,13 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const storeAudioForNextOpening = async (audio, index, lastPosition) => {
   await AsyncStorage.setItem(
-    'previousAudio',
+    "previousAudio",
     JSON.stringify({ audio: { ...audio, lastPosition }, index })
   );
 };
 
-export const convertTime = minutes => {
-  if (minutes) {
-    const hrs = minutes / 60;
-    const minute = hrs.toString().split('.')[0];
-    const percent = parseInt(hrs.toString().split('.')[1].slice(0, 2));
-    const sec = Math.ceil((60 * percent) / 100);
-    if (parseInt(minute) < 10 && sec < 10) {
-      return `0${minute}:0${sec}`;
-    }
-
-    if (sec == 60) {
-      return `${minute + 1}:00`;
-    }
-
-    if (parseInt(minute) < 10) {
-      return `0${minute}:${sec}`;
-    }
-
-    if (sec < 10) {
-      return `${minute}:0${sec}`;
-    }
-
-    console.log("minute: " + minute);
-
-    return `${minute}:${sec}`;
-  }
+export const convertTime = (seconds) => {
+  let s = parseInt(seconds);
+  return (s - (s %= 60)) / 60 + (9 < s ? ":" : ":0") + s;
 };
