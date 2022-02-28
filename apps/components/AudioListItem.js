@@ -107,7 +107,7 @@ const AudioListItem = ({ item, title, duration, url, activeListItem }) => {
   };
 
   const playSoundWithUri = (uri, index) => {
-    if (sound.current) {
+    if (sound.current && currentAudioIndex === index) {
       updateState(context, {
         isAudioPlaying: true,
       });
