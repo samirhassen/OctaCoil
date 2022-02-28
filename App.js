@@ -1,8 +1,8 @@
-import { NavigationContainer } from '@react-navigation/native';
-import React from 'react';
-import { StyleSheet, StatusBar } from 'react-native';
-import { AudioProvider } from './apps/context/AudioProvider';
-import AppNavigator from './apps/navigation/AppNavigator';
+import { NavigationContainer } from "@react-navigation/native";
+import React from "react";
+import { StyleSheet, StatusBar } from "react-native";
+import { AudioProvider } from "./apps/context/AudioProvider";
+import AppNavigator from "./apps/navigation/AppNavigator";
 
 export default function App() {
   return (
@@ -11,16 +11,15 @@ export default function App() {
         <AppNavigator />
       </NavigationContainer>
     </AudioProvider>
-    
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     paddingTop: StatusBar.currentHeight,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

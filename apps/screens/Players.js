@@ -1,29 +1,21 @@
+import Slider from "@react-native-community/slider";
 import React, { useContext, useEffect, useState } from "react";
 import {
-  View,
-  StyleSheet,
-  Text,
   Dimensions,
   Image,
   Platform,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
-import Screen from "../components/Screen";
-import color from "../misc/color";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { Feather } from "@expo/vector-icons";
-import Slider from "@react-native-community/slider";
-import PlayerButton from "../components/PlayerButton";
-import { AudioContext } from "../context/AudioProvider";
-import {
-  changeAudio,
-  moveAudio,
-  pause,
-  playNext,
-} from "../misc/audioController";
-import { convertTime } from "../misc/helper";
-import { selectAudio } from "../misc/audioController";
-import RNFetchBlob from "rn-fetch-blob";
 import Sound from "react-native-sound";
+Sound.setActive(true);
+import RNFetchBlob from "rn-fetch-blob";
+import PlayerButton from "../components/PlayerButton";
+import Screen from "../components/Screen";
+import { AudioContext } from "../context/AudioProvider";
+import color from "../misc/color";
+import { convertTime } from "../misc/helper";
 Sound.setCategory("Playback");
 const { width } = Dimensions.get("window");
 
@@ -92,18 +84,22 @@ const Player = () => {
     } else {
       if (currentAudio && currentAudio.realDuration) return;
       const _isDownloaded = await checkIfDownloaded();
-      console.log("isDownloaded", _isDownloaded);
+      const localPath =
+        RNFetchBlob.fs.dirs.MusicDir + `/${currentAudio.filename}`;
       const uri = !_isDownloaded
         ? Platform.OS === "ios"
           ? currentAudio.urlIOS
           : currentAudio.urlAndroid
-        : RNFetchBlob.fs.dirs.MusicDir + `/${currentAudio.filename}`;
+        : Platform.OS === "ios"
+        ? "file://" + localPath
+        : localPath;
       console.log("uri", uri);
       sound.current = new Sound(uri, "", (error) => {
         if (error) {
           console.log("failed to load the sound", error);
           return;
         }
+        sound.current && sound.current.setCategory("Playback");
         updateState(context, {
           currentAudio: {
             ...currentAudio,
@@ -128,11 +124,19 @@ const Player = () => {
       currentAudioIndex: index,
       isAudioPlaying: true,
     });
+    if (sound.current) {
+      console.log("playing from paused");
+      if (currentTime !== 0) sound.current.setCurrentTime(currentTime);
+      sound.current.play();
+      activateInterval();
+      return;
+    }
     sound.current = new Sound(uri, "", (error) => {
       if (error) {
         console.log("failed to load the sound", error);
         return;
       }
+      sound.current && sound.current.setCategory("Playback");
       if (currentTime !== 0) sound.current.setCurrentTime(currentTime);
       sound.current.setNumberOfLoops(0);
       sound.current.play();
@@ -164,6 +168,15 @@ const Player = () => {
     clearInterval(soundTimer.current);
   };
 
+  const pausePlayingSound = async () => {
+    console.log("pausing");
+    await sound.current.pause();
+    await updateState(context, {
+      isAudioPlaying: false,
+    });
+    clearInterval(soundTimer.current);
+  };
+
   const handlePlayPause = async () => {
     const uri = !isDownloaded
       ? Platform.OS === "ios"
@@ -176,8 +189,9 @@ const Player = () => {
     }
 
     if (currentAudioIndex === index) {
+      console.log("currentAudioIndex = index, audioPlaying", isAudioPlaying);
       if (isAudioPlaying) {
-        return stopPlayingSound();
+        return pausePlayingSound();
       } else {
         return playSoundWithUri(uri, index);
       }

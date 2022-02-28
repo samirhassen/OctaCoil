@@ -1,26 +1,21 @@
-import React, { useState, useContext, useEffect, useRef } from "react";
+import { Entypo, Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
+import { Audio } from "expo-av";
+import React, { useContext, useEffect, useState } from "react";
 import {
-  View,
+  ActivityIndicator,
+  Dimensions,
+  Image,
+  Platform,
   StyleSheet,
   Text,
-  ActivityIndicator,
-  Image,
-  Dimensions,
   TouchableWithoutFeedback,
-  Platform,
+  View,
 } from "react-native";
-import { Entypo, Ionicons, Feather, FontAwesome } from "@expo/vector-icons";
-import color from "../misc/color";
-import * as FileSystem from "expo-file-system";
-import * as MediaLibrary from "expo-media-library";
-import { Audio } from "expo-av";
-import { AudioContext } from "../context/AudioProvider";
-import RNFetchBlob from "rn-fetch-blob";
 import Sound from "react-native-sound";
-import { selectAudio } from "../misc/audioController";
-Sound.setCategory("Playback");
-
-const playbackObject = new Audio.Sound();
+Sound.setActive(true);
+import RNFetchBlob from "rn-fetch-blob";
+import { AudioContext } from "../context/AudioProvider";
+import color from "../misc/color";
 
 const getThumbnailText = (filename) => {
   return (
@@ -112,11 +107,19 @@ const AudioListItem = ({ item, title, duration, url, activeListItem }) => {
   };
 
   const playSoundWithUri = (uri, index) => {
+    if (sound.current) {
+      updateState(context, {
+        isAudioPlaying: true,
+      });
+      sound.current.play();
+      return;
+    }
     sound.current = new Sound(uri, "", (error) => {
       if (error) {
         console.log("failed to load the sound", error);
         return;
       }
+      sound.current.setCategory("Playback");
       sound.current.play();
       updateState(context, {
         currentAudioIndex: index,
@@ -134,10 +137,20 @@ const AudioListItem = ({ item, title, duration, url, activeListItem }) => {
     sound.current = null;
   };
 
+  const pausePlayingSound = async () => {
+    await sound.current.pause();
+    await updateState(context, {
+      isAudioPlaying: false,
+    });
+  };
+
   const handlePlayAudio = async () => {
+    const localPath = RNFetchBlob.fs.dirs.MusicDir + `/${title}`;
     const uri = !isDownloaded
       ? url
-      : RNFetchBlob.fs.dirs.MusicDir + `/${title}`;
+      : Platform.OS === "ios"
+      ? "file://" + localPath
+      : localPath;
     const index = audioFiles.findIndex(({ id }) => id === item.id);
     if (currentAudioIndex === null) {
       return playSoundWithUri(uri, index);
@@ -145,7 +158,7 @@ const AudioListItem = ({ item, title, duration, url, activeListItem }) => {
 
     if (currentAudioIndex === index) {
       if (isAudioPlaying) {
-        return stopPlayingSound();
+        return pausePlayingSound();
       } else {
         return playSoundWithUri(uri, index);
       }
