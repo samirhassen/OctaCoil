@@ -18,6 +18,7 @@ import { AudioContext } from "../context/AudioProvider";
 import RNFetchBlob from "rn-fetch-blob";
 import Sound from "react-native-sound";
 import { selectAudio } from "../misc/audioController";
+Sound.setCategory("Playback");
 
 const playbackObject = new Audio.Sound();
 
@@ -91,6 +92,12 @@ const AudioListItem = ({ item, title, duration, url, activeListItem }) => {
       setLoader(true);
       await RNFetchBlob.config({
         fileCache: true,
+        addAndroidDownloads: {
+          useDownloadManager: true,
+          notification: false,
+          mime: "text/plain",
+          description: "File downloaded by download manager.",
+        },
         path: RNFetchBlob.fs.dirs.MusicDir + `/${title}`,
       }).fetch("GET", url);
       setLoader(false);
@@ -183,9 +190,9 @@ const AudioListItem = ({ item, title, duration, url, activeListItem }) => {
               </Text>
 
               <Text numberOfLines={1} style={styles.description}>
-                {isDownloaded ? (
+                {/* {isDownloaded ? (
                   <FontAwesome name="check-circle" size={20} color="white" />
-                ) : null}{" "}
+                ) : null}{" "} */}
                 {/* Tag: {type}, Album: {album}, Song: {title} */}
                 {/* Album: {album}, Song: {title} */}
               </Text>
@@ -207,7 +214,14 @@ const AudioListItem = ({ item, title, duration, url, activeListItem }) => {
                 <ActivityIndicator size="small" color="#fff" />
               )}
             </View>
-          ) : null}
+          ) : (
+            <FontAwesome
+              name="check-circle"
+              size={20}
+              color="white"
+              style={{ marginRight: 20, alignSelf: "center" }}
+            />
+          )}
         </View>
       </TouchableWithoutFeedback>
       <View style={styles.separator} />

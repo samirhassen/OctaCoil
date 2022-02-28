@@ -24,7 +24,7 @@ import { convertTime } from "../misc/helper";
 import { selectAudio } from "../misc/audioController";
 import RNFetchBlob from "rn-fetch-blob";
 import Sound from "react-native-sound";
-
+Sound.setCategory("Playback");
 const { width } = Dimensions.get("window");
 
 const Player = () => {
