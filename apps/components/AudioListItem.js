@@ -12,10 +12,16 @@ import {
   View,
 } from "react-native";
 import Sound from "react-native-sound";
-Sound.setActive(true);
+import TrackPlayer, {
+  useTrackPlayerEvents,
+  Event,
+} from "react-native-track-player";
+TrackPlayer.setupPlayer();
 import RNFetchBlob from "rn-fetch-blob";
 import { AudioContext } from "../context/AudioProvider";
+import { pause, play, stop } from "../misc/audioController";
 import color from "../misc/color";
+Sound.setActive(true);
 
 const getThumbnailText = (filename) => {
   return (
@@ -55,7 +61,8 @@ const convertTime = (minutes) => {
  * @param {*} isPlaying
  * @returns
  */
-const renderPlayPauseIcon = (isPlaying) => {
+const renderPlayPauseIcon = (isPlaying, loading) => {
+  if (loading) return <ActivityIndicator size="small" color="#fff" />;
   if (isPlaying)
     return <Ionicons name="pause" size={30} color={color.ACTIVE_FONT} />;
   return <Entypo name="controller-play" size={30} color={color.ACTIVE_FONT} />;
@@ -66,10 +73,16 @@ const AudioListItem = ({ item, title, duration, url, activeListItem }) => {
   const [loader, setLoader] = useState(false);
   const { getAudioFiles } = useContext(AudioContext);
   const context = useContext(AudioContext);
-  const { updateState, audioFiles, currentAudioIndex, isAudioPlaying, sound } =
-    context;
-
+  const { audioFiles, currentAudioIndex, isAudioPlaying } = context;
   const [isDownloaded, setisDownloaded] = useState(false);
+  const [audioLoading, setAudioLoading] = useState(false);
+
+  useTrackPlayerEvents([Event.PlaybackState], async (event) => {
+    if (event.state === "loading")
+      return !audioLoading && setAudioLoading(true);
+    else if (event.state === "playing")
+      return audioLoading && setAudioLoading(false);
+  });
 
   useEffect(() => {
     checkIfDownloaded();
@@ -106,44 +119,6 @@ const AudioListItem = ({ item, title, duration, url, activeListItem }) => {
     }
   };
 
-  const playSoundWithUri = (uri, index) => {
-    if (sound.current && currentAudioIndex === index) {
-      updateState(context, {
-        isAudioPlaying: true,
-      });
-      sound.current.play();
-      return;
-    }
-    sound.current = new Sound(uri, "", (error) => {
-      if (error) {
-        console.log("failed to load the sound", error);
-        return;
-      }
-      sound.current.setCategory("Playback");
-      sound.current.play();
-      updateState(context, {
-        currentAudioIndex: index,
-        currentAudio: { ...item, realDuration: sound.current.getDuration() },
-        isAudioPlaying: true,
-      });
-    });
-  };
-
-  const stopPlayingSound = async () => {
-    await sound.current.pause();
-    await updateState(context, {
-      isAudioPlaying: false,
-    });
-    sound.current = null;
-  };
-
-  const pausePlayingSound = async () => {
-    await sound.current.pause();
-    await updateState(context, {
-      isAudioPlaying: false,
-    });
-  };
-
   const handlePlayAudio = async () => {
     const localPath = RNFetchBlob.fs.dirs.MusicDir + `/${title}`;
     const uri = !isDownloaded
@@ -153,21 +128,21 @@ const AudioListItem = ({ item, title, duration, url, activeListItem }) => {
       : localPath;
     const index = audioFiles.findIndex(({ id }) => id === item.id);
     if (currentAudioIndex === null) {
-      return playSoundWithUri(uri, index);
+      return await play({ context, uri, index, isDownloaded, audio: item });
     }
 
     if (currentAudioIndex === index) {
       if (isAudioPlaying) {
-        return pausePlayingSound();
+        return await pause({ context, isDownloaded, uri });
       } else {
-        return playSoundWithUri(uri, index);
+        return await play({ context, uri, index, isDownloaded, audio: item });
       }
     } else {
       if (isAudioPlaying) {
-        await stopPlayingSound();
-        return playSoundWithUri(uri, index);
+        await stop({ context, isDownloaded });
+        return await play({ context, uri, index, isDownloaded, audio: item });
       } else {
-        return playSoundWithUri(uri, index);
+        return await play({ context, uri, index, isDownloaded, audio: item });
       }
     }
   };
@@ -187,7 +162,7 @@ const AudioListItem = ({ item, title, duration, url, activeListItem }) => {
             >
               <Text style={styles.thumbnailText}>
                 {activeListItem
-                  ? renderPlayPauseIcon(isAudioPlaying)
+                  ? renderPlayPauseIcon(isAudioPlaying, audioLoading)
                   : getThumbnailText(title)}
               </Text>
             </View>

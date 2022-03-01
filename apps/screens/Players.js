@@ -1,6 +1,7 @@
 import Slider from "@react-native-community/slider";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import {
+  ActivityIndicator,
   Dimensions,
   Image,
   Platform,
@@ -9,11 +10,13 @@ import {
   View,
 } from "react-native";
 import Sound from "react-native-sound";
+import { useTrackPlayerEvents, Event } from "react-native-track-player";
 Sound.setActive(true);
 import RNFetchBlob from "rn-fetch-blob";
 import PlayerButton from "../components/PlayerButton";
 import Screen from "../components/Screen";
 import { AudioContext } from "../context/AudioProvider";
+import { getDuration, pause, play, stop } from "../misc/audioController";
 import color from "../misc/color";
 import { convertTime } from "../misc/helper";
 Sound.setCategory("Playback");
@@ -35,6 +38,15 @@ const Player = () => {
   } = context;
   const [isDownloaded, setisDownloaded] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
+  const [audioLoading, setAudioLoading] = useState(false);
+  const firstRender = useRef(true);
+
+  useTrackPlayerEvents([Event.PlaybackState], async (event) => {
+    if (event.state === "loading")
+      return !audioLoading && setAudioLoading(true);
+    else if (event.state === "playing")
+      return audioLoading && setAudioLoading(false);
+  });
 
   const calculateSeebBar = () => {
     if (currentTime && currentAudio.realDuration) {
@@ -49,64 +61,101 @@ const Player = () => {
   }, []);
 
   useEffect(() => {
-    checkIfDownloaded();
+    if (firstRender.current && currentAudio) {
+      firstTimeDuration();
+    }
+  }, [currentAudio]);
+
+  const firstTimeDuration = async () => {
+    firstRender.current = false;
+    const localPath =
+      RNFetchBlob.fs.dirs.MusicDir + `/${currentAudio.filename}`;
+    const _isDownloaded = await checkIfDownloaded();
+    const uri = !_isDownloaded
+      ? Platform.OS === "ios"
+        ? currentAudio.urlIOS
+        : currentAudio.urlAndroid
+      : Platform.OS === "ios"
+      ? "file://" + localPath
+      : localPath;
+    const _duration = await getDuration({
+      uri,
+      isDownloaded: _isDownloaded,
+    });
+    return updateState(context, {
+      currentAudio: { ...currentAudio, realDuration: _duration },
+    });
+  };
+
+  useEffect(() => {
+    if (currentAudio) {
+      checkIfDownloaded();
+    }
   }, []);
 
   useEffect(() => {
-    currentAudioChangedCondition();
-  }, [currentAudio]);
+    if (currentAudio) {
+      currentAudioChangedCondition();
+    }
+  }, [currentAudioIndex]);
 
   const currentAudioChangedCondition = async () => {
+    console.log("audio index changed");
+    const localPath =
+      RNFetchBlob.fs.dirs.MusicDir + `/${currentAudio.filename}`;
+    const _isDownloaded = await checkIfDownloaded();
+    const uri = !_isDownloaded
+      ? Platform.OS === "ios"
+        ? currentAudio.urlIOS
+        : currentAudio.urlAndroid
+      : Platform.OS === "ios"
+      ? "file://" + localPath
+      : localPath;
     if (isAudioPlaying) {
-      if (currentAudio && currentAudio.realDuration) return;
-      const _isDownloaded = await checkIfDownloaded();
-      sound.current.stop();
+      if (!currentAudio.realDuration) {
+        const _duration = await getDuration({
+          uri,
+          isDownloaded: _isDownloaded,
+        });
+        return updateState(context, {
+          currentAudio: { ...currentAudio, realDuration: _duration },
+        });
+      }
+      await stop({
+        context,
+        uri,
+        isDownloaded: _isDownloaded,
+        isPreviousDownloaded: isDownloaded,
+      });
       clearInterval(soundTimer.current);
-      const uri = !_isDownloaded
-        ? Platform.OS === "ios"
-          ? currentAudio.urlIOS
-          : currentAudio.urlAndroid
-        : RNFetchBlob.fs.dirs.MusicDir + `/${currentAudio.filename}`;
-      sound.current = new Sound(uri, "", (error) => {
-        if (error) {
-          console.log("failed to load the sound", error);
-          return;
-        }
-        sound.current.play();
-        activateInterval();
-        updateState(context, {
-          currentAudio: {
-            ...currentAudio,
-            realDuration: sound.current.getDuration(),
-          },
-        });
+
+      await play({
+        context,
+        isDownloaded: _isDownloaded,
+        uri,
+        index: currentAudioIndex,
+        audio: currentAudio,
       });
+      activateInterval();
     } else {
-      if (currentAudio && currentAudio.realDuration) return;
-      const _isDownloaded = await checkIfDownloaded();
-      const localPath =
-        RNFetchBlob.fs.dirs.MusicDir + `/${currentAudio.filename}`;
-      const uri = !_isDownloaded
-        ? Platform.OS === "ios"
-          ? currentAudio.urlIOS
-          : currentAudio.urlAndroid
-        : Platform.OS === "ios"
-        ? "file://" + localPath
-        : localPath;
-      console.log("uri", uri);
-      sound.current = new Sound(uri, "", (error) => {
-        if (error) {
-          console.log("failed to load the sound", error);
-          return;
-        }
-        sound.current && sound.current.setCategory("Playback");
-        updateState(context, {
-          currentAudio: {
-            ...currentAudio,
-            realDuration: sound.current.getDuration(),
-          },
+      if (!currentAudio.realDuration) {
+        const _duration = await getDuration({
+          uri,
+          isDownloaded: _isDownloaded,
         });
+        return updateState(context, {
+          currentAudio: { ...currentAudio, realDuration: _duration },
+        });
+      }
+
+      await play({
+        context,
+        isDownloaded: _isDownloaded,
+        uri,
+        index: currentAudioIndex,
+        audio: currentAudio,
       });
+      activateInterval();
     }
   };
 
@@ -115,39 +164,13 @@ const Player = () => {
       RNFetchBlob.fs.dirs.MusicDir + `/${currentAudio.filename}`
     );
     exists && setisDownloaded(exists);
-    console.log(currentAudio.filename, "exists", exists);
     return exists;
-  };
-
-  const playSoundWithUri = (uri, index) => {
-    updateState(context, {
-      currentAudioIndex: index,
-      isAudioPlaying: true,
-    });
-    if (sound.current) {
-      console.log("playing from paused");
-      if (currentTime !== 0) sound.current.setCurrentTime(currentTime);
-      sound.current.play();
-      activateInterval();
-      return;
-    }
-    sound.current = new Sound(uri, "", (error) => {
-      if (error) {
-        console.log("failed to load the sound", error);
-        return;
-      }
-      sound.current && sound.current.setCategory("Playback");
-      if (currentTime !== 0) sound.current.setCurrentTime(currentTime);
-      sound.current.setNumberOfLoops(0);
-      sound.current.play();
-      activateInterval();
-    });
   };
 
   const activateInterval = () => {
     soundTimer.current = setInterval(() => {
       if (currentTime >= currentAudio.realDuration) {
-        stopPlayingSound();
+        stop({ context, isDownloaded });
         clearInterval(soundTimer.current);
         return;
       }
@@ -159,48 +182,63 @@ const Player = () => {
     }, 1000);
   };
 
-  const stopPlayingSound = async () => {
-    await sound.current.pause();
-    await updateState(context, {
-      isAudioPlaying: false,
-    });
-    sound.current = null;
-    clearInterval(soundTimer.current);
-  };
-
-  const pausePlayingSound = async () => {
-    console.log("pausing");
-    await sound.current.pause();
-    await updateState(context, {
-      isAudioPlaying: false,
-    });
-    clearInterval(soundTimer.current);
-  };
-
   const handlePlayPause = async () => {
+    const localPath =
+      RNFetchBlob.fs.dirs.MusicDir + `/${currentAudio.filename}`;
     const uri = !isDownloaded
       ? Platform.OS === "ios"
         ? currentAudio.urlIOS
         : currentAudio.urlAndroid
-      : RNFetchBlob.fs.dirs.MusicDir + `/${currentAudio.filename}`;
+      : Platform.OS === "ios"
+      ? "file://" + localPath
+      : localPath;
     const index = audioFiles.findIndex(({ id }) => id === currentAudio.id);
     if (currentAudioIndex === null) {
-      return playSoundWithUri(uri, index);
+      await play({
+        context,
+        uri,
+        index,
+        isDownloaded,
+        audio: currentAudio,
+      });
+      return activateInterval();
     }
 
     if (currentAudioIndex === index) {
-      console.log("currentAudioIndex = index, audioPlaying", isAudioPlaying);
       if (isAudioPlaying) {
-        return pausePlayingSound();
+        await pause({ context, isDownloaded, uri });
+        return clearInterval(soundTimer.current);
       } else {
-        return playSoundWithUri(uri, index);
+        await play({
+          context,
+          uri,
+          index,
+          isDownloaded,
+          audio: currentAudio,
+        });
+        return activateInterval();
       }
     } else {
       if (isAudioPlaying) {
-        await stopPlayingSound();
-        return playSoundWithUri(uri, index);
+        await stop({ context, isDownloaded });
+        clearInterval(soundTimer.current);
+        await play({
+          context,
+          uri,
+          index,
+          isDownloaded,
+          audio: currentAudio,
+        });
+        return activateInterval();
       } else {
-        return playSoundWithUri(uri, index);
+        await play({
+          context,
+          uri,
+          index,
+          isDownloaded,
+          audio: currentAudio,
+        });
+        return activateInterval();
       }
     }
   };
@@ -222,6 +260,30 @@ const Player = () => {
   };
 
   if (!context.currentAudio) return null;
+
+  const onValueChange = (value) => {
+    if (isAudioPlaying && sound.current) {
+      sound.current.setCurrentTime(value * currentAudio.realDuration);
+      setCurrentTime(value * currentAudio.realDuration);
+    }
+    setCurrentPosition(convertTime(value * currentAudio.realDuration));
+  };
+
+  const onSlidingComplete = async (value) => {
+    console.log(
+      "onSlidingComplete",
+      value * currentAudio.realDuration,
+      currentAudio.realDuration
+    );
+    // await moveAudio(context, value);
+    if (isAudioPlaying && sound.current) {
+      if (value === 1) {
+        return handleNext();
+      }
+      sound.current.setCurrentTime(value * currentAudio.realDuration);
+    }
+    setCurrentPosition(0);
+  };
 
   return (
     <Screen>
@@ -269,10 +331,10 @@ const Player = () => {
               paddingHorizontal: 15,
             }}
           >
+            <Text style={{ color: "#fff" }}>{convertTime(currentTime)}</Text>
             <Text style={{ color: "#fff" }}>
               {convertTime(currentAudio.realDuration)}
             </Text>
-            <Text style={{ color: "#fff" }}>{convertTime(currentTime)}</Text>
           </View>
           <Slider
             style={{ width: width, height: 40 }}
@@ -281,15 +343,7 @@ const Player = () => {
             value={calculateSeebBar()}
             minimumTrackTintColor={color.FONT_MEDIUM}
             maximumTrackTintColor={color.ACTIVE_BG}
-            onValueChange={(value) => {
-              if (isAudioPlaying && sound.current) {
-                sound.current.setCurrentTime(value * currentAudio.realDuration);
-                setCurrentTime(value * currentAudio.realDuration);
-              }
-              setCurrentPosition(
-                convertTime(value * currentAudio.realDuration)
-              );
-            }}
+            onValueChange={onValueChange}
             onSlidingStart={async () => {
               if (!isAudioPlaying) return;
 
@@ -299,29 +353,19 @@ const Player = () => {
                 console.log("error inside onSlidingStart callback", error);
               }
             }}
-            onSlidingComplete={async (value) => {
-              console.log(
-                "onSlidingComplete",
-                value * currentAudio.realDuration,
-                currentAudio.realDuration
-              );
-              // await moveAudio(context, value);
-              if (isAudioPlaying && sound.current) {
-                if (value === 1) {
-                  return handleNext();
-                }
-                sound.current.setCurrentTime(value * currentAudio.realDuration);
-              }
-              setCurrentPosition(0);
-            }}
+            onSlidingComplete={onSlidingComplete}
           />
           <View style={styles.audioControllers}>
             <PlayerButton iconType="PREV" onPress={handlePrevious} />
-            <PlayerButton
-              onPress={handlePlayPause}
-              style={{ marginHorizontal: 25 }}
-              iconType={isAudioPlaying ? "PLAY" : "PAUSE"}
-            />
+            {audioLoading ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <PlayerButton
+                onPress={handlePlayPause}
+                style={{ marginHorizontal: 25 }}
+                iconType={isAudioPlaying ? "PLAY" : "PAUSE"}
+              />
+            )}
             <PlayerButton iconType="NEXT" onPress={handleNext} />
           </View>
         </View>
