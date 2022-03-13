@@ -65,22 +65,10 @@ const renderPlayPauseIcon = (isPlaying, loading) => {
 //Method to display audio list item
 const AudioListItem = ({ item, title, duration, url, activeListItem }) => {
   const [loader, setLoader] = useState(false);
-  const { getAudioFiles } = useContext(AudioContext);
   const context = useContext(AudioContext);
-  const { audioFiles, currentAudioIndex, isAudioPlaying } = context;
-  const [isDownloaded, setisDownloaded] = useState(false);
+  const { audioFiles, currentAudioIndex, isAudioPlaying, getAudioFiles } =
+    context;
   const [audioLoading, setAudioLoading] = useState(false);
-
-  useEffect(() => {
-    checkIfDownloaded();
-  }, []);
-
-  const checkIfDownloaded = async () => {
-    const exists = await RNFetchBlob.fs.exists(
-      RNFetchBlob.fs.dirs.DocumentDir + `/${title}`
-    );
-    exists && setisDownloaded(exists);
-  };
 
   const onDownloadPress = async (url, title) => {
     try {
@@ -96,8 +84,6 @@ const AudioListItem = ({ item, title, duration, url, activeListItem }) => {
         path: RNFetchBlob.fs.dirs.DocumentDir + `/${title}`,
       }).fetch("GET", url);
       setLoader(false);
-      setisDownloaded(true);
-      setLoader(false);
       getAudioFiles();
       alert("File Download Sucessfully!");
     } catch (e) {
@@ -107,29 +93,33 @@ const AudioListItem = ({ item, title, duration, url, activeListItem }) => {
   };
 
   const handlePlayAudio = async () => {
-    const localPath = RNFetchBlob.fs.dirs.DocumentDir + `/${title}`;
-    const uri = !isDownloaded
-      ? url
-      : Platform.OS === "ios"
-      ? "file://" + localPath
-      : localPath;
     const index = audioFiles.findIndex(({ id }) => id === item.id);
     if (currentAudioIndex === null) {
-      return await play({ context, uri, index, isDownloaded, audio: item });
+      return await play({ context, uri: item.url, index, audio: item });
     }
 
     if (currentAudioIndex === index) {
       if (isAudioPlaying) {
-        return await pause({ context, isDownloaded, uri });
+        return await pause({ context });
       } else {
-        return await play({ context, uri, index, isDownloaded, audio: item });
+        return await play({ context, uri: item.url, index, audio: item });
       }
     } else {
       if (isAudioPlaying) {
-        await stop({ context, isDownloaded });
-        return await play({ context, uri, index, isDownloaded, audio: item });
+        await stop({ context });
+        return await play({
+          context,
+          uri: item.url,
+          index,
+          audio: item,
+        });
       } else {
-        return await play({ context, uri, index, isDownloaded, audio: item });
+        return await play({
+          context,
+          uri: item.url,
+          index,
+          audio: item,
+        });
       }
     }
   };
@@ -155,7 +145,7 @@ const AudioListItem = ({ item, title, duration, url, activeListItem }) => {
             </View>
             <View
               style={[
-                isDownloaded
+                item.isDownloaded
                   ? styles.titleDownloadContainer
                   : styles.titleContainer,
               ]}
@@ -174,7 +164,7 @@ const AudioListItem = ({ item, title, duration, url, activeListItem }) => {
               <Text style={styles.timeText}>{convertTime(duration)}</Text>
             </View>
           </View>
-          {!isDownloaded ? (
+          {!item.isDownloaded ? (
             <View style={styles.rightContainer}>
               {!loader ? (
                 <Feather

@@ -1,25 +1,35 @@
 import Sound from "react-native-sound";
 import { storeAudioForNextOpening } from "./helper";
+import MusicControl, { Command } from "react-native-music-control";
+import AsyncStorageLib from "@react-native-async-storage/async-storage";
+MusicControl.enableControl("play", true);
+MusicControl.enableControl("pause", true);
+MusicControl.enableControl("stop", false);
 
-Sound.setCategory("Playback");
+MusicControl.enableControl("closeNotification", true, { when: "paused" });
+
+Sound.setCategory("Playback", false);
 
 // play audio
 export const play = async ({ context, uri, index, audio }) => {
+  console.log("playing", uri);
   try {
     const { sound, currentAudioIndex, updateState } = context;
     if (sound.current && currentAudioIndex === index) {
-      updateState(context, {
-        isAudioPlaying: true,
-      });
+      updateState &&
+        updateState(context, {
+          isAudioPlaying: true,
+        });
       sound.current.play();
       return;
     }
-    updateState(context, {
-      currentAudioIndex: index,
-      currentAudio: { ...audio },
-      isAudioPlaying: true,
-    });
-    sound.current = new Sound(uri, "", (error) => {
+    updateState &&
+      updateState(context, {
+        currentAudioIndex: index,
+        currentAudio: { ...audio },
+        isAudioPlaying: true,
+      });
+    sound.current = new Sound(uri, null, (error) => {
       if (error) {
         console.log("failed to load the sound", error);
         return;
@@ -27,20 +37,118 @@ export const play = async ({ context, uri, index, audio }) => {
       sound.current.setCategory("Playback");
       sound.current.play();
     });
+    startMusicControl({ title: audio.filename, duration: audio.duration });
+    updateMusicControl({ elapsedTime: 0, state: "play" });
+    AsyncStorageLib.setItem(
+      "context",
+      JSON.stringify(
+        {
+          ...context,
+          currentAudioIndex: index,
+          currentAudio: { ...audio },
+          isAudioPlaying: true,
+        },
+        getCircularReplacer()
+      )
+    );
     return;
   } catch (error) {
     console.log("error inside play helper method", error.message);
   }
 };
 
+const getCircularReplacer = () => {
+  const seen = new WeakSet();
+  return (key, value) => {
+    if (typeof value === "object" && value !== null) {
+      if (seen.has(value)) {
+        return;
+      }
+      seen.add(value);
+    }
+    return value;
+  };
+};
+
+export const startMusicControl = ({ title, duration }) => {
+  MusicControl.setNowPlaying({
+    title,
+    artwork: require("../../assets/SE_Logo.png"),
+    artist: "SE Therapies",
+    duration,
+    color: 0xffffff,
+    colorized: true,
+    isLiveStream: false, // iOS Only (Boolean), Show or hide Live Indicator instead of seekbar on lock screen for live streams. Default value is false.
+  });
+};
+
+export const updateMusicControl = ({ state, elapsedTime }) => {
+  const _state =
+    state === "stop"
+      ? MusicControl.STATE_STOPPED
+      : state === "pause"
+      ? MusicControl.STATE_PAUSED
+      : state === "play"
+      ? MusicControl.STATE_PLAYING
+      : MusicControl.STATE_ERROR;
+  MusicControl.updatePlayback({
+    state: _state,
+    elapsedTime,
+  });
+};
+
+export const musicControlListener = async () => {
+  MusicControl.enableBackgroundMode(true);
+  MusicControl.handleAudioInterruptions(true);
+
+  MusicControl.on(Command.stop, async () => {
+    const asyncContextString = await AsyncStorageLib.getItem("context");
+    const context = await JSON.parse(asyncContextString);
+    stop({ context });
+    MusicControl.resetNowPlaying();
+  });
+
+  MusicControl.on(Command.pause, async () => {
+    const asyncContextString = await AsyncStorageLib.getItem("context");
+    const context = await JSON.parse(asyncContextString);
+    pause({ context });
+  });
+
+  MusicControl.on(Command.play, async () => {
+    const asyncContextString = await AsyncStorageLib.getItem("context");
+    const context = await JSON.parse(asyncContextString);
+    const { currentAudio, currentAudioIndex } = context;
+    play({
+      context,
+      uri: currentAudio.url,
+      audio: currentAudio,
+      index: currentAudioIndex,
+    });
+  });
+};
+
 export const stop = async ({ context }) => {
   try {
     const { sound, updateState } = context;
-    await sound.current.pause();
-    await updateState(context, {
-      isAudioPlaying: false,
+    sound.current.stop && (await sound.current.stop());
+    updateState &&
+      (await updateState(context, {
+        isAudioPlaying: false,
+      }));
+    sound.current.getCurrentTime((seconds) => {
+      updateMusicControl({ elapsedTime: seconds, state: "stop" });
     });
     sound.current = null;
+    AsyncStorageLib.setItem(
+      "context",
+      JSON.stringify(
+        {
+          ...context,
+          isAudioPlaying: false,
+        },
+        getCircularReplacer()
+      )
+    );
     return;
   } catch (err) {
     console.log("error stopping sound", err);
@@ -51,10 +159,24 @@ export const stop = async ({ context }) => {
 export const pause = async ({ context }) => {
   try {
     const { sound, updateState } = context;
-    await sound.current.pause();
-    await updateState(context, {
-      isAudioPlaying: false,
+    sound.current.pause && (await sound.current.pause());
+    updateState &&
+      (await updateState(context, {
+        isAudioPlaying: false,
+      }));
+    sound.current.getCurrentTime((seconds) => {
+      updateMusicControl({ elapsedTime: seconds, state: "pause" });
     });
+    AsyncStorageLib.setItem(
+      "context",
+      JSON.stringify(
+        {
+          ...context,
+          isAudioPlaying: false,
+        },
+        getCircularReplacer()
+      )
+    );
   } catch (error) {
     console.log("error inside pause helper method", error.message);
   }

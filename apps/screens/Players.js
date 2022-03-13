@@ -4,7 +4,6 @@ import {
   ActivityIndicator,
   Dimensions,
   Image,
-  Platform,
   StyleSheet,
   Text,
   View,
@@ -18,7 +17,7 @@ import { pause, play, stop } from "../misc/audioController";
 import color from "../misc/color";
 import { convertTime } from "../misc/helper";
 Sound.setActive(true);
-Sound.setCategory("Playback");
+Sound.setCategory("Playback", false);
 const { width } = Dimensions.get("window");
 
 const Player = () => {
@@ -34,7 +33,6 @@ const Player = () => {
   } = context;
   const [currentTime, setCurrentTime] = useState(0);
   const [audioLoading, setAudioLoading] = useState(false);
-  const [isDownloaded, setisDownloaded] = useState(false);
   const [reRender, setReRender] = useState(false);
 
   const calculateSeebBar = () => {
@@ -43,13 +41,6 @@ const Player = () => {
     }
 
     return 0;
-  };
-
-  const checkIfDownloaded = async () => {
-    const exists = await RNFetchBlob.fs.exists(
-      RNFetchBlob.fs.dirs.DocumentDir + `/${currentAudio.filename}`
-    );
-    setisDownloaded(exists);
   };
 
   useEffect(() => {
@@ -65,15 +56,6 @@ const Player = () => {
   }, [reRender]);
 
   const currentAudioChangedCondition = async () => {
-    const localPath =
-      RNFetchBlob.fs.dirs.DocumentDir + `/${currentAudio.filename}`;
-    const uri = !isDownloaded
-      ? Platform.OS === "ios"
-        ? currentAudio.urlIOS
-        : currentAudio.urlAndroid
-      : Platform.OS === "ios"
-      ? "file://" + localPath
-      : localPath;
     const index = audioFiles.findIndex(({ id }) => id === currentAudio.id);
     if (isAudioPlaying) {
       await stop({
@@ -81,7 +63,7 @@ const Player = () => {
       });
       clearInterval(soundTimer.current);
       await play({
-        uri,
+        uri: currentAudio.url,
         context,
         index: index,
         audio: currentAudio,
@@ -109,20 +91,10 @@ const Player = () => {
   };
 
   const handlePlayPause = async () => {
-    const localPath =
-      RNFetchBlob.fs.dirs.DocumentDir + `/${currentAudio.filename}`;
-    const uri = !isDownloaded
-      ? Platform.OS === "ios"
-        ? currentAudio.urlIOS
-        : currentAudio.urlAndroid
-      : Platform.OS === "ios"
-      ? "file://" + localPath
-      : localPath;
-
     const index = audioFiles.findIndex(({ id }) => id === currentAudio.id);
     if (currentAudioIndex === null) {
       await play({
-        uri,
+        uri: currentAudio.url,
         context,
         index,
         audio: currentAudio,
@@ -136,7 +108,7 @@ const Player = () => {
         return await pause({ context });
       } else {
         await play({
-          uri,
+          uri: currentAudio.url,
           context,
           index,
           audio: currentAudio,
@@ -149,7 +121,7 @@ const Player = () => {
         await stop({ context });
         clearInterval(soundTimer.current);
         await play({
-          uri,
+          uri: currentAudio.url,
           context,
           index,
           audio: currentAudio,
@@ -157,7 +129,7 @@ const Player = () => {
         return activateInterval();
       } else {
         await play({
-          uri,
+          uri: currentAudio.url,
           context,
           index,
           audio: currentAudio,
