@@ -19,7 +19,7 @@ export class AudioProvider extends Component {
         "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Energize.m4a?alt=media&token=ac26cc9d-338d-41db-9609-18268a398e76",
       urlAndroid:
         "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Flac%2FEnergize.flac?alt=media&token=0712342c-54d5-4d65-96a3-9366b53a895d",
-      duration: 30.01,
+      duration: 720.013,
       type: "Gamma brainwaves for alertness and mental processing",
     },
     {
@@ -29,7 +29,7 @@ export class AudioProvider extends Component {
         "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Focus.m4a?alt=media&token=3de11cd2-6008-4744-9f31-b0605a575f4e",
       urlAndroid:
         "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Flac%2FFocus.flac?alt=media&token=c80a9eed-8709-48f3-8392-419cae34e396",
-      duration: 30.01,
+      duration: 540.033,
       type: "Beta brainwaves for attention and focus",
     },
     {
@@ -40,7 +40,7 @@ export class AudioProvider extends Component {
         "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Relax.m4a?alt=media&token=194185f7-3f02-49e4-8760-a33642260b75",
       urlAndroid:
         "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Flac%2FRelax.flac?alt=media&token=eb71c46f-1f42-4780-835f-10e20d3605ea",
-      duration: 20.0,
+      duration: 360.12,
       type: "Theta brainwaves for meditation and creativity",
     },
     {

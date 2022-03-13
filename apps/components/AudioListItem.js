@@ -1,5 +1,4 @@
 import { Entypo, Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
-import { Audio } from "expo-av";
 import React, { useContext, useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -12,11 +11,6 @@ import {
   View,
 } from "react-native";
 import Sound from "react-native-sound";
-import TrackPlayer, {
-  useTrackPlayerEvents,
-  Event,
-} from "react-native-track-player";
-TrackPlayer.setupPlayer();
 import RNFetchBlob from "rn-fetch-blob";
 import { AudioContext } from "../context/AudioProvider";
 import { pause, play, stop } from "../misc/audioController";
@@ -77,20 +71,13 @@ const AudioListItem = ({ item, title, duration, url, activeListItem }) => {
   const [isDownloaded, setisDownloaded] = useState(false);
   const [audioLoading, setAudioLoading] = useState(false);
 
-  useTrackPlayerEvents([Event.PlaybackState], async (event) => {
-    if (event.state === "loading")
-      return !audioLoading && setAudioLoading(true);
-    else if (event.state === "playing")
-      return audioLoading && setAudioLoading(false);
-  });
-
   useEffect(() => {
     checkIfDownloaded();
   }, []);
 
   const checkIfDownloaded = async () => {
     const exists = await RNFetchBlob.fs.exists(
-      RNFetchBlob.fs.dirs.MusicDir + `/${title}`
+      RNFetchBlob.fs.dirs.DocumentDir + `/${title}`
     );
     exists && setisDownloaded(exists);
   };
@@ -106,7 +93,7 @@ const AudioListItem = ({ item, title, duration, url, activeListItem }) => {
           mime: "text/plain",
           description: "File downloaded by download manager.",
         },
-        path: RNFetchBlob.fs.dirs.MusicDir + `/${title}`,
+        path: RNFetchBlob.fs.dirs.DocumentDir + `/${title}`,
       }).fetch("GET", url);
       setLoader(false);
       setisDownloaded(true);
@@ -120,7 +107,7 @@ const AudioListItem = ({ item, title, duration, url, activeListItem }) => {
   };
 
   const handlePlayAudio = async () => {
-    const localPath = RNFetchBlob.fs.dirs.MusicDir + `/${title}`;
+    const localPath = RNFetchBlob.fs.dirs.DocumentDir + `/${title}`;
     const uri = !isDownloaded
       ? url
       : Platform.OS === "ios"

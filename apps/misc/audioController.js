@@ -1,142 +1,73 @@
 import Sound from "react-native-sound";
-import TrackPlayer from "react-native-track-player";
 import { storeAudioForNextOpening } from "./helper";
 
 Sound.setCategory("Playback");
 
 // play audio
-export const play = async ({ context, uri, isDownloaded, index, audio }) => {
+export const play = async ({ context, uri, index, audio }) => {
   console.log("playing from", uri);
   try {
-    if (isDownloaded) return await playOffline({ context, uri, index, audio });
-    return await playOnline({ context, uri, index, audio });
+    const { sound, currentAudioIndex, updateState } = context;
+    if (sound.current && currentAudioIndex === index) {
+      updateState(context, {
+        isAudioPlaying: true,
+      });
+      sound.current.play();
+      return;
+    }
+    updateState(context, {
+      currentAudioIndex: index,
+      currentAudio: { ...audio },
+      isAudioPlaying: true,
+    });
+    sound.current = new Sound(uri, "", (error) => {
+      if (error) {
+        console.log("failed to load the sound", error);
+        return;
+      }
+      sound.current.setCategory("Playback");
+      sound.current.play();
+    });
+    return;
   } catch (error) {
     console.log("error inside play helper method", error.message);
   }
 };
 
-const playOnline = async ({ context, index, uri, audio }) => {
-  const { updateState } = context;
-  await TrackPlayer.add({
-    id: index,
-    url: uri,
-    title: "Track Title",
-    artist: "Track Artist",
-  });
-
-  await TrackPlayer.play();
-  return updateState(context, {
-    currentAudioIndex: index,
-    currentAudio: { ...audio, realDuration: TrackPlayer.getDuration() },
-    isAudioPlaying: true,
-  });
-};
-
-const playOffline = async ({ context, uri, index, audio }) => {
-  const { sound, currentAudioIndex, updateState } = context;
-  if (sound.current && currentAudioIndex === index) {
-    updateState(context, {
-      isAudioPlaying: true,
-    });
-    sound.current.play();
-    return;
-  }
-  sound.current = new Sound(uri, "", (error) => {
-    if (error) {
-      console.log("failed to load the sound", error);
-      return;
-    }
-    sound.current.setCategory("Playback");
-    sound.current.play();
-    updateState(context, {
-      currentAudioIndex: index,
-      currentAudio: { ...audio, realDuration: sound.current.getDuration() },
-      isAudioPlaying: true,
-    });
-  });
-};
-
-export const stop = async ({ context, isDownloaded, isPreviousDownloaded }) => {
+export const stop = async ({ context }) => {
   try {
-    if (isDownloaded) return await stopOffline({ context });
-    return await stopOnline({ context });
+    const { sound, updateState } = context;
+    await sound.current.pause();
+    await updateState(context, {
+      isAudioPlaying: false,
+    });
+    sound.current = null;
+    return;
   } catch (err) {
     console.log("error stopping sound", err);
   }
 };
 
-const stopOffline = async ({ context }) => {
-  const { sound, updateState } = context;
-  await sound.current.pause();
-  await updateState(context, {
-    isAudioPlaying: false,
-  });
-  sound.current = null;
-  return;
-};
-
-const stopOnline = async ({ context }) => {
-  await updateState(context, {
-    isAudioPlaying: false,
-  });
-  return await TrackPlayer.stop();
-};
-
 // pause audio
-export const pause = async ({ context, isDownloaded }) => {
+export const pause = async ({ context }) => {
   try {
-    if (isDownloaded) return await pauseOffline({ context });
-    return await pauseOnline({ context });
+    const { sound, updateState } = context;
+    await sound.current.pause();
+    await updateState(context, {
+      isAudioPlaying: false,
+    });
   } catch (error) {
     console.log("error inside pause helper method", error.message);
   }
 };
 
-const pauseOffline = async ({ context }) => {
-  const { sound, updateState } = context;
-  await sound.current.pause();
-  await updateState(context, {
-    isAudioPlaying: false,
-  });
-};
-
-const pauseOnline = async ({ context }) => {
-  const { updateState } = context;
-  await updateState(context, {
-    isAudioPlaying: false,
-  });
-  return await TrackPlayer.pause();
-};
-
-export const getDuration = async ({ uri, isDownloaded }) => {
-  // if (isDownloaded) return getOfflineDuration({ uri });
-  // return await getOnlineDuration({ uri });
+export const getDuration = async ({ uri }) => {
   return await new Promise((resolve) => {
     const sound = new Sound(uri, "", (error) => {
       error && console.log("error loading sound", error);
       resolve(sound.getDuration());
     });
   });
-};
-
-const getOfflineDuration = async ({ uri }) => {
-  return await new Promise((resolve) => {
-    const sound = new Sound(uri, "", (error) => {
-      error && console.log("error loading sound", error);
-      resolve(sound.getDuration());
-    });
-  });
-};
-
-const getOnlineDuration = async ({ uri }) => {
-  console.log("getting online duration", uri);
-  await TrackPlayer.add({
-    id: Math.floor(10000).toString(),
-    url: uri,
-    title: "Track Title",
-    artist: "Track Artist",
-  });
-  return await TrackPlayer.getDuration();
 };
 
 // resume audio

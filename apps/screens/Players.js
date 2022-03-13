@@ -1,5 +1,5 @@
 import Slider from "@react-native-community/slider";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Dimensions,
@@ -10,24 +10,20 @@ import {
   View,
 } from "react-native";
 import Sound from "react-native-sound";
-import { useTrackPlayerEvents, Event } from "react-native-track-player";
-Sound.setActive(true);
 import RNFetchBlob from "rn-fetch-blob";
 import PlayerButton from "../components/PlayerButton";
 import Screen from "../components/Screen";
 import { AudioContext } from "../context/AudioProvider";
-import { getDuration, pause, play, stop } from "../misc/audioController";
+import { pause, play, stop } from "../misc/audioController";
 import color from "../misc/color";
 import { convertTime } from "../misc/helper";
+Sound.setActive(true);
 Sound.setCategory("Playback");
 const { width } = Dimensions.get("window");
 
 const Player = () => {
-  const [currentPosition, setCurrentPosition] = useState(0);
   const context = useContext(AudioContext);
   const {
-    playbackPosition,
-    playbackDuration,
     currentAudio,
     updateState,
     isAudioPlaying,
@@ -36,141 +32,71 @@ const Player = () => {
     audioFiles,
     soundTimer,
   } = context;
-  const [isDownloaded, setisDownloaded] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [audioLoading, setAudioLoading] = useState(false);
-  const firstRender = useRef(true);
-
-  useTrackPlayerEvents([Event.PlaybackState], async (event) => {
-    if (event.state === "loading")
-      return !audioLoading && setAudioLoading(true);
-    else if (event.state === "playing")
-      return audioLoading && setAudioLoading(false);
-  });
+  const [isDownloaded, setisDownloaded] = useState(false);
+  const [reRender, setReRender] = useState(false);
 
   const calculateSeebBar = () => {
-    if (currentTime && currentAudio.realDuration) {
-      return currentTime / currentAudio.realDuration;
+    if (currentTime && currentAudio.duration) {
+      return currentTime / currentAudio.duration;
     }
 
     return 0;
   };
 
-  useEffect(() => {
-    context.loadPreviousAudio();
-  }, []);
-
-  useEffect(() => {
-    if (firstRender.current && currentAudio) {
-      firstTimeDuration();
-    }
-  }, [currentAudio]);
-
-  const firstTimeDuration = async () => {
-    firstRender.current = false;
-    const localPath =
-      RNFetchBlob.fs.dirs.MusicDir + `/${currentAudio.filename}`;
-    const _isDownloaded = await checkIfDownloaded();
-    const uri = !_isDownloaded
-      ? Platform.OS === "ios"
-        ? currentAudio.urlIOS
-        : currentAudio.urlAndroid
-      : Platform.OS === "ios"
-      ? "file://" + localPath
-      : localPath;
-    const _duration = await getDuration({
-      uri,
-      isDownloaded: _isDownloaded,
-    });
-    return updateState(context, {
-      currentAudio: { ...currentAudio, realDuration: _duration },
-    });
+  const checkIfDownloaded = async () => {
+    const exists = await RNFetchBlob.fs.exists(
+      RNFetchBlob.fs.dirs.DocumentDir + `/${currentAudio.filename}`
+    );
+    setisDownloaded(exists);
   };
 
   useEffect(() => {
-    if (currentAudio) {
-      checkIfDownloaded();
-    }
+    context.loadPreviousAudio();
+    checkIfDownloaded();
   }, []);
 
   useEffect(() => {
     if (currentAudio) {
       currentAudioChangedCondition();
+      checkIfDownloaded();
     }
-  }, [currentAudioIndex]);
+  }, [reRender]);
 
   const currentAudioChangedCondition = async () => {
-    console.log("audio index changed");
     const localPath =
-      RNFetchBlob.fs.dirs.MusicDir + `/${currentAudio.filename}`;
-    const _isDownloaded = await checkIfDownloaded();
-    const uri = !_isDownloaded
+      RNFetchBlob.fs.dirs.DocumentDir + `/${currentAudio.filename}`;
+    const uri = !isDownloaded
       ? Platform.OS === "ios"
         ? currentAudio.urlIOS
         : currentAudio.urlAndroid
       : Platform.OS === "ios"
       ? "file://" + localPath
       : localPath;
+    const index = audioFiles.findIndex(({ id }) => id === currentAudio.id);
     if (isAudioPlaying) {
-      if (!currentAudio.realDuration) {
-        const _duration = await getDuration({
-          uri,
-          isDownloaded: _isDownloaded,
-        });
-        return updateState(context, {
-          currentAudio: { ...currentAudio, realDuration: _duration },
-        });
-      }
       await stop({
         context,
-        uri,
-        isDownloaded: _isDownloaded,
-        isPreviousDownloaded: isDownloaded,
       });
       clearInterval(soundTimer.current);
-
       await play({
-        context,
-        isDownloaded: _isDownloaded,
         uri,
-        index: currentAudioIndex,
+        context,
+        index: index,
         audio: currentAudio,
+        isPlayer: true,
       });
-      activateInterval();
+      return activateInterval();
     } else {
-      if (!currentAudio.realDuration) {
-        const _duration = await getDuration({
-          uri,
-          isDownloaded: _isDownloaded,
-        });
-        return updateState(context, {
-          currentAudio: { ...currentAudio, realDuration: _duration },
-        });
-      }
-
-      await play({
-        context,
-        isDownloaded: _isDownloaded,
-        uri,
-        index: currentAudioIndex,
-        audio: currentAudio,
-      });
-      activateInterval();
+      return;
     }
-  };
-
-  const checkIfDownloaded = async () => {
-    const exists = await RNFetchBlob.fs.exists(
-      RNFetchBlob.fs.dirs.MusicDir + `/${currentAudio.filename}`
-    );
-    exists && setisDownloaded(exists);
-    return exists;
   };
 
   const activateInterval = () => {
     soundTimer.current = setInterval(() => {
-      if (currentTime >= currentAudio.realDuration) {
-        stop({ context, isDownloaded });
+      if (currentTime >= currentAudio.duration) {
+        stop({ context });
         clearInterval(soundTimer.current);
         return;
       }
@@ -184,7 +110,7 @@ const Player = () => {
 
   const handlePlayPause = async () => {
     const localPath =
-      RNFetchBlob.fs.dirs.MusicDir + `/${currentAudio.filename}`;
+      RNFetchBlob.fs.dirs.DocumentDir + `/${currentAudio.filename}`;
     const uri = !isDownloaded
       ? Platform.OS === "ios"
         ? currentAudio.urlIOS
@@ -192,50 +118,48 @@ const Player = () => {
       : Platform.OS === "ios"
       ? "file://" + localPath
       : localPath;
+
     const index = audioFiles.findIndex(({ id }) => id === currentAudio.id);
     if (currentAudioIndex === null) {
       await play({
-        context,
         uri,
+        context,
         index,
-        isDownloaded,
         audio: currentAudio,
+        playDirectly: true,
       });
       return activateInterval();
     }
 
     if (currentAudioIndex === index) {
       if (isAudioPlaying) {
-        await pause({ context, isDownloaded, uri });
-        return clearInterval(soundTimer.current);
+        return await pause({ context });
       } else {
         await play({
-          context,
           uri,
+          context,
           index,
-          isDownloaded,
           audio: currentAudio,
+          playDirectly: true,
         });
         return activateInterval();
       }
     } else {
       if (isAudioPlaying) {
-        await stop({ context, isDownloaded });
+        await stop({ context });
         clearInterval(soundTimer.current);
         await play({
-          context,
           uri,
+          context,
           index,
-          isDownloaded,
           audio: currentAudio,
         });
         return activateInterval();
       } else {
         await play({
-          context,
           uri,
+          context,
           index,
-          isDownloaded,
           audio: currentAudio,
         });
         return activateInterval();
@@ -244,45 +168,45 @@ const Player = () => {
   };
 
   const handleNext = async () => {
-    if (currentAudioIndex === audioFiles.length - 1) return;
+    const index = audioFiles.findIndex(({ id }) => id === currentAudio.id);
+    if (index === audioFiles.length - 1) return;
     updateState(context, {
-      currentAudioIndex: currentAudioIndex + 1,
-      currentAudio: audioFiles[currentAudioIndex + 1],
+      currentAudio: audioFiles[index + 1],
     });
+    setReRender(!reRender);
   };
 
   const handlePrevious = async () => {
-    if (currentAudioIndex === 0) return;
+    const index = audioFiles.findIndex(({ id }) => id === currentAudio.id);
+    if (index === 0) return;
     updateState(context, {
-      currentAudioIndex: currentAudioIndex - 1,
-      currentAudio: audioFiles[currentAudioIndex - 1],
+      currentAudio: audioFiles[index - 1],
     });
+    setReRender(!reRender);
   };
 
   if (!context.currentAudio) return null;
 
   const onValueChange = (value) => {
     if (isAudioPlaying && sound.current) {
-      sound.current.setCurrentTime(value * currentAudio.realDuration);
-      setCurrentTime(value * currentAudio.realDuration);
+      sound.current.setCurrentTime(value * currentAudio.duration);
+      setCurrentTime(value * currentAudio.duration);
     }
-    setCurrentPosition(convertTime(value * currentAudio.realDuration));
   };
 
   const onSlidingComplete = async (value) => {
     console.log(
       "onSlidingComplete",
-      value * currentAudio.realDuration,
-      currentAudio.realDuration
+      value * currentAudio.duration,
+      currentAudio.duration
     );
     // await moveAudio(context, value);
     if (isAudioPlaying && sound.current) {
       if (value === 1) {
         return handleNext();
       }
-      sound.current.setCurrentTime(value * currentAudio.realDuration);
+      sound.current.setCurrentTime(value * currentAudio.duration);
     }
-    setCurrentPosition(0);
   };
 
   return (
@@ -333,7 +257,7 @@ const Player = () => {
           >
             <Text style={{ color: "#fff" }}>{convertTime(currentTime)}</Text>
             <Text style={{ color: "#fff" }}>
-              {convertTime(currentAudio.realDuration)}
+              {convertTime(currentAudio.duration)}
             </Text>
           </View>
           <Slider
