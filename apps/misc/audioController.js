@@ -5,7 +5,6 @@ Sound.setCategory("Playback");
 
 // play audio
 export const play = async ({ context, uri, index, audio }) => {
-  console.log("playing from", uri);
   try {
     const { sound, currentAudioIndex, updateState } = context;
     if (sound.current && currentAudioIndex === index) {
