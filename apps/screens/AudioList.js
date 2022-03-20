@@ -14,6 +14,7 @@ import Screen from "../components/Screen";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import OptionModal from "../components/OptionModal";
 import { selectAudio } from "../misc/audioController";
+import { musicControlListener } from "../misc/audioController";
 
 export class AudioList extends Component {
   static contextType = AudioContext;
@@ -47,6 +48,7 @@ export class AudioList extends Component {
 
   componentDidMount() {
     this.context.loadPreviousAudio();
+    musicControlListener({ context: this.context });
   }
 
   rowRenderer = (type, item, index, extendedState) => {

@@ -1,30 +1,28 @@
 import Slider from "@react-native-community/slider";
 import React, { useContext, useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Dimensions,
   Image,
-  Platform,
   StyleSheet,
   Text,
   View,
 } from "react-native";
 import Sound from "react-native-sound";
-Sound.setActive(true);
 import RNFetchBlob from "rn-fetch-blob";
 import PlayerButton from "../components/PlayerButton";
 import Screen from "../components/Screen";
 import { AudioContext } from "../context/AudioProvider";
+import { pause, play, stop } from "../misc/audioController";
 import color from "../misc/color";
 import { convertTime } from "../misc/helper";
-Sound.setCategory("Playback");
+Sound.setActive(true);
+Sound.setCategory("Playback", false);
 const { width } = Dimensions.get("window");
 
 const Player = () => {
-  const [currentPosition, setCurrentPosition] = useState(0);
   const context = useContext(AudioContext);
   const {
-    playbackPosition,
-    playbackDuration,
     currentAudio,
     updateState,
     isAudioPlaying,
@@ -33,12 +31,13 @@ const Player = () => {
     audioFiles,
     soundTimer,
   } = context;
-  const [isDownloaded, setisDownloaded] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
+  const [audioLoading, setAudioLoading] = useState(false);
+  const [reRender, setReRender] = useState(false);
 
   const calculateSeebBar = () => {
-    if (currentTime && currentAudio.realDuration) {
-      return currentTime / currentAudio.realDuration;
+    if (currentTime && currentAudio.duration) {
+      return currentTime / currentAudio.duration;
     }
 
     return 0;
@@ -46,108 +45,40 @@ const Player = () => {
 
   useEffect(() => {
     context.loadPreviousAudio();
+    // checkIfDownloaded();
   }, []);
 
   useEffect(() => {
-    checkIfDownloaded();
-  }, []);
-
-  useEffect(() => {
-    currentAudioChangedCondition();
-  }, [currentAudio]);
+    if (currentAudio) {
+      currentAudioChangedCondition();
+      // checkIfDownloaded();
+    }
+  }, [reRender]);
 
   const currentAudioChangedCondition = async () => {
+    const index = audioFiles.findIndex(({ id }) => id === currentAudio.id);
     if (isAudioPlaying) {
-      if (currentAudio && currentAudio.realDuration) return;
-      const _isDownloaded = await checkIfDownloaded();
-      sound.current.stop();
+      await stop({
+        context,
+      });
       clearInterval(soundTimer.current);
-      const uri = !_isDownloaded
-        ? Platform.OS === "ios"
-          ? currentAudio.urlIOS
-          : currentAudio.urlAndroid
-        : RNFetchBlob.fs.dirs.MusicDir + `/${currentAudio.filename}`;
-      sound.current = new Sound(uri, "", (error) => {
-        if (error) {
-          console.log("failed to load the sound", error);
-          return;
-        }
-        sound.current.play();
-        activateInterval();
-        updateState(context, {
-          currentAudio: {
-            ...currentAudio,
-            realDuration: sound.current.getDuration(),
-          },
-        });
+      await play({
+        uri: currentAudio.url,
+        context,
+        index: index,
+        audio: currentAudio,
+        isPlayer: true,
       });
+      return activateInterval();
     } else {
-      if (currentAudio && currentAudio.realDuration) return;
-      const _isDownloaded = await checkIfDownloaded();
-      const localPath =
-        RNFetchBlob.fs.dirs.MusicDir + `/${currentAudio.filename}`;
-      const uri = !_isDownloaded
-        ? Platform.OS === "ios"
-          ? currentAudio.urlIOS
-          : currentAudio.urlAndroid
-        : Platform.OS === "ios"
-        ? "file://" + localPath
-        : localPath;
-      console.log("uri", uri);
-      sound.current = new Sound(uri, "", (error) => {
-        if (error) {
-          console.log("failed to load the sound", error);
-          return;
-        }
-        sound.current && sound.current.setCategory("Playback");
-        updateState(context, {
-          currentAudio: {
-            ...currentAudio,
-            realDuration: sound.current.getDuration(),
-          },
-        });
-      });
-    }
-  };
-
-  const checkIfDownloaded = async () => {
-    const exists = await RNFetchBlob.fs.exists(
-      RNFetchBlob.fs.dirs.MusicDir + `/${currentAudio.filename}`
-    );
-    exists && setisDownloaded(exists);
-    console.log(currentAudio.filename, "exists", exists);
-    return exists;
-  };
-
-  const playSoundWithUri = (uri, index) => {
-    updateState(context, {
-      currentAudioIndex: index,
-      isAudioPlaying: true,
-    });
-    if (sound.current) {
-      console.log("playing from paused");
-      if (currentTime !== 0) sound.current.setCurrentTime(currentTime);
-      sound.current.play();
-      activateInterval();
       return;
     }
-    sound.current = new Sound(uri, "", (error) => {
-      if (error) {
-        console.log("failed to load the sound", error);
-        return;
-      }
-      sound.current && sound.current.setCategory("Playback");
-      if (currentTime !== 0) sound.current.setCurrentTime(currentTime);
-      sound.current.setNumberOfLoops(0);
-      sound.current.play();
-      activateInterval();
-    });
   };
 
   const activateInterval = () => {
     soundTimer.current = setInterval(() => {
-      if (currentTime >= currentAudio.realDuration) {
-        stopPlayingSound();
+      if (currentTime >= currentAudio.duration) {
+        stop({ context });
         clearInterval(soundTimer.current);
         return;
       }
@@ -159,69 +90,96 @@ const Player = () => {
     }, 1000);
   };
 
-  const stopPlayingSound = async () => {
-    await sound.current.pause();
-    await updateState(context, {
-      isAudioPlaying: false,
-    });
-    sound.current = null;
-    clearInterval(soundTimer.current);
-  };
-
-  const pausePlayingSound = async () => {
-    console.log("pausing");
-    await sound.current.pause();
-    await updateState(context, {
-      isAudioPlaying: false,
-    });
-    clearInterval(soundTimer.current);
-  };
-
   const handlePlayPause = async () => {
-    const uri = !isDownloaded
-      ? Platform.OS === "ios"
-        ? currentAudio.urlIOS
-        : currentAudio.urlAndroid
-      : RNFetchBlob.fs.dirs.MusicDir + `/${currentAudio.filename}`;
     const index = audioFiles.findIndex(({ id }) => id === currentAudio.id);
     if (currentAudioIndex === null) {
-      return playSoundWithUri(uri, index);
+      await play({
+        uri: currentAudio.url,
+        context,
+        index,
+        audio: currentAudio,
+        playDirectly: true,
+      });
+      return activateInterval();
     }
 
     if (currentAudioIndex === index) {
-      console.log("currentAudioIndex = index, audioPlaying", isAudioPlaying);
       if (isAudioPlaying) {
-        return pausePlayingSound();
+        return await pause({ context });
       } else {
-        return playSoundWithUri(uri, index);
+        await play({
+          uri: currentAudio.url,
+          context,
+          index,
+          audio: currentAudio,
+          playDirectly: true,
+        });
+        return activateInterval();
       }
     } else {
       if (isAudioPlaying) {
-        await stopPlayingSound();
-        return playSoundWithUri(uri, index);
+        await stop({ context });
+        clearInterval(soundTimer.current);
+        await play({
+          uri: currentAudio.url,
+          context,
+          index,
+          audio: currentAudio,
+        });
+        return activateInterval();
       } else {
-        return playSoundWithUri(uri, index);
+        await play({
+          uri: currentAudio.url,
+          context,
+          index,
+          audio: currentAudio,
+        });
+        return activateInterval();
       }
     }
   };
 
   const handleNext = async () => {
-    if (currentAudioIndex === audioFiles.length - 1) return;
+    const index = audioFiles.findIndex(({ id }) => id === currentAudio.id);
+    if (index === audioFiles.length - 1) return;
     updateState(context, {
-      currentAudioIndex: currentAudioIndex + 1,
-      currentAudio: audioFiles[currentAudioIndex + 1],
+      currentAudio: audioFiles[index + 1],
     });
+    setReRender(!reRender);
   };
 
   const handlePrevious = async () => {
-    if (currentAudioIndex === 0) return;
+    const index = audioFiles.findIndex(({ id }) => id === currentAudio.id);
+    if (index === 0) return;
     updateState(context, {
-      currentAudioIndex: currentAudioIndex - 1,
-      currentAudio: audioFiles[currentAudioIndex - 1],
+      currentAudio: audioFiles[index - 1],
     });
+    setReRender(!reRender);
   };
 
   if (!context.currentAudio) return null;
+
+  const onValueChange = (value) => {
+    if (isAudioPlaying && sound.current) {
+      sound.current.setCurrentTime(value * currentAudio.duration);
+      setCurrentTime(value * currentAudio.duration);
+    }
+  };
+
+  const onSlidingComplete = async (value) => {
+    console.log(
+      "onSlidingComplete",
+      value * currentAudio.duration,
+      currentAudio.duration
+    );
+    // await moveAudio(context, value);
+    if (isAudioPlaying && sound.current) {
+      if (value === 1) {
+        return handleNext();
+      }
+      sound.current.setCurrentTime(value * currentAudio.duration);
+    }
+  };
 
   return (
     <Screen>
@@ -235,9 +193,8 @@ const Player = () => {
               </>
             )}
           </View>
-          <Text style={styles.audioCount}>{`${
-            context.currentAudioIndex + 1
-          } / ${context.totalAudioCount}`}</Text>
+          <Text style={styles.audioCount}>{`${context.currentAudioIndex + 1
+            } / ${context.totalAudioCount}`}</Text>
         </View>
         <View style={styles.midBannerContainer}>
           {!context.isPlaying ? (
@@ -269,10 +226,10 @@ const Player = () => {
               paddingHorizontal: 15,
             }}
           >
-            <Text style={{ color: "#fff" }}>
-              {convertTime(currentAudio.realDuration)}
-            </Text>
             <Text style={{ color: "#fff" }}>{convertTime(currentTime)}</Text>
+            <Text style={{ color: "#fff" }}>
+              {convertTime(currentAudio.duration)}
+            </Text>
           </View>
           <Slider
             style={{ width: width, height: 40 }}
@@ -281,15 +238,7 @@ const Player = () => {
             value={calculateSeebBar()}
             minimumTrackTintColor={color.FONT_MEDIUM}
             maximumTrackTintColor={color.ACTIVE_BG}
-            onValueChange={(value) => {
-              if (isAudioPlaying && sound.current) {
-                sound.current.setCurrentTime(value * currentAudio.realDuration);
-                setCurrentTime(value * currentAudio.realDuration);
-              }
-              setCurrentPosition(
-                convertTime(value * currentAudio.realDuration)
-              );
-            }}
+            onValueChange={onValueChange}
             onSlidingStart={async () => {
               if (!isAudioPlaying) return;
 
@@ -299,29 +248,19 @@ const Player = () => {
                 console.log("error inside onSlidingStart callback", error);
               }
             }}
-            onSlidingComplete={async (value) => {
-              console.log(
-                "onSlidingComplete",
-                value * currentAudio.realDuration,
-                currentAudio.realDuration
-              );
-              // await moveAudio(context, value);
-              if (isAudioPlaying && sound.current) {
-                if (value === 1) {
-                  return handleNext();
-                }
-                sound.current.setCurrentTime(value * currentAudio.realDuration);
-              }
-              setCurrentPosition(0);
-            }}
+            onSlidingComplete={onSlidingComplete}
           />
           <View style={styles.audioControllers}>
             <PlayerButton iconType="PREV" onPress={handlePrevious} />
-            <PlayerButton
-              onPress={handlePlayPause}
-              style={{ marginHorizontal: 25 }}
-              iconType={isAudioPlaying ? "PLAY" : "PAUSE"}
-            />
+            {audioLoading ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <PlayerButton
+                onPress={handlePlayPause}
+                style={{ marginHorizontal: 25 }}
+                iconType={isAudioPlaying ? "PLAY" : "PAUSE"}
+              />
+            )}
             <PlayerButton iconType="NEXT" onPress={handleNext} />
           </View>
         </View>

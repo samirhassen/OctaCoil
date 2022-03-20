@@ -1,5 +1,4 @@
 import { Entypo, Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
-import { Audio } from "expo-av";
 import React, { useContext, useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -12,10 +11,11 @@ import {
   View,
 } from "react-native";
 import Sound from "react-native-sound";
-Sound.setActive(true);
 import RNFetchBlob from "rn-fetch-blob";
 import { AudioContext } from "../context/AudioProvider";
+import { pause, play, stop } from "../misc/audioController";
 import color from "../misc/color";
+Sound.setActive(true);
 
 const getThumbnailText = (filename) => {
   return (
@@ -55,7 +55,8 @@ const convertTime = (minutes) => {
  * @param {*} isPlaying
  * @returns
  */
-const renderPlayPauseIcon = (isPlaying) => {
+const renderPlayPauseIcon = (isPlaying, loading) => {
+  if (loading) return <ActivityIndicator size="small" color="#fff" />;
   if (isPlaying)
     return <Ionicons name="pause" size={30} color={color.ACTIVE_FONT} />;
   return <Entypo name="controller-play" size={30} color={color.ACTIVE_FONT} />;
@@ -64,39 +65,24 @@ const renderPlayPauseIcon = (isPlaying) => {
 //Method to display audio list item
 const AudioListItem = ({ item, title, duration, url, activeListItem }) => {
   const [loader, setLoader] = useState(false);
-  const { getAudioFiles } = useContext(AudioContext);
   const context = useContext(AudioContext);
-  const { updateState, audioFiles, currentAudioIndex, isAudioPlaying, sound } =
+  const { audioFiles, currentAudioIndex, isAudioPlaying, getAudioFiles } =
     context;
-
-  const [isDownloaded, setisDownloaded] = useState(false);
-
-  useEffect(() => {
-    checkIfDownloaded();
-  }, []);
-
-  const checkIfDownloaded = async () => {
-    const exists = await RNFetchBlob.fs.exists(
-      RNFetchBlob.fs.dirs.MusicDir + `/${title}`
-    );
-    exists && setisDownloaded(exists);
-  };
+  const [audioLoading, setAudioLoading] = useState(false);
 
   const onDownloadPress = async (url, title) => {
     try {
       setLoader(true);
       await RNFetchBlob.config({
         fileCache: true,
-        addAndroidDownloads: {
-          useDownloadManager: true,
-          notification: false,
-          mime: "text/plain",
-          description: "File downloaded by download manager.",
-        },
-        path: RNFetchBlob.fs.dirs.MusicDir + `/${title}`,
+        // addAndroidDownloads: {
+        //   useDownloadManager: true,
+        //   notification: false,
+        //   mime: "text/plain",
+        //   description: "File downloaded by download manager.",
+        // },
+        path: RNFetchBlob.fs.dirs.DocumentDir + `/${title}`,
       }).fetch("GET", url);
-      setLoader(false);
-      setisDownloaded(true);
       setLoader(false);
       getAudioFiles();
       alert("File Download Sucessfully!");
@@ -106,68 +92,34 @@ const AudioListItem = ({ item, title, duration, url, activeListItem }) => {
     }
   };
 
-  const playSoundWithUri = (uri, index) => {
-    if (sound.current && currentAudioIndex === index) {
-      updateState(context, {
-        isAudioPlaying: true,
-      });
-      sound.current.play();
-      return;
-    }
-    sound.current = new Sound(uri, "", (error) => {
-      if (error) {
-        console.log("failed to load the sound", error);
-        return;
-      }
-      sound.current.setCategory("Playback");
-      sound.current.play();
-      updateState(context, {
-        currentAudioIndex: index,
-        currentAudio: { ...item, realDuration: sound.current.getDuration() },
-        isAudioPlaying: true,
-      });
-    });
-  };
-
-  const stopPlayingSound = async () => {
-    await sound.current.pause();
-    await updateState(context, {
-      isAudioPlaying: false,
-    });
-    sound.current = null;
-  };
-
-  const pausePlayingSound = async () => {
-    await sound.current.pause();
-    await updateState(context, {
-      isAudioPlaying: false,
-    });
-  };
-
   const handlePlayAudio = async () => {
-    const localPath = RNFetchBlob.fs.dirs.MusicDir + `/${title}`;
-    const uri = !isDownloaded
-      ? url
-      : Platform.OS === "ios"
-      ? "file://" + localPath
-      : localPath;
     const index = audioFiles.findIndex(({ id }) => id === item.id);
     if (currentAudioIndex === null) {
-      return playSoundWithUri(uri, index);
+      return await play({ context, uri: item.url, index, audio: item });
     }
 
     if (currentAudioIndex === index) {
       if (isAudioPlaying) {
-        return pausePlayingSound();
+        return await pause({ context });
       } else {
-        return playSoundWithUri(uri, index);
+        return await play({ context, uri: item.url, index, audio: item });
       }
     } else {
       if (isAudioPlaying) {
-        await stopPlayingSound();
-        return playSoundWithUri(uri, index);
+        await stop({ context });
+        return await play({
+          context,
+          uri: item.url,
+          index,
+          audio: item,
+        });
       } else {
-        return playSoundWithUri(uri, index);
+        return await play({
+          context,
+          uri: item.url,
+          index,
+          audio: item,
+        });
       }
     }
   };
@@ -187,13 +139,13 @@ const AudioListItem = ({ item, title, duration, url, activeListItem }) => {
             >
               <Text style={styles.thumbnailText}>
                 {activeListItem
-                  ? renderPlayPauseIcon(isAudioPlaying)
+                  ? renderPlayPauseIcon(isAudioPlaying, audioLoading)
                   : getThumbnailText(title)}
               </Text>
             </View>
             <View
               style={[
-                isDownloaded
+                item.isDownloaded
                   ? styles.titleDownloadContainer
                   : styles.titleContainer,
               ]}
@@ -212,7 +164,7 @@ const AudioListItem = ({ item, title, duration, url, activeListItem }) => {
               <Text style={styles.timeText}>{convertTime(duration)}</Text>
             </View>
           </View>
-          {!isDownloaded ? (
+          {!item.isDownloaded ? (
             <View style={styles.rightContainer}>
               {!loader ? (
                 <Feather
