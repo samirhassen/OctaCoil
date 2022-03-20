@@ -75,12 +75,12 @@ const AudioListItem = ({ item, title, duration, url, activeListItem }) => {
       setLoader(true);
       await RNFetchBlob.config({
         fileCache: true,
-        addAndroidDownloads: {
-          useDownloadManager: true,
-          notification: false,
-          mime: "text/plain",
-          description: "File downloaded by download manager.",
-        },
+        // addAndroidDownloads: {
+        //   useDownloadManager: true,
+        //   notification: false,
+        //   mime: "text/plain",
+        //   description: "File downloaded by download manager.",
+        // },
         path: RNFetchBlob.fs.dirs.DocumentDir + `/${title}`,
       }).fetch("GET", url);
       setLoader(false);

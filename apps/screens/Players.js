@@ -45,13 +45,13 @@ const Player = () => {
 
   useEffect(() => {
     context.loadPreviousAudio();
-    checkIfDownloaded();
+    // checkIfDownloaded();
   }, []);
 
   useEffect(() => {
     if (currentAudio) {
       currentAudioChangedCondition();
-      checkIfDownloaded();
+      // checkIfDownloaded();
     }
   }, [reRender]);
 
@@ -193,9 +193,8 @@ const Player = () => {
               </>
             )}
           </View>
-          <Text style={styles.audioCount}>{`${
-            context.currentAudioIndex + 1
-          } / ${context.totalAudioCount}`}</Text>
+          <Text style={styles.audioCount}>{`${context.currentAudioIndex + 1
+            } / ${context.totalAudioCount}`}</Text>
         </View>
         <View style={styles.midBannerContainer}>
           {!context.isPlaying ? (

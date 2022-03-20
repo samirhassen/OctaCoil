@@ -80,7 +80,7 @@ const PlayList = ({ navigation }) => {
 
         updatedList = oldList.filter(list => {
           if (list.id === playList.id) {
-              //same audio in playlist
+            //same audio in playlist
             for (let audio of list.audios) {
               if (audio.id === addToPlayList.id) {
                 // alert with some message
@@ -118,9 +118,9 @@ const PlayList = ({ navigation }) => {
 
   return (
     <Screen>
-    <ScrollView contentContainerStyle={styles.container}>
-      {playList.length
-        ? playList.map(item => (
+      <ScrollView contentContainerStyle={styles.container}>
+        {playList.length
+          ? playList.map(item => (
             <TouchableOpacity
               key={item.id.toString()}
               style={styles.playListBanner}
@@ -134,26 +134,26 @@ const PlayList = ({ navigation }) => {
               </Text>
             </TouchableOpacity>
           ))
-        : null}
+          : null}
 
-      <TouchableOpacity
-        onPress={() => setModalVisible(true)}
-        style={{ marginTop: 15 }}
-      >
-        <Text style={styles.playListBtn}>+ Add New Playlist</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => setModalVisible(true)}
+          style={{ marginTop: 15 }}
+        >
+          <Text style={styles.playListBtn}>+ Add New Playlist</Text>
+        </TouchableOpacity>
 
-      <PlayListInputModal
-        visible={modalVisible}
-        onClose={() => setModalVisible(false)}
-        onSubmit={createPlayList}
-      />
-      <PlayListDetail
-        visible={showPlayList}
-        playList={selectedPlayList}
-        onClose={() => setShowPlayList(false)}
-      />
-    </ScrollView>
+        <PlayListInputModal
+          visible={modalVisible}
+          onClose={() => setModalVisible(false)}
+          onSubmit={createPlayList}
+        />
+        <PlayListDetail
+          visible={showPlayList}
+          playList={selectedPlayList}
+          onClose={() => setShowPlayList(false)}
+        />
+      </ScrollView>
     </Screen>
   );
 };
