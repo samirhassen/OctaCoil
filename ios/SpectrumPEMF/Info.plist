@@ -31,6 +31,10 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>EXUpdatesSDKVersion</key>
+	<string>43.0.0</string>
+	<key>EXUpdatesURL</key>
+	<string>https://exp.host/@my-expo-username/Spectrum-PEMF</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
