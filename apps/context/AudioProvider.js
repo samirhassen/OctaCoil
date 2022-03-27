@@ -227,6 +227,7 @@ export class AudioProvider extends Component {
   };
 
   onPlaybackStatusUpdate = async (playbackStatus) => {
+    console.log("playbackstatus", playbackStatus);
     if (playbackStatus.isLoaded && playbackStatus.isPlaying) {
       this.updateState(this, {
         playbackPosition: playbackStatus.positionMillis,

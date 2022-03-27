@@ -13,7 +13,12 @@ import RNFetchBlob from "rn-fetch-blob";
 import PlayerButton from "../components/PlayerButton";
 import Screen from "../components/Screen";
 import { AudioContext } from "../context/AudioProvider";
-import { pause, play, stop } from "../misc/audioController";
+import {
+  pause,
+  play,
+  stop,
+  musicControlListener,
+} from "../misc/audioController";
 import color from "../misc/color";
 import { convertTime } from "../misc/helper";
 Sound.setActive(true);
@@ -36,26 +41,57 @@ const Player = () => {
   const [reRender, setReRender] = useState(false);
 
   const calculateSeebBar = () => {
+    console.log(context, "context");
+
     if (currentTime && currentAudio.duration) {
+      console.log(currentTime, currentAudio.duration, "in player screen");
+
       return currentTime / currentAudio.duration;
     }
+    console.log("current time__________________________");
+    console.log(currentTime, currentAudio);
 
     return 0;
   };
 
   useEffect(() => {
     context.loadPreviousAudio();
+    musicControlListener({ context: context });
+    if (currentAudio) {
+      setAudioPosition();
+      // checkIfDownloaded();
+    }
     // checkIfDownloaded();
   }, []);
 
-  useEffect(() => {
-    if (currentAudio) {
-      currentAudioChangedCondition();
-      // checkIfDownloaded();
-    }
-  }, [reRender]);
+  // useEffect(() => {
+  //   if (currentAudio) {
+  //     setAudioPosition();
+  //     // checkIfDownloaded();
+  //   }
+  // }, [reRender]);
 
-  const currentAudioChangedCondition = async () => {
+  const setAudioPosition = async () => {
+    const index = audioFiles.findIndex(({ id }) => id === currentAudio.id);
+    if (isAudioPlaying) {
+      // await stop({
+      //   context,
+      // });
+      // clearInterval(soundTimer.current);
+      // await play({
+      //   uri: currentAudio.url,
+      //   context,
+      //   index: index,
+      //   audio: currentAudio,
+      //   isPlayer: true,
+      // });
+      return activateInterval();
+    } else {
+      return;
+    }
+  };
+
+  const currentChangedAudioPosition = async () => {
     const index = audioFiles.findIndex(({ id }) => id === currentAudio.id);
     if (isAudioPlaying) {
       await stop({
@@ -193,8 +229,9 @@ const Player = () => {
               </>
             )}
           </View>
-          <Text style={styles.audioCount}>{`${context.currentAudioIndex + 1
-            } / ${context.totalAudioCount}`}</Text>
+          <Text style={styles.audioCount}>{`${
+            context.currentAudioIndex + 1
+          } / ${context.totalAudioCount}`}</Text>
         </View>
         <View style={styles.midBannerContainer}>
           {!context.isPlaying ? (

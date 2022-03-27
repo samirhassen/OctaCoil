@@ -1,20 +1,47 @@
-import React, { Component, useContext, useEffect, useState } from "react";
+import React, { Component, useContext, useState } from "react";
 import {
   Text,
-  View,
   StyleSheet,
   Dimensions,
   TouchableOpacity,
-  ImageBackground,
+  StatusBar,
 } from "react-native";
 import { AudioContext } from "../context/AudioProvider";
 import { RecyclerListView, LayoutProvider } from "recyclerlistview";
 import AudioListItem from "../components/AudioListItem";
 import Screen from "../components/Screen";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import OptionModal from "../components/OptionModal";
 import { selectAudio } from "../misc/audioController";
 import { musicControlListener } from "../misc/audioController";
+
+const Functional = ({
+  type,
+  item,
+  index,
+  extendedState,
+  onAudioPress,
+  onOptionPress,
+}) => {
+  const context = useContext(AudioContext);
+  const [isSoundPlaying, setIsSoundPlaying] = useState(false);
+
+  return (
+    <AudioListItem
+      isSoundPlaying={isSoundPlaying}
+      setIsSoundPlaying={setIsSoundPlaying}
+      item={item}
+      title={item.filename}
+      type={item.type}
+      album={item.album}
+      url={Platform.OS == "android" ? item.urlAndroid : item.urlIOS}
+      isDownlaod={item?.isDownloaded}
+      isPlaying={extendedState.isPlaying}
+      duration={item.duration}
+      activeListItem={context.currentAudioIndex === index}
+      onAudioPress={onAudioPress}
+      onOptionPress={onOptionPress}
+    />
+  );
+};
 
 export class AudioList extends Component {
   static contextType = AudioContext;
@@ -67,44 +94,6 @@ export class AudioList extends Component {
     );
   };
 
-  navigateToPlaylist = () => {
-    this.context.updateState(this.context, {
-      addToPlayList: this.currentItem,
-    });
-    this.props.navigation.navigate("PlayList");
-  };
-
-  onPressAudioType = (dataProvider, type) => {
-    if (dataProvider._data.length > 0) {
-      var filteredSong = dataProvider._data.filter(
-        (song) => song.type === type
-      );
-      const tempData1 =
-        filteredSong.length == 0
-          ? dataProvider
-          : dataProvider.cloneWithRows([...filteredSong]);
-      this.context.updateState({}, { filteredAudio: tempData1 });
-    }
-  };
-  /*
-              <View style={styles.category}>
-              <TouchableOpacity style={styles.btnstyle} onPress = {() => this.onPressAudioType(dataProvider, 'all')}>
-                  <Text style={styles.btnText}>All</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.btnstyle} onPress = {() => this.onPressAudioType(dataProvider, 'brain')}>
-                  <Text style={styles.btnText}>Brain</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.btnstyle} onPress = {() => this.onPressAudioType(dataProvider, 'heart')}>
-                  <Text style={styles.btnText}>Heart</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.btnstyle} onPress = {() => this.onPressAudioType(dataProvider, 'bone')}>
-                  <Text style={styles.btnText}>Bone</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.btnstyle} onPress = {() => this.onPressAudioType(dataProvider, 'Healing')}>
-                  <Text style={styles.btnText}>Healing</Text>
-                </TouchableOpacity>
-              </View>
-*/
   render() {
     return (
       <AudioContext.Consumer>
@@ -112,6 +101,8 @@ export class AudioList extends Component {
           if (!filteredAudio._data.length) return null;
           return (
             <Screen>
+              <StatusBar barStyle="dark-content" />
+
               <RecyclerListView
                 style={styles.marginFromTop}
                 dataProvider={dataProvider}
@@ -119,19 +110,12 @@ export class AudioList extends Component {
                 rowRenderer={this.rowRenderer}
                 extendedState={{ isPlaying }}
               />
-              <OptionModal
-                options={[
-                  {
-                    title: "Add to playlist",
-                    onPress: this.navigateToPlaylist,
-                  },
-                ]}
-                currentItem={this.currentItem}
-                onClose={() =>
-                  this.setState({ ...this.state, optionModalVisible: false })
-                }
-                visible={this.state.optionModalVisible}
-              />
+              <TouchableOpacity
+                style={{ height: 100 }}
+                onPress={() => alert(JSON.stringify(this.currentItem))}
+              >
+                <Text>hellooo,</Text>
+              </TouchableOpacity>
             </Screen>
           );
         }}
@@ -139,36 +123,6 @@ export class AudioList extends Component {
     );
   }
 }
-
-const Functional = ({
-  type,
-  item,
-  index,
-  extendedState,
-  onAudioPress,
-  onOptionPress,
-}) => {
-  const context = useContext(AudioContext);
-  const [isSoundPlaying, setIsSoundPlaying] = useState(false);
-
-  return (
-    <AudioListItem
-      isSoundPlaying={isSoundPlaying}
-      setIsSoundPlaying={setIsSoundPlaying}
-      item={item}
-      title={item.filename}
-      type={item.type}
-      album={item.album}
-      url={Platform.OS == "android" ? item.urlAndroid : item.urlIOS}
-      isDownlaod={item?.isDownloaded}
-      isPlaying={extendedState.isPlaying}
-      duration={item.duration}
-      activeListItem={context.currentAudioIndex === index}
-      onAudioPress={onAudioPress}
-      onOptionPress={onOptionPress}
-    />
-  );
-};
 
 const styles = StyleSheet.create({
   marginFromTop: {

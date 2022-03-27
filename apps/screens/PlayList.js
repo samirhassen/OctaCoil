@@ -1,17 +1,17 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { useContext, useEffect, useState } from 'react';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { useContext, useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
   ScrollView,
   TouchableOpacity,
   Alert,
-} from 'react-native';
-import PlayListInputModal from '../components/PlayListInputModal';
-import { AudioContext } from '../context/AudioProvider';
-import color from '../misc/color';
-import PlayListDetail from '../components/PlayListDetail';
-import Screen from '../components/Screen';
+} from "react-native";
+import PlayListInputModal from "../components/PlayListInputModal";
+import { AudioContext } from "../context/AudioProvider";
+import color from "../misc/color";
+import PlayListDetail from "../components/PlayListDetail";
+import Screen from "../components/Screen";
 
 let selectedPlayList = {};
 const PlayList = ({ navigation }) => {
@@ -21,8 +21,8 @@ const PlayList = ({ navigation }) => {
   const context = useContext(AudioContext);
   const { playList, addToPlayList, updateState } = context;
 
-  const createPlayList = async playListName => {
-    const result = await AsyncStorage.getItem('playlist');
+  const createPlayList = async (playListName) => {
+    const result = await AsyncStorage.getItem("playlist");
     if (result !== null) {
       const audios = [];
       if (addToPlayList) {
@@ -36,24 +36,24 @@ const PlayList = ({ navigation }) => {
 
       const updatedList = [...playList, newList];
       updateState(context, { addToPlayList: null, playList: updatedList });
-      await AsyncStorage.setItem('playlist', JSON.stringify(updatedList));
+      await AsyncStorage.setItem("playlist", JSON.stringify(updatedList));
     }
     setModalVisible(false);
   };
 
   const renderPlayList = async () => {
-    const result = await AsyncStorage.getItem('playlist');
+    const result = await AsyncStorage.getItem("playlist");
     if (result === null) {
       const defaultPlayList = {
         id: Date.now(),
-        title: 'My Favorite',
+        title: "My Favorite",
         audios: [],
       };
 
       const newPlayList = [...playList, defaultPlayList];
       updateState(context, { playList: [...newPlayList] });
       return await AsyncStorage.setItem(
-        'playlist',
+        "playlist",
         JSON.stringify([...newPlayList])
       );
     }
@@ -67,9 +67,9 @@ const PlayList = ({ navigation }) => {
     }
   }, []);
 
-  const handleBannerPress = async playList => {
+  const handleBannerPress = async (playList) => {
     if (addToPlayList) {
-      const result = await AsyncStorage.getItem('playlist');
+      const result = await AsyncStorage.getItem("playlist");
 
       let oldList = [];
       let updatedList = [];
@@ -78,7 +78,7 @@ const PlayList = ({ navigation }) => {
       if (result !== null) {
         oldList = JSON.parse(result);
 
-        updatedList = oldList.filter(list => {
+        updatedList = oldList.filter((list) => {
           if (list.id === playList.id) {
             //same audio in playlist
             for (let audio of list.audios) {
@@ -99,7 +99,7 @@ const PlayList = ({ navigation }) => {
 
       if (sameAudio) {
         Alert.alert(
-          'Found same audio!',
+          "Found same audio!",
           `${addToPlayList.title} is already inside the list.`
         );
         sameAudio = false;
@@ -107,33 +107,35 @@ const PlayList = ({ navigation }) => {
       }
 
       updateState(context, { addToPlayList: null, playList: [...updatedList] });
-      return AsyncStorage.setItem('playlist', JSON.stringify([...updatedList]));
+      return AsyncStorage.setItem("playlist", JSON.stringify([...updatedList]));
     }
 
     // if there is no audio selected then we want open the list.
     selectedPlayList = playList;
     // setShowPlayList(true);
-    navigation.navigate('PlayListDetail', playList);
+    navigation.navigate("PlayListDetail", playList);
   };
 
   return (
     <Screen>
+      <StatusBar backgroundColor="#f2f2f2" barStyle="dark-content" />
+
       <ScrollView contentContainerStyle={styles.container}>
         {playList.length
-          ? playList.map(item => (
-            <TouchableOpacity
-              key={item.id.toString()}
-              style={styles.playListBanner}
-              onPress={() => handleBannerPress(item)}
-            >
-              <Text>{item.title}</Text>
-              <Text style={styles.audioCount}>
-                {item.audios.length > 1
-                  ? `${item.audios.length} Songs`
-                  : `${item.audios.length} Song`}
-              </Text>
-            </TouchableOpacity>
-          ))
+          ? playList.map((item) => (
+              <TouchableOpacity
+                key={item.id.toString()}
+                style={styles.playListBanner}
+                onPress={() => handleBannerPress(item)}
+              >
+                <Text>{item.title}</Text>
+                <Text style={styles.audioCount}>
+                  {item.audios.length > 1
+                    ? `${item.audios.length} Songs`
+                    : `${item.audios.length} Song`}
+                </Text>
+              </TouchableOpacity>
+            ))
           : null}
 
         <TouchableOpacity
@@ -164,7 +166,7 @@ const styles = StyleSheet.create({
   },
   playListBanner: {
     padding: 5,
-    backgroundColor: 'rgba(204,204,204,0.3)',
+    backgroundColor: "rgba(204,204,204,0.3)",
     borderRadius: 5,
     marginBottom: 15,
   },
@@ -176,7 +178,7 @@ const styles = StyleSheet.create({
   playListBtn: {
     color: color.ACTIVE_BG,
     letterSpacing: 1,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 14,
     padding: 5,
   },

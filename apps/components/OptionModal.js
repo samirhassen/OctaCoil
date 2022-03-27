@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   View,
   StyleSheet,
@@ -6,26 +6,21 @@ import {
   StatusBar,
   Text,
   TouchableWithoutFeedback,
-} from 'react-native';
-import color from '../misc/color';
+} from "react-native";
+import color from "../misc/color";
 
-const OptionModal = ({
-  visible,
-  currentItem,
-  onClose,
-  options
-}) => {
+const OptionModal = ({ visible, currentItem, onClose, options }) => {
   const { title } = currentItem;
   return (
     <>
-      <StatusBar hidden />
-      <Modal animationType='fade' transparent visible={visible}>
+      <StatusBar />
+      <Modal animationType="fade" transparent visible={visible}>
         <View style={styles.modal}>
           <Text style={styles.title} numberOfLines={2}>
             {title}
           </Text>
           <View style={styles.optionContainer}>
-            {options.map(optn => {
+            {options.map((optn) => {
               return (
                 <TouchableWithoutFeedback
                   key={optn.title}
@@ -47,7 +42,7 @@ const OptionModal = ({
 
 const styles = StyleSheet.create({
   modal: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     right: 0,
     left: 0,
@@ -61,20 +56,20 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     padding: 20,
     paddingBottom: 0,
     color: color.FONT_MEDIUM,
   },
   option: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: color.FONT,
     paddingVertical: 10,
     letterSpacing: 1,
   },
   modalBg: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     right: 0,
     left: 0,
