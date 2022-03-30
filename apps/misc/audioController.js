@@ -13,8 +13,6 @@ Sound.setCategory("Playback", false);
 // play audio
 export const play = async ({ context, uri, index, audio }) => {
   console.log("playing", uri);
-  console.log("play @");
-
   try {
     const { sound, currentAudioIndex, updateState } = context;
     if (sound.current && currentAudioIndex === index) {
@@ -73,8 +71,6 @@ const getCircularReplacer = () => {
 };
 
 export const startMusicControl = ({ title, duration }) => {
-  console.log("startMusicControl @");
-
   MusicControl.setNowPlaying({
     title,
     artwork: require("../../assets/SE_Logo.png"),
@@ -87,14 +83,6 @@ export const startMusicControl = ({ title, duration }) => {
 };
 
 export const updateMusicControl = ({ state, elapsedTime }) => {
-  console.log(
-    "updateMusicControl @",
-    "state:",
-    state,
-    "elapsedTime",
-    elapsedTime
-  );
-
   const _state =
     state === "stop"
       ? MusicControl.STATE_STOPPED
@@ -110,8 +98,6 @@ export const updateMusicControl = ({ state, elapsedTime }) => {
 };
 
 export const musicControlListener = async () => {
-  console.log("musicControlListener @");
-
   MusicControl.enableBackgroundMode(true);
   MusicControl.handleAudioInterruptions(true);
 
@@ -150,8 +136,6 @@ export const stop = async ({ context }) => {
         isAudioPlaying: false,
       }));
     sound.current.getCurrentTime((seconds) => {
-      console.log(seconds, "this is current seconds in audiocontroller");
-
       updateMusicControl({ elapsedTime: seconds, state: "stop" });
     });
     sound.current = null;
@@ -232,8 +216,6 @@ export const selectAudio = async (
   playListInfo = {},
   newPlaybackObj
 ) => {
-  console.log("selectAudio @");
-
   const {
     soundObj,
     playbackObj,
@@ -244,6 +226,7 @@ export const selectAudio = async (
     onPlaybackStatusUpdate,
   } = context;
   try {
+    console.log(audio, context, "hihihi");
     const currentAudioUrl =
       Platform.OS == "android" ? audio.urlAndroid : audio.urlIOS;
 
@@ -255,7 +238,6 @@ export const selectAudio = async (
         audio.lastPosition,
         newPlaybackObj
       );
-      console.log(status, "status");
       const index = audioFiles.findIndex(({ id }) => id === audio.id);
       updateState(context, {
         currentAudio: audio,
@@ -319,7 +301,6 @@ export const selectAudio = async (
 };
 
 const selectAudioFromPlayList = async (context, select) => {
-  console.log("selectAudioFromPlayList @");
   const currentAudioUrl =
     Platform.OS == "android" ? audio.urlAndroid : audio.urlIOS;
 
@@ -365,7 +346,6 @@ export const changeAudio = async (context, select) => {
     updateState,
     isPlayListRunning,
   } = context;
-  console.log("changeAudio @");
 
   if (isPlayListRunning) return selectAudioFromPlayList(context, select);
 
@@ -457,8 +437,6 @@ export const changeAudio = async (context, select) => {
 };
 
 export const moveAudio = async (context, value) => {
-  console.log("moveAudio @");
-
   const { soundObj, isPlaying, playbackObj, updateState } = context;
   if (soundObj === null || !isPlaying) return;
 

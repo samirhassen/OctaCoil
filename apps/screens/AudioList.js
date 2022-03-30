@@ -1,11 +1,5 @@
 import React, { Component, useContext, useState } from "react";
-import {
-  Text,
-  StyleSheet,
-  Dimensions,
-  TouchableOpacity,
-  StatusBar,
-} from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
 import { AudioContext } from "../context/AudioProvider";
 import { RecyclerListView, LayoutProvider } from "recyclerlistview";
 import AudioListItem from "../components/AudioListItem";
@@ -13,14 +7,75 @@ import Screen from "../components/Screen";
 import { selectAudio } from "../misc/audioController";
 import { musicControlListener } from "../misc/audioController";
 
-const Functional = ({
-  type,
-  item,
-  index,
-  extendedState,
-  onAudioPress,
-  onOptionPress,
-}) => {
+export class AudioList extends Component {
+  static contextType = AudioContext;
+  constructor(props) {
+    super(props);
+    this.state = {
+      optionModalVisible: false,
+    };
+
+    this.currentItem = {};
+  }
+
+  layoutProvider = new LayoutProvider(
+    () => "audio",
+    (type, dim) => {
+      switch (type) {
+        case "audio":
+          dim.width = Dimensions.get("window").width;
+          dim.height = 70;
+          break;
+        default:
+          dim.width = 0;
+          dim.height = 0;
+      }
+    }
+  );
+
+  componentDidMount() {
+    this.context.loadPreviousAudio();
+    musicControlListener({ context: this.context });
+  }
+
+  rowRenderer = (type, item, index, extendedState) => {
+    return (
+      <Functional
+        type={type}
+        item={item}
+        index={index}
+        extendedState={extendedState}
+        onOptionPress={() => {
+          this.currentItem = item;
+          this.setState({ ...this.state, optionModalVisible: true });
+        }}
+      />
+    );
+  };
+
+  render() {
+    return (
+      <AudioContext.Consumer>
+        {({ dataProvider, isPlaying, filteredAudio }) => {
+          if (!filteredAudio._data.length) return null;
+          return (
+            <Screen>
+              <RecyclerListView
+                style={styles.marginFromTop}
+                dataProvider={dataProvider}
+                layoutProvider={this.layoutProvider}
+                rowRenderer={this.rowRenderer}
+                extendedState={{ isPlaying }}
+              />
+            </Screen>
+          );
+        }}
+      </AudioContext.Consumer>
+    );
+  }
+}
+
+const Functional = ({ item, index, extendedState, onOptionPress }) => {
   const context = useContext(AudioContext);
   const [isSoundPlaying, setIsSoundPlaying] = useState(false);
 
@@ -37,92 +92,11 @@ const Functional = ({
       isPlaying={extendedState.isPlaying}
       duration={item.duration}
       activeListItem={context.currentAudioIndex === index}
-      onAudioPress={onAudioPress}
+      // onAudioPress={onAudioPress}
       onOptionPress={onOptionPress}
     />
   );
 };
-
-export class AudioList extends Component {
-  static contextType = AudioContext;
-  constructor(props) {
-    super(props);
-    this.state = {
-      optionModalVisible: false,
-    };
-
-    this.currentItem = {};
-  }
-
-  layoutProvider = new LayoutProvider(
-    (i) => "audio",
-    (type, dim) => {
-      switch (type) {
-        case "audio":
-          dim.width = Dimensions.get("window").width;
-          dim.height = 70;
-          break;
-        default:
-          dim.width = 0;
-          dim.height = 0;
-      }
-    }
-  );
-
-  handleAudioPress = async (audio) => {
-    await selectAudio(audio, this.context);
-  };
-
-  componentDidMount() {
-    this.context.loadPreviousAudio();
-    musicControlListener({ context: this.context });
-  }
-
-  rowRenderer = (type, item, index, extendedState) => {
-    return (
-      <Functional
-        type={type}
-        item={item}
-        index={index}
-        extendedState={extendedState}
-        onAudioPress={() => this.handleAudioPress(item)}
-        onOptionPress={() => {
-          this.currentItem = item;
-          this.setState({ ...this.state, optionModalVisible: true });
-        }}
-      />
-    );
-  };
-
-  render() {
-    return (
-      <AudioContext.Consumer>
-        {({ dataProvider, isPlaying, filteredAudio }) => {
-          if (!filteredAudio._data.length) return null;
-          return (
-            <Screen>
-              <StatusBar barStyle="dark-content" />
-
-              <RecyclerListView
-                style={styles.marginFromTop}
-                dataProvider={dataProvider}
-                layoutProvider={this.layoutProvider}
-                rowRenderer={this.rowRenderer}
-                extendedState={{ isPlaying }}
-              />
-              <TouchableOpacity
-                style={{ height: 100 }}
-                onPress={() => alert(JSON.stringify(this.currentItem))}
-              >
-                <Text>hellooo,</Text>
-              </TouchableOpacity>
-            </Screen>
-          );
-        }}
-      </AudioContext.Consumer>
-    );
-  }
-}
 
 const styles = StyleSheet.create({
   marginFromTop: {

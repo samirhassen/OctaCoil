@@ -18,9 +18,11 @@ import {
   play,
   stop,
   musicControlListener,
+  selectAudio,
 } from "../misc/audioController";
 import color from "../misc/color";
 import { convertTime } from "../misc/helper";
+
 Sound.setActive(true);
 Sound.setCategory("Playback", false);
 const { width } = Dimensions.get("window");
@@ -39,39 +41,29 @@ const Player = () => {
   const [currentTime, setCurrentTime] = useState(0);
   const [audioLoading, setAudioLoading] = useState(false);
   const [reRender, setReRender] = useState(false);
-
+  const [seekbarCurrentValue, setSeekbarCurrentValue] = useState(0);
   const calculateSeebBar = () => {
-    console.log(context, "context");
-
     if (currentTime && currentAudio.duration) {
-      console.log(currentTime, currentAudio.duration, "in player screen");
-
       return currentTime / currentAudio.duration;
     }
-    console.log("current time__________________________");
-    console.log(currentTime, currentAudio);
 
     return 0;
   };
 
   useEffect(() => {
-    context.loadPreviousAudio();
-    musicControlListener({ context: context });
-    if (currentAudio) {
-      setAudioPosition();
-      // checkIfDownloaded();
-    }
+    // context.loadPreviousAudio();
+    // musicControlListener({ context: context });
     // checkIfDownloaded();
   }, []);
 
-  // useEffect(() => {
-  //   if (currentAudio) {
-  //     setAudioPosition();
-  //     // checkIfDownloaded();
-  //   }
-  // }, [reRender]);
+  useEffect(() => {
+    if (currentAudio) {
+      currentAudioChangedCondition();
+      // checkIfDownloaded();
+    }
+  }, [reRender]);
 
-  const setAudioPosition = async () => {
+  const currentAudioChangedCondition = async () => {
     const index = audioFiles.findIndex(({ id }) => id === currentAudio.id);
     if (isAudioPlaying) {
       // await stop({
@@ -85,26 +77,6 @@ const Player = () => {
       //   audio: currentAudio,
       //   isPlayer: true,
       // });
-      return activateInterval();
-    } else {
-      return;
-    }
-  };
-
-  const currentChangedAudioPosition = async () => {
-    const index = audioFiles.findIndex(({ id }) => id === currentAudio.id);
-    if (isAudioPlaying) {
-      await stop({
-        context,
-      });
-      clearInterval(soundTimer.current);
-      await play({
-        uri: currentAudio.url,
-        context,
-        index: index,
-        audio: currentAudio,
-        isPlayer: true,
-      });
       return activateInterval();
     } else {
       return;
@@ -174,23 +146,63 @@ const Player = () => {
       }
     }
   };
+  handleAudioPress = async (audio) => {
+    await selectAudio(audio, this.context);
+  };
 
   const handleNext = async () => {
     const index = audioFiles.findIndex(({ id }) => id === currentAudio.id);
+
     if (index === audioFiles.length - 1) return;
-    updateState(context, {
-      currentAudio: audioFiles[index + 1],
-    });
-    setReRender(!reRender);
+    const nextAudio = audioFiles[index + 1];
+
+    if (isAudioPlaying) {
+      setReRender(!reRender);
+      await stop({ context });
+      await play({
+        context,
+        uri: nextAudio.url,
+        index,
+        audio: nextAudio,
+      });
+      // return setReRender(!reRender);
+    } else {
+      await play({
+        context,
+        uri: nextAudio.url,
+        index,
+        audio: nextAudio,
+      });
+      // return setReRender(!reRender);
+    }
   };
 
   const handlePrevious = async () => {
     const index = audioFiles.findIndex(({ id }) => id === currentAudio.id);
     if (index === 0) return;
-    updateState(context, {
-      currentAudio: audioFiles[index - 1],
-    });
-    setReRender(!reRender);
+
+    if (index === audioFiles.length - 1) return;
+    const previousAudio = audioFiles[index - 1];
+
+    if (isAudioPlaying) {
+      setReRender(!reRender);
+      await stop({ context });
+      await play({
+        context,
+        uri: previousAudio.url,
+        index,
+        audio: previousAudio,
+      });
+      // return setReRender(!reRender);
+    } else {
+      await play({
+        context,
+        uri: previousAudio.url,
+        index,
+        audio: previousAudio,
+      });
+      // return setReRender(!reRender);
+    }
   };
 
   if (!context.currentAudio) return null;

@@ -144,7 +144,7 @@ export class AudioProvider extends Component {
   filterAudioData;
 
   getAudioFiles = async () => {
-    let { dataProvider, audioFiles, audioLists, filteredAudio } = this.state;
+    let { dataProvider, audioFiles, filteredAudio } = this.state;
     audioFiles = [];
     this.album = await MediaLibrary.getAlbumAsync("octaCoil");
     this.media = await MediaLibrary.getAssetsAsync({
@@ -242,8 +242,6 @@ export class AudioProvider extends Component {
         playbackStatus.positionMillis
       );
     }
-    let durationSeconds = playbackStatus.durationMillis / 1000;
-    let positionSeconds = playbackStatus.positionMillis / 1000;
 
     if (playbackStatus.didJustFinish) {
       if (this.state.isPlayListRunning) {
