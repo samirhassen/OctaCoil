@@ -108,7 +108,7 @@ const Player = () => {
         audio: currentAudio,
         playDirectly: true,
       });
-      return activateInterval();
+      // return activateInterval();
     }
 
     if (currentAudioIndex === index) {
@@ -122,19 +122,19 @@ const Player = () => {
           audio: currentAudio,
           playDirectly: true,
         });
-        return activateInterval();
+        // return activateInterval();
       }
     } else {
       if (isAudioPlaying) {
         await stop({ context });
-        clearInterval(soundTimer.current);
+        // clearInterval(soundTimer.current);
         await play({
           uri: currentAudio.url,
           context,
           index,
           audio: currentAudio,
         });
-        return activateInterval();
+        // return activateInterval();
       } else {
         await play({
           uri: currentAudio.url,
@@ -142,7 +142,7 @@ const Player = () => {
           index,
           audio: currentAudio,
         });
-        return activateInterval();
+        // return activateInterval();
       }
     }
   };
@@ -162,7 +162,7 @@ const Player = () => {
       await play({
         context,
         uri: nextAudio.url,
-        index,
+        index: index + 1,
         audio: nextAudio,
       });
       // return setReRender(!reRender);
@@ -170,7 +170,7 @@ const Player = () => {
       await play({
         context,
         uri: nextAudio.url,
-        index,
+        index: index + 1,
         audio: nextAudio,
       });
       // return setReRender(!reRender);
@@ -190,7 +190,7 @@ const Player = () => {
       await play({
         context,
         uri: previousAudio.url,
-        index,
+        index: index - 1,
         audio: previousAudio,
       });
       // return setReRender(!reRender);
@@ -198,7 +198,7 @@ const Player = () => {
       await play({
         context,
         uri: previousAudio.url,
-        index,
+        index: index - 1,
         audio: previousAudio,
       });
       // return setReRender(!reRender);

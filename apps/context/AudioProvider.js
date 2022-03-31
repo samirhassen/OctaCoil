@@ -345,6 +345,7 @@ export class AudioProvider extends Component {
       activePlayList,
       isAudioPlaying,
     } = this.state;
+    console.log("updatingsaudioprovider", currentAudioIndex);
 
     return (
       <AudioContext.Provider
