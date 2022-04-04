@@ -34,7 +34,7 @@ export const play = async ({ context, uri, index, audio }) => {
         console.log("failed to load the sound", error);
         return;
       }
-      sound.current.setCategory("Playback");
+      sound.current && sound.current.setCategory("Playback");
       sound.current.play();
     });
     startMusicControl({ title: audio.filename, duration: audio.duration });

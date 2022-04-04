@@ -51,7 +51,7 @@ const Player = () => {
   };
 
   useEffect(() => {
-    // context.loadPreviousAudio();
+    context.loadPreviousAudio();
     // musicControlListener({ context: context });
     // checkIfDownloaded();
   }, []);
@@ -215,12 +215,6 @@ const Player = () => {
   };
 
   const onSlidingComplete = async (value) => {
-    console.log(
-      "onSlidingComplete",
-      value * currentAudio.duration,
-      currentAudio.duration
-    );
-    // await moveAudio(context, value);
     if (isAudioPlaying && sound.current) {
       if (value === 1) {
         return handleNext();
