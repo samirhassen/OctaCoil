@@ -12,7 +12,7 @@ Sound.setCategory("Playback", false);
 
 // play audio
 export const play = async ({ context, uri, index, audio }) => {
-  console.log("playing", uri);
+  // console.log("playing", uri, context.sound);
   try {
     const { sound, currentAudioIndex, updateState } = context;
     if (sound.current && currentAudioIndex === index) {
@@ -35,7 +35,9 @@ export const play = async ({ context, uri, index, audio }) => {
         return;
       }
       sound.current && sound.current.setCategory("Playback");
-      sound.current.play();
+      sound.current && sound.current.play
+        ? sound.current.play()
+        : console.log("cannot find play in ");
     });
     startMusicControl({ title: audio.filename, duration: audio.duration });
     updateMusicControl({ elapsedTime: 0, state: "play" });

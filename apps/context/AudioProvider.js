@@ -10,17 +10,30 @@ import RNFetchBlob from "rn-fetch-blob";
 
 export const AudioContext = createContext();
 const audioItems = [
+  // {
+  //   id: 1,
+  //   filename: "Energize",
+  //   isRequire: true,
+  //   urlIOS:
+  //     "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Energize.m4a?alt=media&token=ac26cc9d-338d-41db-9609-18268a398e76",
+  //   urlAndroid:
+  //     "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Flac%2FEnergize.flac?alt=media&token=0712342c-54d5-4d65-96a3-9366b53a895d",
+  //   duration: 720.013,
+  //   type: "Gamma brainwaves for alertness and mental processing",
+  // },
+
   {
     id: 1,
-    filename: "Energize",
+    filename: "Test Music",
     isRequire: true,
     urlIOS:
-      "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Energize.m4a?alt=media&token=ac26cc9d-338d-41db-9609-18268a398e76",
+      "https://firebasestorage.googleapis.com/v0/b/eventbuzzz-71e8f.appspot.com/o/Harry-Styles-As-It-Was-_Official-Video_.flac?alt=media&token=ba468024-aa00-478d-8183-6925b784be6e",
     urlAndroid:
       "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Flac%2FEnergize.flac?alt=media&token=0712342c-54d5-4d65-96a3-9366b53a895d",
-    duration: 720.013,
-    type: "Gamma brainwaves for alertness and mental processing",
+    duration: 147.6,
+    type: "Pop Music",
   },
+
   {
     id: 2,
     filename: "Focus",

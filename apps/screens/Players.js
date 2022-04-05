@@ -42,17 +42,11 @@ const Player = () => {
   const [audioLoading, setAudioLoading] = useState(false);
   const [reRender, setReRender] = useState(false);
   const [seekbarCurrentValue, setSeekbarCurrentValue] = useState(0);
-  const calculateSeebBar = () => {
-    if (currentTime && currentAudio.duration) {
-      return currentTime / currentAudio.duration;
-    }
-
-    return 0;
-  };
 
   useEffect(() => {
-    context.loadPreviousAudio();
-    // musicControlListener({ context: context });
+    if (!currentAudio) {
+      context.loadPreviousAudio();
+    } // musicControlListener({ context: context });
     // checkIfDownloaded();
   }, []);
 
@@ -81,21 +75,6 @@ const Player = () => {
     } else {
       return;
     }
-  };
-
-  const activateInterval = () => {
-    soundTimer.current = setInterval(() => {
-      if (currentTime >= currentAudio.duration) {
-        stop({ context });
-        clearInterval(soundTimer.current);
-        return;
-      }
-      if (sound.current) {
-        sound.current.getCurrentTime((seconds) => {
-          setCurrentTime(seconds);
-        });
-      }
-    }, 1000);
   };
 
   const handlePlayPause = async () => {
@@ -146,38 +125,53 @@ const Player = () => {
       }
     }
   };
-  handleAudioPress = async (audio) => {
+  const handleAudioPress = async (audio) => {
     await selectAudio(audio, this.context);
   };
 
-  const handleNext = async () => {
-    const index = audioFiles.findIndex(({ id }) => id === currentAudio.id);
+  async function handleNext() {
+    setCurrentTime(0);
 
-    if (index === audioFiles.length - 1) return;
-    const nextAudio = audioFiles[index + 1];
+    try {
+      console.log(context, "holaaaaa");
+      const index = audioFiles.findIndex(({ id }) => id === currentAudio.id);
 
-    if (isAudioPlaying) {
-      setReRender(!reRender);
-      await stop({ context });
-      await play({
-        context,
-        uri: nextAudio.url,
-        index: index + 1,
-        audio: nextAudio,
-      });
-      // return setReRender(!reRender);
-    } else {
-      await play({
-        context,
-        uri: nextAudio.url,
-        index: index + 1,
-        audio: nextAudio,
-      });
-      // return setReRender(!reRender);
+      if (index === audioFiles.length - 1) return;
+      const nextAudio = audioFiles[index + 1];
+
+      if (isAudioPlaying) {
+        setReRender(!reRender);
+        await stop({ context });
+        await play({
+          context,
+          uri: nextAudio.url,
+          index: index + 1,
+          audio: nextAudio,
+        });
+        // return setReRender(!reRender);
+      } else {
+        console.log(
+          "playing next song an file index is",
+          index,
+          "context is ",
+          context
+        );
+        await play({
+          context,
+          uri: nextAudio.url,
+          index: index + 1,
+          audio: nextAudio,
+        });
+        // return setReRender(!reRender);
+      }
+    } catch (err) {
+      console.log(err);
     }
-  };
+  }
 
   const handlePrevious = async () => {
+    setCurrentTime(0);
+
     const index = audioFiles.findIndex(({ id }) => id === currentAudio.id);
     if (index === 0) return;
 
@@ -209,7 +203,6 @@ const Player = () => {
 
   const onValueChange = (value) => {
     if (isAudioPlaying && sound.current) {
-      sound.current.setCurrentTime(value * currentAudio.duration);
       setCurrentTime(value * currentAudio.duration);
     }
   };
@@ -221,6 +214,30 @@ const Player = () => {
       }
       sound.current.setCurrentTime(value * currentAudio.duration);
     }
+  };
+  const activateInterval = () => {
+    soundTimer.current = setInterval(() => {
+      console.log("running interval");
+
+      if (currentTime >= currentAudio.duration) {
+        stop({ context });
+        clearInterval(soundTimer.current);
+        return handleNext();
+      }
+      if (sound.current) {
+        sound.current.getCurrentTime((seconds) => {
+          setCurrentTime(seconds);
+        });
+      }
+    }, 1000);
+  };
+
+  const calculateSeebBar = () => {
+    if (currentTime && currentAudio.duration) {
+      return currentTime / currentAudio.duration;
+    }
+
+    return 0;
   };
 
   return (
