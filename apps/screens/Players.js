@@ -87,7 +87,7 @@ const Player = () => {
         audio: currentAudio,
         playDirectly: true,
       });
-      // return activateInterval();
+      return activateInterval();
     }
 
     if (currentAudioIndex === index) {
@@ -101,19 +101,19 @@ const Player = () => {
           audio: currentAudio,
           playDirectly: true,
         });
-        // return activateInterval();
+        return activateInterval();
       }
     } else {
       if (isAudioPlaying) {
         await stop({ context });
-        // clearInterval(soundTimer.current);
+        clearInterval(soundTimer.current);
         await play({
           uri: currentAudio.url,
           context,
           index,
           audio: currentAudio,
         });
-        // return activateInterval();
+        return activateInterval();
       } else {
         await play({
           uri: currentAudio.url,
@@ -121,7 +121,7 @@ const Player = () => {
           index,
           audio: currentAudio,
         });
-        // return activateInterval();
+        return activateInterval();
       }
     }
   };
@@ -209,9 +209,9 @@ const Player = () => {
 
   const onSlidingComplete = async (value) => {
     if (isAudioPlaying && sound.current) {
-      if (value === 1) {
-        return handleNext();
-      }
+      // if (value === 1) {
+      //   return handleNext();
+      // }
       sound.current.setCurrentTime(value * currentAudio.duration);
     }
   };
@@ -219,16 +219,16 @@ const Player = () => {
     soundTimer.current = setInterval(() => {
       console.log("running interval");
 
-      if (currentTime >= currentAudio.duration) {
-        stop({ context });
-        clearInterval(soundTimer.current);
-        return handleNext();
-      }
-      if (sound.current) {
+      sound.current &&
         sound.current.getCurrentTime((seconds) => {
-          setCurrentTime(seconds);
+          if (seconds + 1 >= currentAudio.duration) {
+            // stop({ context });
+            // clearInterval(soundTimer.current);
+            return handleNext();
+          } else {
+            setCurrentTime(seconds);
+          }
         });
-      }
     }, 1000);
   };
 
