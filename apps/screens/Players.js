@@ -22,6 +22,7 @@ import {
 } from "../misc/audioController";
 import color from "../misc/color";
 import { convertTime } from "../misc/helper";
+import Video from "react-native-video";
 
 Sound.setActive(true);
 Sound.setCategory("Playback", false);
@@ -291,6 +292,7 @@ const Player = () => {
               {convertTime(currentAudio.duration)}
             </Text>
           </View>
+
           <Slider
             style={{ width: width, height: 40 }}
             minimumValue={0}

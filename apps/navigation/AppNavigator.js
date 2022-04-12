@@ -12,6 +12,7 @@ import { MaterialIcons, FontAwesome5, Entypo } from "@expo/vector-icons";
 import PlayListDetail from "../screens/PlayListDetail";
 import Registration from "../screens/Registration";
 import AboutUs from "../screens/AboutUs";
+import TestAudio from "../screens/TestAudio";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -82,6 +83,16 @@ const AppNavigator = () => {
         options={{
           tabBarIcon: ({ color, size }) => (
             <Entypo name="info-with-circle" size={size} color={color} />
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="TestAudio"
+        component={TestAudio}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <MaterialIcons name="headset" size={28} color={color} />
           ),
         }}
       />

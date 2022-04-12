@@ -9,9 +9,9 @@ import { Alert } from "react-native";
 import RNFetchBlob from "rn-fetch-blob";
 
 export const AudioContext = createContext();
-const audioItems = [
+export const audioItems = [
   {
-    id: 1,
+    id: 0,
     filename: "Energize",
     isRequire: true,
     urlIOS:
@@ -22,17 +22,17 @@ const audioItems = [
     type: "Gamma brainwaves for alertness and mental processing",
   },
 
-  // {
-  //   id: 1,
-  //   filename: "Test Music",
-  //   isRequire: true,
-  //   urlIOS:
-  //     "https://firebasestorage.googleapis.com/v0/b/eventbuzzz-71e8f.appspot.com/o/Harry-Styles-As-It-Was-_Official-Video_.flac?alt=media&token=ba468024-aa00-478d-8183-6925b784be6e",
-  //   urlAndroid:
-  //     "https://firebasestorage.googleapis.com/v0/b/eventbuzzz-71e8f.appspot.com/o/Harry%20Styles%20-%20As%20It%20Was%20(Official%20Video).mp3?alt=media&token=6f5e94e5-ead6-43fa-a6aa-5943019caa73",
-  //   duration: 147.6,
-  //   type: "Pop Music",
-  // },
+  {
+    id: 1,
+    filename: "Test Music",
+    isRequire: true,
+    urlIOS:
+      "https://firebasestorage.googleapis.com/v0/b/eventbuzzz-71e8f.appspot.com/o/Harry-Styles-As-It-Was-_Official-Video_.flac?alt=media&token=ba468024-aa00-478d-8183-6925b784be6e",
+    urlAndroid:
+      "https://firebasestorage.googleapis.com/v0/b/eventbuzzz-71e8f.appspot.com/o/Harry%20Styles%20-%20As%20It%20Was%20(Official%20Video).mp3?alt=media&token=6f5e94e5-ead6-43fa-a6aa-5943019caa73",
+    duration: 147.6,
+    type: "Pop Music",
+  },
 
   {
     id: 2,
