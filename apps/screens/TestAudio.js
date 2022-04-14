@@ -22,7 +22,7 @@ const { width, height } = Dimensions.get("window");
 
 const PlayerComponent = () => {
   let playerRef = useRef();
-  const [isPlay, setPlay] = useState(false);
+  const [isPlay, setPlay] = useState(true);
   const [currentSong, setCurrentSong] = useState(0);
   const [duration, setDuration] = useState(0);
   const [currentTime, setcurrentTime] = useState(0);
@@ -75,9 +75,13 @@ const PlayerComponent = () => {
           setcurrentTime(0);
         }}
         onEnd={() => nextButtonHandle()}
+        // source={{
+        //   uri: audioItems[currentSong].urlIOS,
+        // }} // Can be a URL or a local file.
         source={{
-          uri: audioItems[currentSong].urlIOS,
-        }} // Can be a URL or a local file.
+          uri: "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/M3U8%2FHarryStyles%2FHarry_Styles_-_As_It_Was_Official_Video.m3u8",
+          type: "m3u8",
+        }}
         ref={(ref) => {
           playerRef = ref;
         }} // Store reference
