@@ -20,8 +20,22 @@ export const audioItems = [
       "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Flac%2FEnergize.flac?alt=media&token=0712342c-54d5-4d65-96a3-9366b53a895d",
     duration: 720.013,
     type: "Gamma brainwaves for alertness and mental processing",
+    urlIOS_hls:
+      "https://firebasestorage.googleapis.com:443/v0/b/octacoil-app.appspot.com/o/M3U8%2FEnergise%2Fplaylist.m3u8?alt=media&token=72842bb4-9bca-4d87-8ebd-6dba3b93cdcb",
   },
 
+  {
+    id: 1,
+    filename: "Focus",
+    urlIOS:
+      "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Focus.m4a?alt=media&token=3de11cd2-6008-4744-9f31-b0605a575f4e",
+    urlAndroid:
+      "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Flac%2FFocus.flac?alt=media&token=c80a9eed-8709-48f3-8392-419cae34e396",
+    duration: 540.033,
+    type: "Beta brainwaves for attention and focus",
+    urlIOS_hls:
+      "https://firebasestorage.googleapis.com:443/v0/b/octacoil-app.appspot.com/o/M3U8%2FFocus%2Fplaylist.m3u8?alt=media&token=b9e4df83-22e9-4a85-9613-bc08f8fdd1e4",
+  },
   {
     id: 1,
     filename: "Test Music",
@@ -32,18 +46,10 @@ export const audioItems = [
       "https://firebasestorage.googleapis.com/v0/b/eventbuzzz-71e8f.appspot.com/o/Harry%20Styles%20-%20As%20It%20Was%20(Official%20Video).mp3?alt=media&token=6f5e94e5-ead6-43fa-a6aa-5943019caa73",
     duration: 147.6,
     type: "Pop Music",
+    urlIOS_hls:
+      "https://firebasestorage.googleapis.com:443/v0/b/octacoil-app.appspot.com/o/M3U8%2FFocus%2Fplaylist.m3u8?alt=media&token=b9e4df83-22e9-4a85-9613-bc08f8fdd1e4",
   },
 
-  {
-    id: 2,
-    filename: "Focus",
-    urlIOS:
-      "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Focus.m4a?alt=media&token=3de11cd2-6008-4744-9f31-b0605a575f4e",
-    urlAndroid:
-      "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Flac%2FFocus.flac?alt=media&token=c80a9eed-8709-48f3-8392-419cae34e396",
-    duration: 540.033,
-    type: "Beta brainwaves for attention and focus",
-  },
   {
     id: 3,
     filename: "Relax",

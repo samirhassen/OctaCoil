@@ -19,6 +19,7 @@ import { audioItems } from "../context/AudioProvider";
 import { convertTime } from "../misc/helper";
 
 const { width, height } = Dimensions.get("window");
+import storage from "@react-native-firebase/storage";
 
 const PlayerComponent = () => {
   let playerRef = useRef();
@@ -26,7 +27,7 @@ const PlayerComponent = () => {
   const [currentSong, setCurrentSong] = useState(0);
   const [duration, setDuration] = useState(0);
   const [currentTime, setcurrentTime] = useState(0);
-
+  const [currentSongUrl, setCurrentSongUrl] = useState("");
   const [songLoaded, setSongLoaded] = useState(false);
 
   const formatedTime = (time) => {
@@ -49,7 +50,13 @@ const PlayerComponent = () => {
     }
   };
   const audioFile = audioItems[currentSong];
-
+  // const reference = storage()
+  //   .ref("/M3U8/Focus/playlist.m3u8")
+  //   .getDownloadURL()
+  //   .then((val) => {
+  //     console.log(val);
+  //     setCurrentSongUrl(val);
+  //   });
   return (
     <View style={styles.audioPlayerContainer}>
       <Video
@@ -79,7 +86,7 @@ const PlayerComponent = () => {
         //   uri: audioItems[currentSong].urlIOS,
         // }} // Can be a URL or a local file.
         source={{
-          uri: "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/M3U8%2FHarryStyles%2FHarry_Styles_-_As_It_Was_Official_Video.m3u8",
+          uri: audioFile.urlIOS_hls,
           type: "m3u8",
         }}
         ref={(ref) => {
