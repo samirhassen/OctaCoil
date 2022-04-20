@@ -70,6 +70,8 @@ const AudioListItem = ({
   openPlayer,
   isDownloaded,
   title,
+  handleItemClick,
+  index,
 }) => {
   const [loader, setLoader] = useState(false);
   const context = useContext(AudioContext);
@@ -102,7 +104,12 @@ const AudioListItem = ({
 
   return (
     <>
-      <TouchableWithoutFeedback onPress={openPlayer}>
+      <TouchableWithoutFeedback
+        onPress={() => {
+          handleItemClick(index);
+          openPlayer();
+        }}
+      >
         <View style={styles.container}>
           <View style={styles.leftContainer}>
             <View

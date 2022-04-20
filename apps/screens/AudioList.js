@@ -8,6 +8,7 @@ import {
   Modal,
   View,
   ActivityIndicator,
+  Image,
 } from "react-native";
 import AudioListItem from "../components/AudioListItem";
 import Screen from "../components/Screen";
@@ -18,8 +19,24 @@ import Video from "react-native-video";
 import color from "../misc/color";
 
 import { convertTime } from "../misc/helper";
+import TabBar from "../components/TabBar";
+import { mod, moderateScale } from "react-native-size-matters";
+import { MaterialIcons, FontAwesome5, Entypo } from "@expo/vector-icons";
 
 const { width, height } = Dimensions.get("window");
+const yoga = require("../../assets/yoga.png");
+
+const Banner = () => (
+  <Image
+    source={yoga}
+    resizeMode="contain"
+    style={{
+      width: moderateScale(300),
+      height: moderateScale(350),
+      alignSelf: "center",
+    }}
+  />
+);
 
 export const AudioList = () => {
   const [isSoundPlaying, setIsSoundPlaying] = useState(false);
@@ -66,7 +83,16 @@ export const AudioList = () => {
   //     />
   //   );
   // };
+  const handleItemClick = (index) => {
+    console.log("set current song", index + 1);
 
+    if (index >= 0 && index < audioItems.length) {
+      console.log("set current song", index + 1);
+
+      setCurrentSong(index);
+      setPlay(true);
+    }
+  };
   return (
     <Screen>
       <View style={{ flex: 1, marginTop: 20 }}>
@@ -90,6 +116,8 @@ export const AudioList = () => {
                 duration={item.duration}
                 activeListItem={currentSong === index}
                 isPlaying={isPlay}
+                handleItemClick={handleItemClick}
+                index={index}
                 // onAudioPress={onAudioPress}
               />
             );
@@ -129,6 +157,7 @@ export const AudioList = () => {
           }} // Store reference
           // Callback when video cannot be loaded
         />
+        <TabBar handlePlayerPress={() => setplayerModalVisible(true)} />
         <Modal
           animationType="slide"
           transparent={true}
@@ -137,10 +166,8 @@ export const AudioList = () => {
           <View
             style={{
               flex: 1,
-              backgroundColor: "black",
-              justifyContent: "flex-end",
-              paddingBottom: 30,
-              marginTop: 100,
+              backgroundColor: "rgba(0,0,0,0.9)",
+              padding: moderateScale(20),
             }}
           >
             <TouchableOpacity
@@ -148,86 +175,96 @@ export const AudioList = () => {
                 setplayerModalVisible(false);
               }}
               style={{
-                backgroundColor: "white",
-                alignSelf: "flex-start",
-                height: 30,
-                width: 100,
-                justifyContent: "center",
+                marginTop: moderateScale(50),
+                height: moderateScale(100),
                 alignItems: "center",
-                borderRadius: 10,
               }}
             >
-              <Text>close</Text>
+              <FontAwesome5
+                name="chevron-down"
+                size={moderateScale(28)}
+                color={"white"}
+              />
             </TouchableOpacity>
-
-            <Text numberOfLines={1} style={styles.audioTitle}>
-              {audioFile.filename}
-            </Text>
-            <Text style={styles.audioSubTitle}>
-              <Text style={{ fontWeight: "bold" }}>Tag: </Text> {audioFile.type}
-              ,<Text style={{ fontWeight: "bold" }}> Song: </Text>{" "}
-              {audioFile.filename}
-            </Text>
             <View
               style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                paddingHorizontal: 15,
+                flex: 1,
+                justifyContent: "flex-end",
               }}
             >
-              <Text style={{ color: "#fff" }}>{convertTime(currentTime)}</Text>
-              <Text style={{ color: "#fff" }}>{convertTime(duration)}</Text>
-            </View>
-
-            <Slider
-              style={{ width: width, height: 40 }}
-              minimumValue={0}
-              maximumValue={1}
-              value={currentTime && duration ? currentTime / duration : 0}
-              minimumTrackTintColor={color.FONT_MEDIUM}
-              maximumTrackTintColor={color.ACTIVE_BG}
-              onValueChange={(val) => {
-                currentTime && duration ? playerRef.seek(duration * val) : null;
-              }}
-              onSlidingStart={async () => {}}
-              onSlidingComplete={(val) => {
-                console.log(duration * val);
-                currentTime && duration ? playerRef.seek(duration * val) : null;
-              }}
-            />
-            <View style={styles.audioControllers}>
-              <PlayerButton
-                iconType="PREV"
-                onPress={() => previousButtonHandle()}
-              />
+              <Banner />
+              <Text numberOfLines={1} style={styles.audioTitle}>
+                {audioFile.filename}
+              </Text>
+              <Text style={styles.audioSubTitle}>
+                <Text style={{ fontWeight: "bold" }}>Tag: </Text>{" "}
+                {audioFile.type},
+                <Text style={{ fontWeight: "bold" }}> Song: </Text>{" "}
+                {audioFile.filename}
+              </Text>
               <View
                 style={{
-                  width: 100,
-                  justifyContent: "center",
-                  alignItems: "center",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  paddingHorizontal: 15,
                 }}
               >
-                {!songLoaded ? (
-                  <ActivityIndicator size="small" color="#fff" />
-                ) : (
-                  <PlayerButton
-                    onPress={() => {
-                      setPlay(!isPlay);
-                    }}
-                    style={{ marginHorizontal: 25 }}
-                    iconType={isPlay ? "PLAY" : "PAUSE"}
-                  />
-                )}
+                <Text style={{ color: "#fff" }}>
+                  {convertTime(currentTime)}
+                </Text>
+                <Text style={{ color: "#fff" }}>{convertTime(duration)}</Text>
               </View>
 
-              <PlayerButton
-                iconType="NEXT"
-                onPress={() => nextButtonHandle()}
+              <Slider
+                style={{ height: 40 }}
+                minimumValue={0}
+                maximumValue={1}
+                value={currentTime && duration ? currentTime / duration : 0}
+                minimumTrackTintColor={color.FONT_MEDIUM}
+                maximumTrackTintColor={color.ACTIVE_BG}
+                onValueChange={(val) => {
+                  currentTime && duration
+                    ? playerRef.seek(duration * val)
+                    : null;
+                }}
+                onSlidingStart={async () => {}}
+                onSlidingComplete={(val) => {
+                  console.log(duration * val);
+                  currentTime && duration
+                    ? playerRef.seek(duration * val)
+                    : null;
+                }}
               />
-              <PlayerButton
-                iconType="NEXT"
-                onPress={() => console.log(audioFiles)}
-              />
+              <View style={styles.audioControllers}>
+                <PlayerButton
+                  iconType="PREV"
+                  onPress={() => previousButtonHandle()}
+                />
+                <View
+                  style={{
+                    width: 100,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  {!songLoaded ? (
+                    <ActivityIndicator size="small" color="#fff" />
+                  ) : (
+                    <PlayerButton
+                      onPress={() => {
+                        setPlay(!isPlay);
+                      }}
+                      style={{ marginHorizontal: 25 }}
+                      iconType={isPlay ? "PLAY" : "PAUSE"}
+                    />
+                  )}
+                </View>
+
+                <PlayerButton
+                  iconType="NEXT"
+                  onPress={() => nextButtonHandle()}
+                />
+              </View>
             </View>
           </View>
         </Modal>
@@ -270,11 +307,11 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   audioControllers: {
-    width,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     paddingBottom: 20,
+    paddingTop: 10,
   },
   audioCountContainer: {
     flexDirection: "row",
@@ -294,18 +331,17 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: -30,
   },
   audioTitle: {
     fontSize: 28,
     fontWeight: "bold",
     color: color.FONT,
-    padding: 15,
+    paddingVertical: 15,
   },
   audioSubTitle: {
     fontSize: 18,
     color: color.FONT,
-    padding: 15,
+    paddingVertical: 15,
   },
 });
 

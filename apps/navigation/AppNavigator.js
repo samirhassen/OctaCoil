@@ -7,6 +7,7 @@ import { AudioContext } from "../context/AudioProvider";
 import { MaterialIcons, FontAwesome5, Entypo } from "@expo/vector-icons";
 import AboutUs from "../screens/AboutUs";
 import TestAudio from "../screens/TestAudio";
+import { View } from "react-native";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -16,7 +17,7 @@ const AppNavigator = () => {
   const { isLoggedIn } = context;
 
   return (
-    <Tab.Navigator>
+    <Tab.Navigator tabBar={() => <View />}>
       <Tab.Screen
         name="AudioList"
         component={AudioList}
