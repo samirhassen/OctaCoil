@@ -14,6 +14,9 @@ export const audioItems = [
     id: 0,
     filename: "Energize",
     isRequire: true,
+    fileNameExtAndroid: "Energize.flac",
+    fileNameExtIOS: "Energize.m4a",
+
     urlIOS:
       "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Energize.m4a?alt=media&token=ac26cc9d-338d-41db-9609-18268a398e76",
     urlAndroid:
@@ -27,6 +30,8 @@ export const audioItems = [
   {
     id: 1,
     filename: "Focus",
+    fileNameExtAndroid: "Focus.flac",
+    fileNameExtIOS: "Focus.m4a",
     urlIOS:
       "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Focus.m4a?alt=media&token=3de11cd2-6008-4744-9f31-b0605a575f4e",
     urlAndroid:
@@ -36,24 +41,13 @@ export const audioItems = [
     urlIOS_hls:
       "https://firebasestorage.googleapis.com:443/v0/b/octacoil-app.appspot.com/o/M3U8%2FFocus%2Fplaylist.m3u8?alt=media&token=b9e4df83-22e9-4a85-9613-bc08f8fdd1e4",
   },
-  {
-    id: 1,
-    filename: "Test Music",
-    isRequire: true,
-    urlIOS:
-      "https://firebasestorage.googleapis.com/v0/b/eventbuzzz-71e8f.appspot.com/o/Harry-Styles-As-It-Was-_Official-Video_.flac?alt=media&token=ba468024-aa00-478d-8183-6925b784be6e",
-    urlAndroid:
-      "https://firebasestorage.googleapis.com/v0/b/eventbuzzz-71e8f.appspot.com/o/Harry%20Styles%20-%20As%20It%20Was%20(Official%20Video).mp3?alt=media&token=6f5e94e5-ead6-43fa-a6aa-5943019caa73",
-    duration: 147.6,
-    type: "Pop Music",
-    urlIOS_hls:
-      "https://firebasestorage.googleapis.com:443/v0/b/octacoil-app.appspot.com/o/M3U8%2FFocus%2Fplaylist.m3u8?alt=media&token=b9e4df83-22e9-4a85-9613-bc08f8fdd1e4",
-  },
 
   {
-    id: 3,
+    id: 2,
     filename: "Relax",
     isRequire: true,
+    fileNameExtAndroid: "Relax.flac",
+    fileNameExtIOS: "Relax.m4a",
     urlIOS:
       "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Relax.m4a?alt=media&token=194185f7-3f02-49e4-8760-a33642260b75",
     urlAndroid:
@@ -62,9 +56,11 @@ export const audioItems = [
     type: "Theta brainwaves for meditation and creativity",
   },
   {
-    id: 4,
+    id: 3,
     filename: "Sleep",
     isRequire: true,
+    fileNameExtAndroid: "Sleep.flac",
+    fileNameExtIOS: "Sleep.m4a",
     urlIOS:
       "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Sleep.m4a?alt=media&token=16cd5ee4-48b2-4776-976a-6714ad6e36f8",
     urlAndroid:
@@ -73,9 +69,11 @@ export const audioItems = [
     type: "Delta brainwaves for deep sleep and relaxation",
   },
   {
-    id: 5,
+    id: 4,
     filename: "Bones",
     isRequire: true,
+    fileNameExtAndroid: "Bones.flac",
+    fileNameExtIOS: "Bones.m4a",
     urlIOS:
       "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Bones.m4a?alt=media&token=fae5e63c-e89e-4041-b874-8df67f62931e",
     urlAndroid:
@@ -84,9 +82,11 @@ export const audioItems = [
     type: "Stimulate bone growth for fracture repair and increased density",
   },
   {
-    id: 6,
+    id: 5,
     filename: "Inflammation",
     isRequire: true,
+    fileNameExtAndroid: "Inflammation.flac",
+    fileNameExtIOS: "Inflammation.m4a",
     urlIOS:
       "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Inflammation.m4a?alt=media&token=ca76699d-20e0-4f8c-8486-fc34a43cd56d",
     urlAndroid:
@@ -95,9 +95,11 @@ export const audioItems = [
     type: "Reduce inflammation for pain management and tissue healing",
   },
   {
-    id: 7,
+    id: 6,
     filename: "Performance",
     isRequire: true,
+    fileNameExtAndroid: "Performance.flac",
+    fileNameExtIOS: "Performance.m4a",
     urlIOS:
       "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Performance.m4a?alt=media&token=2c8ae0ee-3a65-485b-a185-61f4be92d482",
     urlAndroid:
@@ -106,9 +108,11 @@ export const audioItems = [
     type: "Nitric Oxide production for performance and health",
   },
   {
-    id: 8,
+    id: 7,
     filename: "Circulation",
     isRequire: true,
+    fileNameExtAndroid: "Circulation.flac",
+    fileNameExtIOS: "Circulation.m4a",
     urlIOS:
       "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Circulation.m4a?alt=media&token=5c7f6bb7-8c30-404a-9d22-e88db913dcf4",
     urlAndroid:
@@ -117,9 +121,11 @@ export const audioItems = [
     type: "Heart and blood vessel support for circulation",
   },
   {
-    id: 9,
+    id: 8,
     filename: "Recovery",
     isRequire: true,
+    fileNameExtAndroid: "Recovery.flac",
+    fileNameExtIOS: "Recovery.m4a",
     urlIOS:
       "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Recovery.m4a?alt=media&token=b19953a5-0302-4471-80f8-4b65b0de0a97",
     urlAndroid:
@@ -183,7 +189,9 @@ export class AudioProvider extends Component {
       item.urlAndroid = item.uri;
       item.urlIOS = item.uri;
       delete item.uri;
-      item.filename = item.filename.split(".").slice(0, -1).join(".");
+      const fileExtension =
+        Platform.OS === "ios" ? item.fileNameExtIOS : item.fileNameExtAndroid;
+      fileExtension = fileExtension.split(".").slice(0, -1).join(".");
       return this.media.assets;
     });
 
@@ -196,8 +204,11 @@ export class AudioProvider extends Component {
     for (var i = 0; i <= audioItems.length; i++) {
       const item = audioItems[i];
       if (item) {
-        const isDownloaded = await checkIfDownloaded(item.filename);
-        const localPath = RNFetchBlob.fs.dirs.DocumentDir + `/${item.filename}`;
+        const fileExtension =
+          Platform.OS === "ios" ? item.fileNameExtIOS : item.fileNameExtAndroid;
+        const isDownloaded = await checkIfDownloaded(fileExtension);
+
+        const localPath = RNFetchBlob.fs.dirs.DocumentDir + `/${fileExtension}`;
 
         let url;
         if (isDownloaded) {

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import color from "../misc/color";
 import {
   StyleSheet,
@@ -15,7 +15,7 @@ import Slider from "@react-native-community/slider";
 import Video from "react-native-video";
 
 import Screen from "../components/Screen";
-import { audioItems } from "../context/AudioProvider";
+import { AudioContext, audioItems } from "../context/AudioProvider";
 import { convertTime } from "../misc/helper";
 
 const { width, height } = Dimensions.get("window");
@@ -29,7 +29,7 @@ const PlayerComponent = () => {
   const [currentTime, setcurrentTime] = useState(0);
   const [currentSongUrl, setCurrentSongUrl] = useState("");
   const [songLoaded, setSongLoaded] = useState(false);
-
+  const context = useContext(AudioContext);
   const formatedTime = (time) => {
     var minutes = "0" + Math.floor(time / 60);
     var seconds = "0" + (time - minutes * 60);
@@ -86,8 +86,8 @@ const PlayerComponent = () => {
         //   uri: audioItems[currentSong].urlIOS,
         // }} // Can be a URL or a local file.
         source={{
-          uri: audioFile.urlIOS_hls,
-          type: "m3u8",
+          uri:
+            Platform.OS == "android" ? audioFile.urlAndroid : audioFile.urlIOS,
         }}
         ref={(ref) => {
           playerRef = ref;
@@ -147,6 +147,7 @@ const PlayerComponent = () => {
         </View>
 
         <PlayerButton iconType="NEXT" onPress={() => nextButtonHandle()} />
+        <PlayerButton iconType="NEXT" onPress={() => console.log(context)} />
       </View>
     </View>
   );
@@ -169,75 +170,38 @@ const TestAudio = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  maincontainer: {
-    flex: 1,
-
-    backgroundColor: "#6200EE",
-  },
-  image: {
-    flex: 1,
-    justifyContent: "center",
-  },
-  innerContainer: {
-    textAlign: "center",
-    marginLeft: 35,
-  },
-  header: {
-    marginTop: 20,
-    fontSize: 24,
-    color: "#fff",
-    fontWeight: "bold",
-  },
-  version: {
-    marginTop: 10,
-    color: "#fff",
-  },
-  info: {
-    fontSize: 15,
-    marginTop: 10,
-    paddingRight: 10,
-    color: "#fff",
-  },
-  audioControllers: {
-    width,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    paddingBottom: 20,
-  },
-  audioCountContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: 15,
+  marginFromTop: {
+    marginTop: 50,
   },
   container: {
     flex: 1,
-  },
-  audioCount: {
-    textAlign: "right",
-    marginTop: 10,
-    color: color.FONT_LIGHT,
-    fontSize: 14,
-  },
-  midBannerContainer: {
-    flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: -30,
   },
-  audioTitle: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: color.FONT,
-    padding: 15,
+  category: {
+    height: 90,
+    marginLeft: 24,
+    marginTop: 45,
+    flexDirection: "row",
+    flexWrap: "wrap",
   },
-  audioSubTitle: {
-    fontSize: 18,
-    color: color.FONT,
-    padding: 15,
+  btnstyle: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 12,
+    paddingBottom: 2,
+    marginLeft: 5,
+    borderRadius: 4,
+    elevation: 3,
+    opacity: 0.7,
+    backgroundColor: "white",
+  },
+  iconStyle: {
+    marginLeft: 20,
+    marginTop: 10,
+  },
+  btnText: {
+    fontSize: 20,
   },
 });
 

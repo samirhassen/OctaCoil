@@ -15,7 +15,11 @@ const Screen = ({ children }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar backgroundColor="#192438" barStyle="light-content" />
+      <StatusBar
+        backgroundColor="black"
+        barStyle="dark-content"
+        translucent={true}
+      />
       <ImageBackground
         source={require("../../assets/bg.png")}
         resizeMode="cover"

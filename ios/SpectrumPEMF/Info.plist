@@ -62,6 +62,8 @@
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>SplashScreen</string>
+	<key>UIMainStoryboardFile</key>
+	<string>SplashScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>

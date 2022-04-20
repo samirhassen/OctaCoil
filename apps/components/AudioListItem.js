@@ -10,14 +10,12 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import Sound from "react-native-sound";
 import RNFetchBlob from "rn-fetch-blob";
 import { AudioContext } from "../context/AudioProvider";
 import { pause, play, stop } from "../misc/audioController";
 import color from "../misc/color";
-Sound.setActive(true);
 
-const getThumbnailText = (filename) => {
+const getThumbnailText = () => {
   return (
     <Image
       source={require("../../assets/cg.png")}
@@ -63,14 +61,22 @@ const renderPlayPauseIcon = (isPlaying, loading) => {
 };
 
 //Method to display audio list item
-const AudioListItem = ({ item, title, duration, url, activeListItem }) => {
+const AudioListItem = ({
+  fileNameExtension,
+  duration,
+  url,
+  activeListItem,
+  isPlaying,
+  openPlayer,
+  isDownloaded,
+  title,
+}) => {
   const [loader, setLoader] = useState(false);
   const context = useContext(AudioContext);
-  const { audioFiles, currentAudioIndex, isAudioPlaying, getAudioFiles } =
-    context;
+  const { getAudioFiles } = context;
   const [audioLoading, setAudioLoading] = useState(false);
 
-  const onDownloadPress = async (url, title) => {
+  const onDownloadPress = async (url, fileNameExtension) => {
     try {
       setLoader(true);
       await RNFetchBlob.config({
@@ -81,7 +87,7 @@ const AudioListItem = ({ item, title, duration, url, activeListItem }) => {
         //   mime: "text/plain",
         //   description: "File downloaded by download manager.",
         // },
-        path: RNFetchBlob.fs.dirs.DocumentDir + `/${title}`,
+        path: RNFetchBlob.fs.dirs.DocumentDir + `/${fileNameExtension}`,
       }).fetch("GET", url);
       setLoader(false);
       getAudioFiles();
@@ -92,41 +98,11 @@ const AudioListItem = ({ item, title, duration, url, activeListItem }) => {
     }
   };
 
-  const handlePlayAudio = async () => {
-    const index = audioFiles.findIndex(({ id }) => id === item.id);
-    if (currentAudioIndex === null) {
-      return await play({ context, uri: item.url, index, audio: item });
-    }
-
-    if (currentAudioIndex === index) {
-      if (isAudioPlaying) {
-        return await pause({ context });
-      } else {
-        return await play({ context, uri: item.url, index, audio: item });
-      }
-    } else {
-      if (isAudioPlaying) {
-        await stop({ context });
-        return await play({
-          context,
-          uri: item.url,
-          index,
-          audio: item,
-        });
-      } else {
-        return await play({
-          context,
-          uri: item.url,
-          index,
-          audio: item,
-        });
-      }
-    }
-  };
+  const handlePlayAudio = async () => {};
 
   return (
     <>
-      <TouchableWithoutFeedback onPress={handlePlayAudio}>
+      <TouchableWithoutFeedback onPress={openPlayer}>
         <View style={styles.container}>
           <View style={styles.leftContainer}>
             <View
@@ -139,18 +115,18 @@ const AudioListItem = ({ item, title, duration, url, activeListItem }) => {
             >
               <Text style={styles.thumbnailText}>
                 {activeListItem
-                  ? renderPlayPauseIcon(isAudioPlaying, audioLoading)
-                  : getThumbnailText(title)}
+                  ? renderPlayPauseIcon(isPlaying, audioLoading)
+                  : getThumbnailText(fileNameExtension)}
               </Text>
             </View>
             <View
               style={[
-                item.isDownloaded
-                  ? styles.titleDownloadContainer
-                  : styles.titleContainer,
+                isDownloaded
+                  ? styles.fileNameExtensionDownloadContainer
+                  : styles.fileNameExtensionContainer,
               ]}
             >
-              <Text numberOfLines={1} style={styles.title}>
+              <Text numberOfLines={1} style={styles.fileNameExtension}>
                 {title}
               </Text>
 
@@ -158,17 +134,17 @@ const AudioListItem = ({ item, title, duration, url, activeListItem }) => {
                 {/* {isDownloaded ? (
                   <FontAwesome name="check-circle" size={20} color="white" />
                 ) : null}{" "} */}
-                {/* Tag: {type}, Album: {album}, Song: {title} */}
-                {/* Album: {album}, Song: {title} */}
+                {/* Tag: {type}, Album: {album}, Song: {fileNameExtension} */}
+                {/* Album: {album}, Song: {fileNameExtension} */}
               </Text>
               <Text style={styles.timeText}>{convertTime(duration)}</Text>
             </View>
           </View>
-          {!item.isDownloaded ? (
+          {!isDownloaded ? (
             <View style={styles.rightContainer}>
               {!loader ? (
                 <Feather
-                  onPress={() => onDownloadPress(url, title)}
+                  onPress={() => onDownloadPress(url, fileNameExtension)}
                   id="downlink"
                   name="download"
                   size={24}
@@ -199,6 +175,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignSelf: "center",
     width: width - 80,
+    marginVertical: 5,
   },
   leftContainer: {
     flexDirection: "row",
@@ -225,11 +202,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: color.FONT,
   },
-  titleContainer: {
+  fileNameExtensionContainer: {
     width: width - 180,
     paddingLeft: 10,
   },
-  titleDownloadContainer: {
+  fileNameExtensionDownloadContainer: {
     width: width - 130,
     paddingLeft: 10,
   },
@@ -237,7 +214,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: color.FONT_MEDIUM,
   },
-  title: {
+  fileNameExtension: {
     fontSize: 16,
     fontWeight: "bold",
     color: color.FONT,
