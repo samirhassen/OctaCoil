@@ -8,13 +8,20 @@ import {
   StatusBar,
   View,
   Dimensions,
+  TouchableOpacity,
 } from "react-native";
-
+import {
+  MaterialIcons,
+  FontAwesome5,
+  Entypo,
+  SimpleLineIcons,
+} from "@expo/vector-icons";
 import Screen from "../components/Screen";
+import { scale } from "react-native-size-matters";
 
 const { width, height } = Dimensions.get("window");
 
-const AboutUs = () => {
+const AboutUs = (props) => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="#f2f2f2" barStyle="dark-content" />
@@ -23,6 +30,18 @@ const AboutUs = () => {
         resizeMode="cover"
         style={styles.image}
       >
+        <TouchableOpacity
+          style={{
+            width: scale(100),
+
+            justifyContent: "center",
+            alignItems: "center",
+            marginBottom: scale(10),
+          }}
+          onPress={() => props.navigation.goBack()}
+        >
+          <MaterialIcons name="arrow-back" size={scale(30)} color={"black"} />
+        </TouchableOpacity>
         <View style={styles.maincontainer}>
           <View style={styles.innerContainer}>
             <Text style={styles.header}></Text>
@@ -63,6 +82,11 @@ const styles = StyleSheet.create({
   image: {
     flex: 1,
     justifyContent: "center",
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
   innerContainer: {
     textAlign: "center",

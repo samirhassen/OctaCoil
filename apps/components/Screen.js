@@ -8,26 +8,34 @@ import {
 } from "react-native";
 import color from "../misc/color";
 
+const bgImage = require("../../assets/bg.png");
 const Screen = ({ children }) => {
   useEffect(() => {
     StatusBar.setHidden(false);
   }, []);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar
-        backgroundColor="black"
-        barStyle="dark-content"
+    <>
+      <SafeAreaView
+        style={{ flex: 0, backgroundColor: "rgba(0,0,0,0)" }}
         translucent={true}
       />
       <ImageBackground
-        source={require("../../assets/bg.png")}
+        source={bgImage}
         resizeMode="cover"
         style={styles.image}
-      >
-        {children}
-      </ImageBackground>
-    </SafeAreaView>
+      ></ImageBackground>
+      <StatusBar
+        backgroundColor="black"
+        barStyle="light-content"
+        translucent={true}
+      />
+      {children}
+      <SafeAreaView
+        style={{ flex: 0, backgroundColor: "rgba(0,0,0,0)" }}
+        backgroundColor="rgba(0,0,0,0.4)"
+      />
+    </>
   );
 };
 
@@ -38,6 +46,11 @@ const styles = StyleSheet.create({
   image: {
     flex: 1,
     justifyContent: "center",
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
 });
 

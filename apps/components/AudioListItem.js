@@ -10,6 +10,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+import { scale } from "react-native-size-matters";
 import RNFetchBlob from "rn-fetch-blob";
 import { AudioContext } from "../context/AudioProvider";
 import { pause, play, stop } from "../misc/audioController";
@@ -172,7 +173,6 @@ const AudioListItem = ({
           )}
         </View>
       </TouchableWithoutFeedback>
-      <View style={styles.separator} />
     </>
   );
 };
@@ -181,8 +181,12 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignSelf: "center",
-    width: width - 80,
-    marginVertical: 5,
+    marginVertical: scale(4),
+    backgroundColor: "rgba(0,0,0,0.4)",
+    padding: scale(7),
+    paddingHorizontal: scale(15),
+    marginHorizontal: scale(15),
+    borderRadius: 10,
   },
   leftContainer: {
     flexDirection: "row",

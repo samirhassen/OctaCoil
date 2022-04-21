@@ -9,6 +9,8 @@ import {
   View,
   ActivityIndicator,
   Image,
+  LayoutAnimation,
+  UIManager,
 } from "react-native";
 import AudioListItem from "../components/AudioListItem";
 import Screen from "../components/Screen";
@@ -20,30 +22,54 @@ import color from "../misc/color";
 
 import { convertTime } from "../misc/helper";
 import TabBar from "../components/TabBar";
-import { mod, moderateScale } from "react-native-size-matters";
-import { MaterialIcons, FontAwesome5, Entypo } from "@expo/vector-icons";
+import { mod, moderateScale, scale } from "react-native-size-matters";
+import {
+  MaterialIcons,
+  FontAwesome5,
+  Entypo,
+  SimpleLineIcons,
+} from "@expo/vector-icons";
+import LottieView from "lottie-react-native";
 
 const { width, height } = Dimensions.get("window");
 const yoga = require("../../assets/yoga.png");
-
+if (
+  Platform.OS === "android" &&
+  UIManager.setLayoutAnimationEnabledExperimental
+) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 const Banner = () => (
-  <Image
-    source={yoga}
-    resizeMode="contain"
+  <LottieView
     style={{
       width: moderateScale(300),
       height: moderateScale(350),
       alignSelf: "center",
     }}
+    source={require("../../assets/Lottie/Yoga.json")}
+    autoPlay
+    loop
   />
+  // <Image
+  //   source={yoga}
+  //   resizeMode="contain"
+  //   style={{
+  //     width: moderateScale(300),
+  //     height: moderateScale(350),
+  //     alignSelf: "center",
+  //   }}
+  // />
 );
 
-export const AudioList = () => {
+export const AudioList = (props) => {
   const [isSoundPlaying, setIsSoundPlaying] = useState(false);
   const { audioFiles } = useContext(AudioContext);
   const [playerModalVisible, setplayerModalVisible] = useState(false);
   let playerRef = useRef();
   const [isPlay, setPlay] = useState(false);
+  const [repeat, setRepeat] = useState(false);
+  const [currentSongTempValue, setCurrentSongTempValue] = useState(0);
+
   const [currentSong, setCurrentSong] = useState(0);
   const [duration, setDuration] = useState(0);
   const [currentTime, setcurrentTime] = useState(0);
@@ -54,9 +80,13 @@ export const AudioList = () => {
     var seconds = "0" + (time - minutes * 60);
     return minutes.substr(-2) + ":" + seconds.substr(-2);
   };
+
   const nextButtonHandle = () => {
     if (currentSong >= 0 && currentSong < audioItems.length) {
       console.log("set current song", currentSong + 1);
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
+      setCurrentSongTempValue(0);
+      setcurrentTime(0);
 
       setCurrentSong(currentSong + 1);
     }
@@ -64,7 +94,9 @@ export const AudioList = () => {
   const previousButtonHandle = () => {
     if (currentSong >= 1) {
       console.log("set current song", currentSong + 1);
-
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
+      setCurrentSongTempValue(0);
+      setcurrentTime(0);
       setCurrentSong(currentSong - 1);
     }
   };
@@ -88,10 +120,19 @@ export const AudioList = () => {
 
     if (index >= 0 && index < audioItems.length) {
       console.log("set current song", index + 1);
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
+      setCurrentSongTempValue(0);
 
       setCurrentSong(index);
       setPlay(true);
     }
+  };
+  const repeatHandle = () => {
+    currentTime && duration ? playerRef.seek(0) : null;
+    setCurrentSongTempValue(0);
+    setcurrentTime(0);
+
+    setPlay(true);
   };
   return (
     <Screen>
@@ -133,19 +174,25 @@ export const AudioList = () => {
           playInBackground={false}
           paused={!isPlay}
           onLoad={(val) => {
+            LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
+
             setDuration(val.duration);
             setSongLoaded(true);
           }}
           onProgress={(prog) => {
             setcurrentTime(prog.currentTime);
+            setCurrentSongTempValue(prog.currentTime);
           }}
           audioOnly={true}
           onLoadStart={() => {
+            LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
+
             setSongLoaded(false);
             setDuration(0);
             setcurrentTime(0);
+            setCurrentSongTempValue(0);
           }}
-          onEnd={() => nextButtonHandle()}
+          onEnd={() => (repeat ? repeatHandle() : nextButtonHandle())}
           // source={{
           //   uri: audioItems[currentSong].urlIOS,
           // }} // Can be a URL or a local file.
@@ -157,7 +204,10 @@ export const AudioList = () => {
           }} // Store reference
           // Callback when video cannot be loaded
         />
-        <TabBar handlePlayerPress={() => setplayerModalVisible(true)} />
+        <TabBar
+          handlePlayerPress={() => setplayerModalVisible(true)}
+          onAboutUsPress={() => props.navigation.navigate("AboutUs")}
+        />
         <Modal
           animationType="slide"
           transparent={true}
@@ -193,6 +243,11 @@ export const AudioList = () => {
               }}
             >
               <Banner />
+              {!songLoaded ? (
+                <Text numberOfLines={1} style={styles.loadingText}>
+                  Loading high quality sound...
+                </Text>
+              ) : null}
               <Text numberOfLines={1} style={styles.audioTitle}>
                 {audioFile.filename}
               </Text>
@@ -210,7 +265,7 @@ export const AudioList = () => {
                 }}
               >
                 <Text style={{ color: "#fff" }}>
-                  {convertTime(currentTime)}
+                  {convertTime(currentSongTempValue)}
                 </Text>
                 <Text style={{ color: "#fff" }}>{convertTime(duration)}</Text>
               </View>
@@ -222,20 +277,22 @@ export const AudioList = () => {
                 value={currentTime && duration ? currentTime / duration : 0}
                 minimumTrackTintColor={color.FONT_MEDIUM}
                 maximumTrackTintColor={color.ACTIVE_BG}
-                onValueChange={(val) => {
-                  currentTime && duration
-                    ? playerRef.seek(duration * val)
-                    : null;
-                }}
-                onSlidingStart={async () => {}}
+                onValueChange={(val) => setCurrentSongTempValue(duration * val)}
                 onSlidingComplete={(val) => {
-                  console.log(duration * val);
                   currentTime && duration
                     ? playerRef.seek(duration * val)
                     : null;
                 }}
               />
               <View style={styles.audioControllers}>
+                <View
+                  style={{
+                    width: scale(100),
+                    backgroundColor: "red",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                ></View>
                 <PlayerButton
                   iconType="PREV"
                   onPress={() => previousButtonHandle()}
@@ -264,6 +321,21 @@ export const AudioList = () => {
                   iconType="NEXT"
                   onPress={() => nextButtonHandle()}
                 />
+                <TouchableOpacity
+                  style={{
+                    width: scale(100),
+
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                  onPress={() => setRepeat(!repeat)}
+                >
+                  <MaterialIcons
+                    name="repeat"
+                    size={scale(30)}
+                    color={repeat ? color.ACTIVE_BG : color.FONT_MEDIUM}
+                  />
+                </TouchableOpacity>
               </View>
             </View>
           </View>
@@ -342,6 +414,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: color.FONT,
     paddingVertical: 15,
+  },
+  loadingText: {
+    fontSize: scale(14),
+    color: color.FONT,
+    paddingBottom: scale(15),
+    alignSelf: "center",
+    fontWeight: "300",
   },
 });
 
