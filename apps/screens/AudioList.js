@@ -74,6 +74,7 @@ export const AudioList = (props) => {
   const [duration, setDuration] = useState(0);
   const [currentTime, setcurrentTime] = useState(0);
   const [currentSongUrl, setCurrentSongUrl] = useState("");
+  const [slidingStart, setSlidingStart] = useState(false);
   const [songLoaded, setSongLoaded] = useState(false);
   const formatedTime = (time) => {
     var minutes = "0" + Math.floor(time / 60);
@@ -82,13 +83,19 @@ export const AudioList = (props) => {
   };
 
   const nextButtonHandle = () => {
-    if (currentSong >= 0 && currentSong < audioItems.length) {
+    console.log("audioItems.length", audioItems.length);
+
+    if (currentSong >= 0 && currentSong < audioItems.length - 1) {
       console.log("set current song", currentSong + 1);
       LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
       setCurrentSongTempValue(0);
       setcurrentTime(0);
 
       setCurrentSong(currentSong + 1);
+    } else if (currentSong === audioItems.length - 1) {
+      setCurrentSongTempValue(0);
+      setcurrentTime(0);
+      setCurrentSong(0);
     }
   };
   const previousButtonHandle = () => {
@@ -116,10 +123,10 @@ export const AudioList = (props) => {
   //   );
   // };
   const handleItemClick = (index) => {
-    console.log("set current song", index + 1);
+    console.log("set current songfdsfs", index);
 
     if (index >= 0 && index < audioItems.length) {
-      console.log("set current song", index + 1);
+      console.log("set current song", index);
       LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
       setCurrentSongTempValue(0);
 
@@ -180,8 +187,9 @@ export const AudioList = (props) => {
             setSongLoaded(true);
           }}
           onProgress={(prog) => {
+            !slidingStart && setCurrentSongTempValue(prog.currentTime);
+
             setcurrentTime(prog.currentTime);
-            setCurrentSongTempValue(prog.currentTime);
           }}
           audioOnly={true}
           onLoadStart={() => {
@@ -265,7 +273,7 @@ export const AudioList = (props) => {
                 }}
               >
                 <Text style={{ color: "#fff" }}>
-                  {convertTime(currentSongTempValue)}
+                  {convertTime(currentTime)}
                 </Text>
                 <Text style={{ color: "#fff" }}>{convertTime(duration)}</Text>
               </View>
@@ -274,11 +282,19 @@ export const AudioList = (props) => {
                 style={{ height: 40 }}
                 minimumValue={0}
                 maximumValue={1}
-                value={currentTime && duration ? currentTime / duration : 0}
+                value={
+                  currentSongTempValue && duration
+                    ? currentSongTempValue / duration
+                    : 0
+                }
+                onSlidingStart={() => setSlidingStart(true)}
                 minimumTrackTintColor={color.FONT_MEDIUM}
                 maximumTrackTintColor={color.ACTIVE_BG}
-                onValueChange={(val) => setCurrentSongTempValue(duration * val)}
+                onValueChange={(val) => setcurrentTime(duration * val)}
                 onSlidingComplete={(val) => {
+                  setSlidingStart(false);
+
+                  setCurrentSongTempValue(duration * val);
                   currentTime && duration
                     ? playerRef.seek(duration * val)
                     : null;

@@ -65,7 +65,7 @@ export const audioItems = [
       "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Sleep.m4a?alt=media&token=16cd5ee4-48b2-4776-976a-6714ad6e36f8",
     urlAndroid:
       "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Flac%2FSleep.flac?alt=media&token=92517e44-c911-4f61-b859-41ee3b9a63d0",
-    duration: 32.0,
+    duration: 720.001,
     type: "Delta brainwaves for deep sleep and relaxation",
   },
   {
@@ -78,7 +78,7 @@ export const audioItems = [
       "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Bones.m4a?alt=media&token=fae5e63c-e89e-4041-b874-8df67f62931e",
     urlAndroid:
       "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Flac%2FBones.flac?alt=media&token=448b7d2e-d0a7-4d9c-a5ba-17d7da8ef96f",
-    duration: 0.6,
+    duration: 180.001,
     type: "Stimulate bone growth for fracture repair and increased density",
   },
   {
@@ -91,7 +91,7 @@ export const audioItems = [
       "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Inflammation.m4a?alt=media&token=ca76699d-20e0-4f8c-8486-fc34a43cd56d",
     urlAndroid:
       "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Flac%2FInflammation.flac?alt=media&token=9f39a5c8-d7d9-445a-8c3d-61e40650428b",
-    duration: 0.6,
+    duration: 188.4,
     type: "Reduce inflammation for pain management and tissue healing",
   },
   {
@@ -104,7 +104,7 @@ export const audioItems = [
       "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Performance.m4a?alt=media&token=2c8ae0ee-3a65-485b-a185-61f4be92d482",
     urlAndroid:
       "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Flac%2FPerformance.flac?alt=media&token=b67f091a-9e35-44e5-bf98-51a04c2befa5",
-    duration: 0.6,
+    duration: 187.2,
     type: "Nitric Oxide production for performance and health",
   },
   {
@@ -117,7 +117,7 @@ export const audioItems = [
       "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Circulation.m4a?alt=media&token=5c7f6bb7-8c30-404a-9d22-e88db913dcf4",
     urlAndroid:
       "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Flac%2FCirculation.flac?alt=media&token=61eac8c1-68c8-4fb3-9bc5-acb84de9c3f0",
-    duration: 0.6,
+    duration: 194.4,
     type: "Heart and blood vessel support for circulation",
   },
   {
@@ -130,7 +130,7 @@ export const audioItems = [
       "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Recovery.m4a?alt=media&token=b19953a5-0302-4471-80f8-4b65b0de0a97",
     urlAndroid:
       "https://firebasestorage.googleapis.com/v0/b/octacoil-app.appspot.com/o/Flac%2FRecovery.flac?alt=media&token=82f27073-e6f5-4704-b483-421d0cf26c1c",
-    duration: 0.6,
+    duration: 194.4,
     type: "Boost anabolic cellular activity for tissue growth and recovery",
   },
 ];
