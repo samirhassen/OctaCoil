@@ -11,6 +11,7 @@ import {
   Image,
   LayoutAnimation,
   UIManager,
+  Platform,
 } from "react-native";
 import AudioListItem from "../components/AudioListItem";
 import Screen from "../components/Screen";
