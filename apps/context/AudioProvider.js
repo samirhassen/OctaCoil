@@ -189,9 +189,9 @@ export class AudioProvider extends Component {
       item.urlAndroid = item.uri;
       item.urlIOS = item.uri;
       delete item.uri;
-      const fileExtension =
+      let fileExtension =
         Platform.OS === "ios" ? item.fileNameExtIOS : item.fileNameExtAndroid;
-      fileExtension = fileExtension.split(".").slice(0, -1).join(".");
+      fileExtension = fileExtension?.split(".").slice(0, -1).join(".");
       return this.media.assets;
     });
 

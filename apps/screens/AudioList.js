@@ -22,7 +22,12 @@ import color from "../misc/color";
 
 import { convertTime } from "../misc/helper";
 import TabBar from "../components/TabBar";
-import { mod, moderateScale, scale } from "react-native-size-matters";
+import {
+  mod,
+  moderateScale,
+  scale,
+  verticalScale,
+} from "react-native-size-matters";
 import {
   MaterialIcons,
   FontAwesome5,
@@ -87,7 +92,9 @@ export const AudioList = (props) => {
 
     if (currentSong >= 0 && currentSong < audioItems.length - 1) {
       console.log("set current song", currentSong + 1);
-      LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
+      Platform.OS === "ios"
+        ? LayoutAnimation.configureNext(LayoutAnimation.Presets.linear)
+        : null;
       setCurrentSongTempValue(0);
       setcurrentTime(0);
 
@@ -101,7 +108,9 @@ export const AudioList = (props) => {
   const previousButtonHandle = () => {
     if (currentSong >= 1) {
       console.log("set current song", currentSong + 1);
-      LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
+      Platform.OS === "ios"
+        ? LayoutAnimation.configureNext(LayoutAnimation.Presets.linear)
+        : null;
       setCurrentSongTempValue(0);
       setcurrentTime(0);
       setCurrentSong(currentSong - 1);
@@ -127,7 +136,9 @@ export const AudioList = (props) => {
 
     if (index >= 0 && index < audioItems.length) {
       console.log("set current song", index);
-      LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
+      Platform.OS === "ios"
+        ? LayoutAnimation.configureNext(LayoutAnimation.Presets.linear)
+        : null;
       setCurrentSongTempValue(0);
 
       setCurrentSong(index);
@@ -143,7 +154,7 @@ export const AudioList = (props) => {
   };
   return (
     <Screen>
-      <View style={{ flex: 1, marginTop: 20 }}>
+      <View style={{ flex: 1, marginTop: verticalScale(40) }}>
         <FlatList
           data={audioFiles}
           renderItem={({ item, index }) => {
@@ -181,7 +192,9 @@ export const AudioList = (props) => {
           playInBackground={false}
           paused={!isPlay}
           onLoad={(val) => {
-            LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
+            Platform.OS === "ios"
+              ? LayoutAnimation.configureNext(LayoutAnimation.Presets.linear)
+              : null;
 
             setDuration(val.duration);
             setSongLoaded(true);
@@ -193,7 +206,9 @@ export const AudioList = (props) => {
           }}
           audioOnly={true}
           onLoadStart={() => {
-            LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
+            Platform.OS === "ios"
+              ? LayoutAnimation.configureNext(LayoutAnimation.Presets.linear)
+              : null;
 
             setSongLoaded(false);
             setDuration(0);
