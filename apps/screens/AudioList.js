@@ -147,11 +147,12 @@ export const AudioList = (props) => {
     }
   };
   const repeatHandle = () => {
-    currentTime && duration ? playerRef.seek(0) : null;
+    console.log("hello", playerRef.seek);
+    playerRef.seek(0);
     setCurrentSongTempValue(0);
     setcurrentTime(0);
 
-    setPlay(true);
+    // setPlay(true);
   };
   return (
     <Screen>
@@ -190,7 +191,8 @@ export const AudioList = (props) => {
             bufferForPlaybackMs: 2000,
             bufferForPlaybackAfterRebufferMs: 2000,
           }}
-          playInBackground={false}
+          repeat={repeat}
+          playInBackground={true}
           paused={!isPlay}
           onLoad={(val) => {
             Platform.OS === "ios"
@@ -249,16 +251,18 @@ export const AudioList = (props) => {
                 setplayerModalVisible(false);
               }}
               style={{
-                marginTop: moderateScale(50),
-                height: moderateScale(100),
+                paddingTop: moderateScale(50),
                 alignItems: "center",
+                flex: 1,
               }}
+              activeOpacity={1}
             >
               <FontAwesome5
                 name="chevron-down"
                 size={moderateScale(28)}
                 color={"white"}
               />
+              <Banner />
             </TouchableOpacity>
             <View
               style={{
@@ -266,7 +270,6 @@ export const AudioList = (props) => {
                 justifyContent: "flex-end",
               }}
             >
-              <Banner />
               {!songLoaded ? (
                 <Text numberOfLines={1} style={styles.loadingText}>
                   Loading high quality sound...

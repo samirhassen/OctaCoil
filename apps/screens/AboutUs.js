@@ -18,6 +18,8 @@ import {
 } from "@expo/vector-icons";
 import Screen from "../components/Screen";
 import { scale } from "react-native-size-matters";
+import * as Linking from "expo-linking";
+import { URLS } from "../misc/config";
 
 const { width, height } = Dimensions.get("window");
 
@@ -60,6 +62,26 @@ const AboutUs = (props) => {
               us will be effective in recharging your cells and optimizing your
               physiology, empowering you to live your life to the fullest.
             </Text>
+            <View style={[styles.policyContainer, { marginTop: 30 }]}>
+              <TouchableOpacity onPress={() => Linking.openURL(URLS.terms)}>
+                <Text style={styles.policyText}>Terms & Conditions</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => Linking.openURL(URLS.privacy)}>
+                <Text style={styles.policyText}>Privacy Policy</Text>
+              </TouchableOpacity>
+            </View>
+            <View
+              style={[
+                styles.policyContainer,
+                { justifyContent: "center", marginTop: 10 },
+              ]}
+            >
+              <TouchableOpacity
+                onPress={() => Linking.openURL("mailto: info@spectrumpemf.com")}
+              >
+                <Text style={styles.policyText}>Contact Us</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </ImageBackground>
@@ -74,10 +96,11 @@ const styles = StyleSheet.create({
   maincontainer: {
     flexDirection: "row",
     justifyContent: "center",
-    width: width - 70,
     height: height - 150,
-    marginLeft: 35,
+    marginHorizontal: 40,
     backgroundColor: "rgba(52, 52, 52, 0.6)",
+    paddingHorizontal: 40,
+    borderRadius: 10,
   },
   image: {
     flex: 1,
@@ -90,7 +113,6 @@ const styles = StyleSheet.create({
   },
   innerContainer: {
     textAlign: "center",
-    marginLeft: 35,
   },
   header: {
     marginTop: 20,
@@ -107,6 +129,15 @@ const styles = StyleSheet.create({
     marginTop: 10,
     paddingRight: 10,
     color: "#fff",
+  },
+  policyContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  policyText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "white",
   },
 });
 
