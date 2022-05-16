@@ -1,208 +1,461 @@
-import React, { Component, useContext, useEffect, useState } from "react";
+import React, { useContext, useState, useRef } from "react";
 import {
-  Text,
-  View,
   StyleSheet,
   Dimensions,
+  FlatList,
   TouchableOpacity,
-  ImageBackground,
+  Text,
+  Modal,
+  View,
+  ActivityIndicator,
+  Image,
+  LayoutAnimation,
+  UIManager,
+  Platform,
 } from "react-native";
-import { AudioContext } from "../context/AudioProvider";
-import { RecyclerListView, LayoutProvider } from "recyclerlistview";
 import AudioListItem from "../components/AudioListItem";
 import Screen from "../components/Screen";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import OptionModal from "../components/OptionModal";
-import { selectAudio } from "../misc/audioController";
-import { musicControlListener } from "../misc/audioController";
+import { AudioContext, audioItems } from "../context/AudioProvider";
+import PlayerButton from "../components/PlayerButton";
+import Slider from "@react-native-community/slider";
+import Video from "react-native-video";
+import color from "../misc/color";
 
-export class AudioList extends Component {
-  static contextType = AudioContext;
-  constructor(props) {
-    super(props);
-    this.state = {
-      optionModalVisible: false,
-    };
+import { convertTime } from "../misc/helper";
+import TabBar from "../components/TabBar";
+import {
+  mod,
+  moderateScale,
+  scale,
+  verticalScale,
+} from "react-native-size-matters";
+import {
+  MaterialIcons,
+  FontAwesome5,
+  Entypo,
+  SimpleLineIcons,
+} from "@expo/vector-icons";
+import LottieView from "lottie-react-native";
 
-    this.currentItem = {};
-  }
+const { width, height } = Dimensions.get("window");
+const yoga = require("../../assets/yoga.png");
+if (
+  Platform.OS === "android" &&
+  UIManager.setLayoutAnimationEnabledExperimental
+) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
+const Banner = () => (
+  <LottieView
+    style={{
+      width: moderateScale(300),
+      height: moderateScale(350),
+      alignSelf: "center",
+    }}
+    source={require("../../assets/Lottie/Yoga.json")}
+    autoPlay
+    loop
+  />
+  // <Image
+  //   source={yoga}
+  //   resizeMode="contain"
+  //   style={{
+  //     width: moderateScale(300),
+  //     height: moderateScale(350),
+  //     alignSelf: "center",
+  //   }}
+  // />
+);
 
-  layoutProvider = new LayoutProvider(
-    (i) => "audio",
-    (type, dim) => {
-      switch (type) {
-        case "audio":
-          dim.width = Dimensions.get("window").width;
-          dim.height = 70;
-          break;
-        default:
-          dim.width = 0;
-          dim.height = 0;
-      }
+export const AudioList = (props) => {
+  const [isSoundPlaying, setIsSoundPlaying] = useState(false);
+  const { audioFiles } = useContext(AudioContext);
+  const [playerModalVisible, setplayerModalVisible] = useState(false);
+  let playerRef = useRef();
+  const [isPlay, setPlay] = useState(false);
+  const [repeat, setRepeat] = useState(false);
+  const [currentSongTempValue, setCurrentSongTempValue] = useState(0);
+
+  const [currentSong, setCurrentSong] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [currentTime, setcurrentTime] = useState(0);
+  const [currentSongUrl, setCurrentSongUrl] = useState("");
+  const [slidingStart, setSlidingStart] = useState(false);
+  const [songLoaded, setSongLoaded] = useState(false);
+  const formatedTime = (time) => {
+    var minutes = "0" + Math.floor(time / 60);
+    var seconds = "0" + (time - minutes * 60);
+    return minutes.substr(-2) + ":" + seconds.substr(-2);
+  };
+
+  const nextButtonHandle = () => {
+    console.log("audioItems.length", audioItems.length);
+
+    if (currentSong >= 0 && currentSong < audioItems.length - 1) {
+      console.log("set current song", currentSong + 1);
+      Platform.OS === "ios"
+        ? LayoutAnimation.configureNext(LayoutAnimation.Presets.linear)
+        : null;
+      setCurrentSongTempValue(0);
+      setcurrentTime(0);
+
+      setCurrentSong(currentSong + 1);
+    } else if (currentSong === audioItems.length - 1) {
+      setCurrentSongTempValue(0);
+      setcurrentTime(0);
+      setCurrentSong(0);
     }
-  );
-
-  handleAudioPress = async (audio) => {
-    await selectAudio(audio, this.context);
   };
-
-  componentDidMount() {
-    this.context.loadPreviousAudio();
-    musicControlListener({ context: this.context });
-  }
-
-  rowRenderer = (type, item, index, extendedState) => {
-    return (
-      <Functional
-        type={type}
-        item={item}
-        index={index}
-        extendedState={extendedState}
-        onAudioPress={() => this.handleAudioPress(item)}
-        onOptionPress={() => {
-          this.currentItem = item;
-          this.setState({ ...this.state, optionModalVisible: true });
-        }}
-      />
-    );
-  };
-
-  navigateToPlaylist = () => {
-    this.context.updateState(this.context, {
-      addToPlayList: this.currentItem,
-    });
-    this.props.navigation.navigate("PlayList");
-  };
-
-  onPressAudioType = (dataProvider, type) => {
-    if (dataProvider._data.length > 0) {
-      var filteredSong = dataProvider._data.filter(
-        (song) => song.type === type
-      );
-      const tempData1 =
-        filteredSong.length == 0
-          ? dataProvider
-          : dataProvider.cloneWithRows([...filteredSong]);
-      this.context.updateState({}, { filteredAudio: tempData1 });
+  const previousButtonHandle = () => {
+    if (currentSong >= 1) {
+      console.log("set current song", currentSong + 1);
+      Platform.OS === "ios"
+        ? LayoutAnimation.configureNext(LayoutAnimation.Presets.linear)
+        : null;
+      setCurrentSongTempValue(0);
+      setcurrentTime(0);
+      setCurrentSong(currentSong - 1);
     }
   };
-  /*
-              <View style={styles.category}>
-              <TouchableOpacity style={styles.btnstyle} onPress = {() => this.onPressAudioType(dataProvider, 'all')}>
-                  <Text style={styles.btnText}>All</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.btnstyle} onPress = {() => this.onPressAudioType(dataProvider, 'brain')}>
-                  <Text style={styles.btnText}>Brain</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.btnstyle} onPress = {() => this.onPressAudioType(dataProvider, 'heart')}>
-                  <Text style={styles.btnText}>Heart</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.btnstyle} onPress = {() => this.onPressAudioType(dataProvider, 'bone')}>
-                  <Text style={styles.btnText}>Bone</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.btnstyle} onPress = {() => this.onPressAudioType(dataProvider, 'Healing')}>
-                  <Text style={styles.btnText}>Healing</Text>
+  const audioFile = audioItems[currentSong];
+  // rowRenderer = (type, item, index, extendedState) => {
+  //   return (
+  //     <AudioListFunc
+  //       type={type}
+  //       item={item}
+  //       index={index}
+  //       extendedState={extendedState}
+  //       onOptionPress={() => {
+  //         this.currentItem = item;
+  //         this.setState({ ...this.state, optionModalVisible: true });
+  //       }}
+  //     />
+  //   );
+  // };
+  const handleItemClick = (index) => {
+    console.log("set current songfdsfs", index);
+
+    if (index >= 0 && index < audioItems.length) {
+      console.log("set current song", index);
+      Platform.OS === "ios"
+        ? LayoutAnimation.configureNext(LayoutAnimation.Presets.linear)
+        : null;
+      setCurrentSongTempValue(0);
+
+      setCurrentSong(index);
+      setPlay(true);
+    }
+  };
+  const repeatHandle = () => {
+    console.log("hello", playerRef.seek);
+    playerRef.seek(0);
+    setCurrentSongTempValue(0);
+    setcurrentTime(0);
+
+    // setPlay(true);
+  };
+  return (
+    <Screen>
+      <View style={{ flex: 1, marginTop: verticalScale(40) }}>
+        <FlatList
+          data={audioFiles}
+          renderItem={({ item, index }) => {
+            const fileExtension =
+              Platform.OS === "ios"
+                ? item.fileNameExtIOS
+                : item.fileNameExtAndroid;
+            return (
+              <AudioListItem
+                key={fileExtension + index}
+                openPlayer={() => setplayerModalVisible(true)}
+                fileNameExtension={fileExtension}
+                type={item.type}
+                title={item.filename}
+                album={item.album}
+                url={Platform.OS == "android" ? item.urlAndroid : item.urlIOS}
+                isDownloaded={item?.isDownloaded}
+                duration={item.duration}
+                activeListItem={currentSong === index}
+                isPlaying={isPlay}
+                handleItemClick={handleItemClick}
+                index={index}
+                // onAudioPress={onAudioPress}
+              />
+            );
+          }}
+        />
+        <Video
+          bufferConfig={{
+            minBufferMs: 2000,
+            maxBufferMs: 5000,
+            bufferForPlaybackMs: 2000,
+            bufferForPlaybackAfterRebufferMs: 2000,
+          }}
+          repeat={repeat}
+          playInBackground={true}
+          paused={!isPlay}
+          onLoad={(val) => {
+            Platform.OS === "ios"
+              ? LayoutAnimation.configureNext(LayoutAnimation.Presets.linear)
+              : null;
+
+            setDuration(val.duration);
+            setSongLoaded(true);
+          }}
+          onProgress={(prog) => {
+            !slidingStart && setCurrentSongTempValue(prog.currentTime);
+
+            setcurrentTime(prog.currentTime);
+          }}
+          audioOnly={true}
+          onLoadStart={() => {
+            Platform.OS === "ios"
+              ? LayoutAnimation.configureNext(LayoutAnimation.Presets.linear)
+              : null;
+
+            setSongLoaded(false);
+            setDuration(0);
+            setcurrentTime(0);
+            setCurrentSongTempValue(0);
+          }}
+          onEnd={() => (repeat ? repeatHandle() : nextButtonHandle())}
+          // source={{
+          //   uri: audioItems[currentSong].urlIOS,
+          // }} // Can be a URL or a local file.
+          source={{
+            uri: audioFiles[currentSong]?.url,
+          }}
+          ref={(ref) => {
+            playerRef = ref;
+          }} // Store reference
+          // Callback when video cannot be loaded
+        />
+        <TabBar
+          handlePlayerPress={() => setplayerModalVisible(true)}
+          onAboutUsPress={() => props.navigation.navigate("AboutUs")}
+        />
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={playerModalVisible}
+        >
+          <View
+            style={{
+              flex: 1,
+              backgroundColor: "rgba(0,0,0,0.9)",
+              padding: moderateScale(20),
+            }}
+          >
+            <TouchableOpacity
+              onPress={() => {
+                setplayerModalVisible(false);
+              }}
+              style={{
+                paddingTop: moderateScale(50),
+                alignItems: "center",
+                flex: 1,
+              }}
+              activeOpacity={1}
+            >
+              <FontAwesome5
+                name="chevron-down"
+                size={moderateScale(28)}
+                color={"white"}
+              />
+              <Banner />
+            </TouchableOpacity>
+            <View
+              style={{
+                flex: 1,
+                justifyContent: "flex-end",
+              }}
+            >
+              {!songLoaded ? (
+                <Text numberOfLines={1} style={styles.loadingText}>
+                  Loading high quality sound...
+                </Text>
+              ) : null}
+              <Text numberOfLines={1} style={styles.audioTitle}>
+                {audioFile.filename}
+              </Text>
+              <Text style={styles.audioSubTitle}>
+                <Text style={{ fontWeight: "bold" }}>Tag: </Text>{" "}
+                {audioFile.type},
+                <Text style={{ fontWeight: "bold" }}> Song: </Text>{" "}
+                {audioFile.filename}
+              </Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  paddingHorizontal: 15,
+                }}
+              >
+                <Text style={{ color: "#fff" }}>
+                  {convertTime(currentTime)}
+                </Text>
+                <Text style={{ color: "#fff" }}>{convertTime(duration)}</Text>
+              </View>
+
+              <Slider
+                style={{ height: 40 }}
+                minimumValue={0}
+                maximumValue={1}
+                value={
+                  currentSongTempValue && duration
+                    ? currentSongTempValue / duration
+                    : 0
+                }
+                onSlidingStart={() => setSlidingStart(true)}
+                minimumTrackTintColor={color.FONT_MEDIUM}
+                maximumTrackTintColor={color.ACTIVE_BG}
+                onValueChange={(val) => setcurrentTime(duration * val)}
+                onSlidingComplete={(val) => {
+                  setSlidingStart(false);
+
+                  setCurrentSongTempValue(duration * val);
+                  currentTime && duration
+                    ? playerRef.seek(duration * val)
+                    : null;
+                }}
+              />
+              <View style={styles.audioControllers}>
+                <View
+                  style={{
+                    width: scale(100),
+                    backgroundColor: "red",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                ></View>
+                <PlayerButton
+                  iconType="PREV"
+                  onPress={() => previousButtonHandle()}
+                />
+                <View
+                  style={{
+                    width: 100,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  {!songLoaded ? (
+                    <ActivityIndicator size="small" color="#fff" />
+                  ) : (
+                    <PlayerButton
+                      onPress={() => {
+                        setPlay(!isPlay);
+                      }}
+                      style={{ marginHorizontal: 25 }}
+                      iconType={isPlay ? "PLAY" : "PAUSE"}
+                    />
+                  )}
+                </View>
+
+                <PlayerButton
+                  iconType="NEXT"
+                  onPress={() => nextButtonHandle()}
+                />
+                <TouchableOpacity
+                  style={{
+                    width: scale(100),
+
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                  onPress={() => setRepeat(!repeat)}
+                >
+                  <MaterialIcons
+                    name="repeat"
+                    size={scale(30)}
+                    color={repeat ? color.ACTIVE_BG : color.FONT_MEDIUM}
+                  />
                 </TouchableOpacity>
               </View>
-*/
-  render() {
-    return (
-      <AudioContext.Consumer>
-        {({ dataProvider, isPlaying, filteredAudio }) => {
-          if (!filteredAudio._data.length) return null;
-          return (
-            <Screen>
-              <RecyclerListView
-                style={styles.marginFromTop}
-                dataProvider={dataProvider}
-                layoutProvider={this.layoutProvider}
-                rowRenderer={this.rowRenderer}
-                extendedState={{ isPlaying }}
-              />
-              <OptionModal
-                options={[
-                  {
-                    title: "Add to playlist",
-                    onPress: this.navigateToPlaylist,
-                  },
-                ]}
-                currentItem={this.currentItem}
-                onClose={() =>
-                  this.setState({ ...this.state, optionModalVisible: false })
-                }
-                visible={this.state.optionModalVisible}
-              />
-            </Screen>
-          );
-        }}
-      </AudioContext.Consumer>
-    );
-  }
-}
-
-const Functional = ({
-  type,
-  item,
-  index,
-  extendedState,
-  onAudioPress,
-  onOptionPress,
-}) => {
-  const context = useContext(AudioContext);
-  const [isSoundPlaying, setIsSoundPlaying] = useState(false);
-
-  return (
-    <AudioListItem
-      isSoundPlaying={isSoundPlaying}
-      setIsSoundPlaying={setIsSoundPlaying}
-      item={item}
-      title={item.filename}
-      type={item.type}
-      album={item.album}
-      url={Platform.OS == "android" ? item.urlAndroid : item.urlIOS}
-      isDownlaod={item?.isDownloaded}
-      isPlaying={extendedState.isPlaying}
-      duration={item.duration}
-      activeListItem={context.currentAudioIndex === index}
-      onAudioPress={onAudioPress}
-      onOptionPress={onOptionPress}
-    />
+            </View>
+          </View>
+        </Modal>
+      </View>
+    </Screen>
   );
 };
 
 const styles = StyleSheet.create({
-  marginFromTop: {
-    marginTop: 50,
+  container: {
+    flex: 1,
+  },
+  maincontainer: {
+    flex: 1,
+
+    backgroundColor: "#6200EE",
+  },
+  image: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  innerContainer: {
+    textAlign: "center",
+    marginLeft: 35,
+  },
+  header: {
+    marginTop: 20,
+    fontSize: 24,
+    color: "#fff",
+    fontWeight: "bold",
+  },
+  version: {
+    marginTop: 10,
+    color: "#fff",
+  },
+  info: {
+    fontSize: 15,
+    marginTop: 10,
+    paddingRight: 10,
+    color: "#fff",
+  },
+  audioControllers: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingBottom: 20,
+    paddingTop: 10,
+  },
+  audioCountContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 15,
   },
   container: {
+    flex: 1,
+  },
+  audioCount: {
+    textAlign: "right",
+    marginTop: 10,
+    color: color.FONT_LIGHT,
+    fontSize: 14,
+  },
+  midBannerContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
-  category: {
-    height: 90,
-    marginLeft: 24,
-    marginTop: 45,
-    flexDirection: "row",
-    flexWrap: "wrap",
+  audioTitle: {
+    fontSize: 28,
+    fontWeight: "bold",
+    color: color.FONT,
+    paddingVertical: 15,
   },
-  btnstyle: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 12,
-    paddingBottom: 2,
-    marginLeft: 5,
-    borderRadius: 4,
-    elevation: 3,
-    opacity: 0.7,
-    backgroundColor: "white",
+  audioSubTitle: {
+    fontSize: 18,
+    color: color.FONT,
+    paddingVertical: 15,
   },
-  iconStyle: {
-    marginLeft: 20,
-    marginTop: 10,
-  },
-  btnText: {
-    fontSize: 20,
+  loadingText: {
+    fontSize: scale(14),
+    color: color.FONT,
+    paddingBottom: scale(15),
+    alignSelf: "center",
+    fontWeight: "300",
   },
 });
 

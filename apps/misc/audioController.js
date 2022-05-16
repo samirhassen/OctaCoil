@@ -12,7 +12,7 @@ Sound.setCategory("Playback", false);
 
 // play audio
 export const play = async ({ context, uri, index, audio }) => {
-  console.log("playing", uri);
+  // console.log("playing", uri, context.sound);
   try {
     const { sound, currentAudioIndex, updateState } = context;
     if (sound.current && currentAudioIndex === index) {
@@ -34,8 +34,10 @@ export const play = async ({ context, uri, index, audio }) => {
         console.log("failed to load the sound", error);
         return;
       }
-      sound.current.setCategory("Playback");
-      sound.current.play();
+      sound.current && sound.current.setCategory("Playback");
+      sound.current && sound.current.play
+        ? sound.current.play()
+        : console.log("cannot find play in ");
     });
     startMusicControl({ title: audio.filename, duration: audio.duration });
     updateMusicControl({ elapsedTime: 0, state: "play" });
@@ -226,6 +228,7 @@ export const selectAudio = async (
     onPlaybackStatusUpdate,
   } = context;
   try {
+    console.log(audio, context, "hihihi");
     const currentAudioUrl =
       Platform.OS == "android" ? audio.urlAndroid : audio.urlIOS;
 

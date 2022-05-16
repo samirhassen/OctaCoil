@@ -13,9 +13,17 @@ import RNFetchBlob from "rn-fetch-blob";
 import PlayerButton from "../components/PlayerButton";
 import Screen from "../components/Screen";
 import { AudioContext } from "../context/AudioProvider";
-import { pause, play, stop } from "../misc/audioController";
+import {
+  pause,
+  play,
+  stop,
+  musicControlListener,
+  selectAudio,
+} from "../misc/audioController";
 import color from "../misc/color";
 import { convertTime } from "../misc/helper";
+import Video from "react-native-video";
+
 Sound.setActive(true);
 Sound.setCategory("Playback", false);
 const { width } = Dimensions.get("window");
@@ -34,17 +42,12 @@ const Player = () => {
   const [currentTime, setCurrentTime] = useState(0);
   const [audioLoading, setAudioLoading] = useState(false);
   const [reRender, setReRender] = useState(false);
-
-  const calculateSeebBar = () => {
-    if (currentTime && currentAudio.duration) {
-      return currentTime / currentAudio.duration;
-    }
-
-    return 0;
-  };
+  const [seekbarCurrentValue, setSeekbarCurrentValue] = useState(0);
 
   useEffect(() => {
-    context.loadPreviousAudio();
+    if (!currentAudio) {
+      context.loadPreviousAudio();
+    } // musicControlListener({ context: context });
     // checkIfDownloaded();
   }, []);
 
@@ -58,36 +61,21 @@ const Player = () => {
   const currentAudioChangedCondition = async () => {
     const index = audioFiles.findIndex(({ id }) => id === currentAudio.id);
     if (isAudioPlaying) {
-      await stop({
-        context,
-      });
-      clearInterval(soundTimer.current);
-      await play({
-        uri: currentAudio.url,
-        context,
-        index: index,
-        audio: currentAudio,
-        isPlayer: true,
-      });
+      // await stop({
+      //   context,
+      // });
+      // clearInterval(soundTimer.current);
+      // await play({
+      //   uri: currentAudio.url,
+      //   context,
+      //   index: index,
+      //   audio: currentAudio,
+      //   isPlayer: true,
+      // });
       return activateInterval();
     } else {
       return;
     }
-  };
-
-  const activateInterval = () => {
-    soundTimer.current = setInterval(() => {
-      if (currentTime >= currentAudio.duration) {
-        stop({ context });
-        clearInterval(soundTimer.current);
-        return;
-      }
-      if (sound.current) {
-        sound.current.getCurrentTime((seconds) => {
-          setCurrentTime(seconds);
-        });
-      }
-    }, 1000);
   };
 
   const handlePlayPause = async () => {
@@ -138,47 +126,119 @@ const Player = () => {
       }
     }
   };
-
-  const handleNext = async () => {
-    const index = audioFiles.findIndex(({ id }) => id === currentAudio.id);
-    if (index === audioFiles.length - 1) return;
-    updateState(context, {
-      currentAudio: audioFiles[index + 1],
-    });
-    setReRender(!reRender);
+  const handleAudioPress = async (audio) => {
+    await selectAudio(audio, this.context);
   };
 
+  async function handleNext() {
+    setCurrentTime(0);
+
+    try {
+      console.log(context, "holaaaaa");
+      const index = audioFiles.findIndex(({ id }) => id === currentAudio.id);
+
+      if (index === audioFiles.length - 1) return;
+      const nextAudio = audioFiles[index + 1];
+
+      if (isAudioPlaying) {
+        setReRender(!reRender);
+        await stop({ context });
+        await play({
+          context,
+          uri: nextAudio.url,
+          index: index + 1,
+          audio: nextAudio,
+        });
+        // return setReRender(!reRender);
+      } else {
+        console.log(
+          "playing next song an file index is",
+          index,
+          "context is ",
+          context
+        );
+        await play({
+          context,
+          uri: nextAudio.url,
+          index: index + 1,
+          audio: nextAudio,
+        });
+        // return setReRender(!reRender);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   const handlePrevious = async () => {
+    setCurrentTime(0);
+
     const index = audioFiles.findIndex(({ id }) => id === currentAudio.id);
     if (index === 0) return;
-    updateState(context, {
-      currentAudio: audioFiles[index - 1],
-    });
-    setReRender(!reRender);
+
+    if (index === audioFiles.length - 1) return;
+    const previousAudio = audioFiles[index - 1];
+
+    if (isAudioPlaying) {
+      setReRender(!reRender);
+      await stop({ context });
+      await play({
+        context,
+        uri: previousAudio.url,
+        index: index - 1,
+        audio: previousAudio,
+      });
+      // return setReRender(!reRender);
+    } else {
+      await play({
+        context,
+        uri: previousAudio.url,
+        index: index - 1,
+        audio: previousAudio,
+      });
+      // return setReRender(!reRender);
+    }
   };
 
   if (!context.currentAudio) return null;
 
   const onValueChange = (value) => {
     if (isAudioPlaying && sound.current) {
-      sound.current.setCurrentTime(value * currentAudio.duration);
       setCurrentTime(value * currentAudio.duration);
     }
   };
 
   const onSlidingComplete = async (value) => {
-    console.log(
-      "onSlidingComplete",
-      value * currentAudio.duration,
-      currentAudio.duration
-    );
-    // await moveAudio(context, value);
     if (isAudioPlaying && sound.current) {
-      if (value === 1) {
-        return handleNext();
-      }
+      // if (value === 1) {
+      //   return handleNext();
+      // }
       sound.current.setCurrentTime(value * currentAudio.duration);
     }
+  };
+  const activateInterval = () => {
+    soundTimer.current = setInterval(() => {
+      console.log("running interval");
+
+      sound.current &&
+        sound.current.getCurrentTime((seconds) => {
+          if (seconds + 1 >= currentAudio.duration) {
+            // stop({ context });
+            // clearInterval(soundTimer.current);
+            return handleNext();
+          } else {
+            setCurrentTime(seconds);
+          }
+        });
+    }, 1000);
+  };
+
+  const calculateSeebBar = () => {
+    if (currentTime && currentAudio.duration) {
+      return currentTime / currentAudio.duration;
+    }
+
+    return 0;
   };
 
   return (
@@ -193,8 +253,9 @@ const Player = () => {
               </>
             )}
           </View>
-          <Text style={styles.audioCount}>{`${context.currentAudioIndex + 1
-            } / ${context.totalAudioCount}`}</Text>
+          <Text style={styles.audioCount}>{`${
+            context.currentAudioIndex + 1
+          } / ${context.totalAudioCount}`}</Text>
         </View>
         <View style={styles.midBannerContainer}>
           {!context.isPlaying ? (
@@ -231,6 +292,7 @@ const Player = () => {
               {convertTime(currentAudio.duration)}
             </Text>
           </View>
+
           <Slider
             style={{ width: width, height: 40 }}
             minimumValue={0}

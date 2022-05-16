@@ -8,6 +8,7 @@ export default function App() {
   return (
     <AudioProvider>
       <NavigationContainer>
+        <StatusBar backgroundColor={"black"} />
         <AppNavigator />
       </NavigationContainer>
     </AudioProvider>
