@@ -275,11 +275,11 @@ const Player = () => {
             {context.currentAudio.filename}
           </Text>
           <Text style={styles.audioSubTitle}>
-            <Text style={{ fontWeight: "bold" }}>Tag: </Text>{" "}
+            <Text style={{ fontWeight: "bold" }}>Description: </Text>{" "}
             {currentAudio.type},
-            <Text style={{ fontWeight: "bold" }}> Song: </Text>{" "}
-            {currentAudio.filename}
-          </Text>
+            {/* <Text style={{ fontWeight: "bold" }}> Song: </Text>{" "}
+            {currentAudio.filename} */}
+           </Text>
           <View
             style={{
               flexDirection: "row",
