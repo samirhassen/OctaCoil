@@ -12,6 +12,8 @@ import {
   LayoutAnimation,
   UIManager,
   Platform,
+  Switch,
+  SafeAreaView,
 } from "react-native";
 import AudioListItem from "../components/AudioListItem";
 import Screen from "../components/Screen";
@@ -44,6 +46,28 @@ if (
   UIManager.setLayoutAnimationEnabledExperimental
 ) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
+}
+function secondsToTime(secs) {
+  var hours = Math.floor(secs / (60 * 60));
+
+  var divisor_for_minutes = secs % (60 * 60);
+  var minutes = Math.floor(divisor_for_minutes / 60);
+
+  var divisor_for_seconds = divisor_for_minutes % 60;
+  var seconds = Math.ceil(divisor_for_seconds);
+  var obj = {
+    h: hours,
+    m: minutes,
+    s: seconds,
+  };
+  var str = "";
+  if (obj.h > 0) {
+    str = obj.h + " hr ";
+  }
+  if (obj.m > 0) {
+    str = str + obj.m + " mins";
+  }
+  return str;
 }
 const Banner = () => (
   <LottieView
@@ -87,6 +111,11 @@ export const AudioList = (props) => {
     var seconds = "0" + (time - minutes * 60);
     return minutes.substr(-2) + ":" + seconds.substr(-2);
   };
+  // TIMER
+
+  const [timer, setTimer] = useState(false);
+  const [timerModal, setTimerModal] = useState(false);
+  const [timerValue, setTimerValue] = useState(0);
 
   const nextButtonHandle = () => {
     console.log("audioItems.length", audioItems.length);
@@ -153,6 +182,17 @@ export const AudioList = (props) => {
     setcurrentTime(0);
 
     // setPlay(true);
+  };
+  const timerRef = useRef(null);
+
+  const setTimerTimeout = (seconds) => {
+    console.log(seconds);
+    timerRef.current = setTimeout(() => {
+      console.log("setting false");
+      setTimerValue(0);
+      setPlay(false);
+      /** Your logic goes here */
+    }, seconds);
   };
   return (
     <Screen>
@@ -234,146 +274,250 @@ export const AudioList = (props) => {
           handlePlayerPress={() => setplayerModalVisible(true)}
           onAboutUsPress={() => props.navigation.navigate("AboutUs")}
         />
+
         <Modal
           animationType="slide"
           transparent={true}
           visible={playerModalVisible}
         >
-          <View
-            style={{
-              flex: 1,
-              backgroundColor: "rgba(0,0,0,0.9)",
-              padding: moderateScale(20),
-            }}
-          >
-            <TouchableOpacity
-              onPress={() => {
-                setplayerModalVisible(false);
-              }}
-              style={{
-                paddingTop: moderateScale(50),
-                alignItems: "center",
-                flex: 1,
-              }}
-              activeOpacity={1}
-            >
-              <FontAwesome5
-                name="chevron-down"
-                size={moderateScale(28)}
-                color={"white"}
-              />
-              <Banner />
-            </TouchableOpacity>
+          {!timerModal ? (
             <View
               style={{
                 flex: 1,
-                justifyContent: "flex-end",
+                backgroundColor: "rgba(0,0,0,0.9)",
+                padding: moderateScale(20),
               }}
             >
-              {!songLoaded ? (
-                <Text numberOfLines={1} style={styles.loadingText}>
-                  Loading high quality sound...
-                </Text>
-              ) : null}
-              <Text numberOfLines={1} style={styles.audioTitle}>
-                {audioFile.filename}
-              </Text>
-              <Text style={styles.audioSubTitle}>
-                <Text style={{ fontWeight: "bold" }}>Tag: </Text>{" "}
-                {audioFile.type},
-                <Text style={{ fontWeight: "bold" }}> Song: </Text>{" "}
-                {audioFile.filename}
-              </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setplayerModalVisible(false);
+                }}
+                style={{
+                  paddingTop: moderateScale(50),
+                  alignItems: "center",
+                  flex: 1,
+                }}
+                activeOpacity={1}
+              >
+                <FontAwesome5
+                  name="chevron-down"
+                  size={moderateScale(28)}
+                  color={"white"}
+                />
+                <Banner />
+              </TouchableOpacity>
               <View
                 style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  paddingHorizontal: 15,
+                  flex: 1,
+                  justifyContent: "flex-end",
                 }}
               >
-                <Text style={{ color: "#fff" }}>
-                  {convertTime(currentTime)}
+                {!songLoaded ? (
+                  <Text numberOfLines={1} style={styles.loadingText}>
+                    Loading high quality sound...
+                  </Text>
+                ) : null}
+                <Text numberOfLines={1} style={styles.audioTitle}>
+                  {audioFile.filename}
                 </Text>
-                <Text style={{ color: "#fff" }}>{convertTime(duration)}</Text>
-              </View>
-
-              <Slider
-                style={{ height: 40 }}
-                minimumValue={0}
-                maximumValue={1}
-                value={
-                  currentSongTempValue && duration
-                    ? currentSongTempValue / duration
-                    : 0
-                }
-                onSlidingStart={() => setSlidingStart(true)}
-                minimumTrackTintColor={color.FONT_MEDIUM}
-                maximumTrackTintColor={color.ACTIVE_BG}
-                onValueChange={(val) => setcurrentTime(duration * val)}
-                onSlidingComplete={(val) => {
-                  setSlidingStart(false);
-
-                  setCurrentSongTempValue(duration * val);
-                  currentTime && duration
-                    ? playerRef.seek(duration * val)
-                    : null;
-                }}
-              />
-              <View style={styles.audioControllers}>
+                <Text style={styles.audioSubTitle}>
+                  <Text style={{ fontWeight: "bold" }}>Tag: </Text>{" "}
+                  {audioFile.type},
+                  <Text style={{ fontWeight: "bold" }}> Song: </Text>{" "}
+                  {audioFile.filename}
+                </Text>
                 <View
                   style={{
-                    width: scale(100),
-                    backgroundColor: "red",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                ></View>
-                <PlayerButton
-                  iconType="PREV"
-                  onPress={() => previousButtonHandle()}
-                />
-                <View
-                  style={{
-                    width: 100,
-                    justifyContent: "center",
-                    alignItems: "center",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    paddingHorizontal: 15,
                   }}
                 >
-                  {!songLoaded ? (
-                    <ActivityIndicator size="small" color="#fff" />
-                  ) : (
-                    <PlayerButton
-                      onPress={() => {
-                        setPlay(!isPlay);
-                      }}
-                      style={{ marginHorizontal: 25 }}
-                      iconType={isPlay ? "PLAY" : "PAUSE"}
-                    />
-                  )}
+                  <Text style={{ color: "#fff" }}>
+                    {convertTime(currentTime)}
+                  </Text>
+                  <Text style={{ color: "#fff" }}>{convertTime(duration)}</Text>
                 </View>
 
-                <PlayerButton
-                  iconType="NEXT"
-                  onPress={() => nextButtonHandle()}
-                />
-                <TouchableOpacity
-                  style={{
-                    width: scale(100),
+                <Slider
+                  style={{ height: 40 }}
+                  minimumValue={0}
+                  maximumValue={30}
+                  value={
+                    currentSongTempValue && duration
+                      ? currentSongTempValue / duration
+                      : 0
+                  }
+                  onSlidingStart={() => setSlidingStart(true)}
+                  minimumTrackTintColor={color.FONT_MEDIUM}
+                  maximumTrackTintColor={color.ACTIVE_BG}
+                  onValueChange={(val) => setcurrentTime(duration * val)}
+                  onSlidingComplete={(val) => {
+                    setSlidingStart(false);
 
-                    justifyContent: "center",
-                    alignItems: "center",
+                    setCurrentSongTempValue(duration * val);
+                    currentTime && duration
+                      ? playerRef.seek(duration * val)
+                      : null;
                   }}
-                  onPress={() => setRepeat(!repeat)}
-                >
-                  <MaterialIcons
-                    name="repeat"
-                    size={scale(30)}
-                    color={repeat ? color.ACTIVE_BG : color.FONT_MEDIUM}
+                />
+                <View style={styles.audioControllers}>
+                  <TouchableOpacity
+                    onPress={() => setTimerModal(true)}
+                    style={{
+                      width: scale(100),
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <MaterialIcons
+                      name="timer"
+                      size={scale(30)}
+                      color={repeat ? color.ACTIVE_BG : color.FONT_MEDIUM}
+                    />
+                  </TouchableOpacity>
+                  <PlayerButton
+                    iconType="PREV"
+                    onPress={() => previousButtonHandle()}
                   />
-                </TouchableOpacity>
+                  <View
+                    style={{
+                      width: 100,
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    {!songLoaded ? (
+                      <ActivityIndicator size="small" color="#fff" />
+                    ) : (
+                      <PlayerButton
+                        onPress={() => {
+                          setPlay(!isPlay);
+                        }}
+                        style={{ marginHorizontal: 25 }}
+                        iconType={isPlay ? "PLAY" : "PAUSE"}
+                      />
+                    )}
+                  </View>
+
+                  <PlayerButton
+                    iconType="NEXT"
+                    onPress={() => nextButtonHandle()}
+                  />
+                  <TouchableOpacity
+                    style={{
+                      width: scale(100),
+
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                    onPress={() => setRepeat(!repeat)}
+                  >
+                    <MaterialIcons
+                      name="repeat"
+                      size={scale(30)}
+                      color={repeat ? color.ACTIVE_BG : color.FONT_MEDIUM}
+                    />
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
-          </View>
+          ) : (
+            <View
+              style={{
+                flex: 1,
+                backgroundColor: "rgba(0,0,0,0.9)",
+                padding: moderateScale(20),
+              }}
+            >
+              <SafeAreaView
+                style={{ flex: 1, justifyContent: "space-between" }}
+              >
+                <Text
+                  style={{
+                    fontWeight: "500",
+                    color: "white",
+                    alignSelf: "center",
+                    fontSize: 20,
+                    paddingVertical: 10,
+                  }}
+                >
+                  Set Sleep Timer:
+                </Text>
+                <View style={{ minHeight: 100 }}>
+                  <Text
+                    style={{
+                      fontWeight: "500",
+                      color: "white",
+                      alignSelf: "center",
+                      fontSize: 40,
+                    }}
+                  >
+                    {secondsToTime(timerValue) || "Off"}
+                  </Text>
+                  <Slider
+                    style={{ height: 40 }}
+                    minimumValue={0}
+                    maximumValue={43200}
+                    step={60}
+                    value={timerValue}
+                    // onSlidingStart={() => setSlidingStart(true)}
+                    minimumTrackTintColor={color.FONT_MEDIUM}
+                    maximumTrackTintColor={color.ACTIVE_BG}
+                    onValueChange={setTimerValue}
+                  />
+                </View>
+                <View>
+                  <TouchableOpacity
+                    style={{
+                      backgroundColor: color.ACTIVE_BG,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      padding: 14,
+                      borderRadius: 5,
+                    }}
+                    onPress={() => {
+                      if (timerValue < 60) {
+                        setTimerModal(false);
+
+                        return;
+                      }
+                      if (timerRef.current) {
+                        clearTimeout(timerRef.current);
+                      }
+                      setTimerModal(false);
+
+                      setTimerTimeout(timerValue * 1000);
+                    }}
+                  >
+                    <Text style={{ color: "white", fontWeight: "bold" }}>
+                      CONFIRM
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setTimerModal(false);
+                    }}
+                    style={{
+                      justifyContent: "center",
+                      alignItems: "center",
+                      padding: 14,
+                      borderRadius: 5,
+                      marginTop: 8,
+                      borderWidth: 2,
+                      backgroundColor: "white",
+                    }}
+                  >
+                    <Text
+                      style={{ color: color.ACTIVE_BG, fontWeight: "bold" }}
+                    >
+                      CANCEL
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </SafeAreaView>
+            </View>
+          )}
         </Modal>
       </View>
     </Screen>

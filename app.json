@@ -13,9 +13,11 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
-      "bundleIdentifier": "com.cg.octacoil",
+      "bundleIdentifier": "com.spectrum.octacoil",
       "buildNumber": "1.0.0"
     },
     "android": {
