@@ -6,7 +6,7 @@ import { storeAudioForNextOpening } from "../misc/helper";
 import { playNext } from "../misc/audioController";
 import * as MediaLibrary from "expo-media-library";
 import { Alert } from "react-native";
-import RNFetchBlob from "rn-fetch-blob";
+import * as FileSystem from "expo-file-system";
 
 export const AudioContext = createContext();
 export const audioItems = [
@@ -196,9 +196,10 @@ export class AudioProvider extends Component {
     });
 
     const checkIfDownloaded = async (name) => {
-      return await RNFetchBlob.fs.exists(
-        RNFetchBlob.fs.dirs.DocumentDir + `/${name}`
+      const fileInfo = await FileSystem.getInfoAsync(
+        FileSystem.documentDirectory + `/${name}`
       );
+      return fileInfo.exists;
     };
     let tracks = [];
     for (var i = 0; i <= audioItems.length; i++) {
@@ -208,7 +209,7 @@ export class AudioProvider extends Component {
           Platform.OS === "ios" ? item.fileNameExtIOS : item.fileNameExtAndroid;
         const isDownloaded = await checkIfDownloaded(fileExtension);
 
-        const localPath = RNFetchBlob.fs.dirs.DocumentDir + `/${fileExtension}`;
+        const localPath = FileSystem.documentDirectory + `/${fileExtension}`;
 
         let url;
         if (isDownloaded) {

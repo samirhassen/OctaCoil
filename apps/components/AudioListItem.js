@@ -11,10 +11,11 @@ import {
   View,
 } from "react-native";
 import { scale } from "react-native-size-matters";
-import RNFetchBlob from "rn-fetch-blob";
+// import RNFetchBlob from "rn-fetch-blob";
 import { AudioContext } from "../context/AudioProvider";
 import { pause, play, stop } from "../misc/audioController";
 import color from "../misc/color";
+import * as FileSystem from "expo-file-system";
 
 const getThumbnailText = () => {
   return (
@@ -82,19 +83,18 @@ const AudioListItem = ({
   const onDownloadPress = async (url, fileNameExtension) => {
     try {
       setLoader(true);
-      await RNFetchBlob.config({
-        fileCache: true,
-        // addAndroidDownloads: {
-        //   useDownloadManager: true,
-        //   notification: false,
-        //   mime: "text/plain",
-        //   description: "File downloaded by download manager.",
-        // },
-        path: RNFetchBlob.fs.dirs.DocumentDir + `/${fileNameExtension}`,
-      }).fetch("GET", url);
-      setLoader(false);
-      getAudioFiles();
-      alert("File Download Sucessfully!");
+      const downloadResumable = FileSystem.createDownloadResumable(
+        url,
+        FileSystem.documentDirectory + `/${fileNameExtension}`,
+        {},
+        () => null
+      );
+      const { uri } = await downloadResumable.downloadAsync();
+      if (uri) {
+        setLoader(false);
+        getAudioFiles();
+        alert("File Download Sucessfully!");
+      }
     } catch (e) {
       console.log("error while downloading", e);
       console.error(e);

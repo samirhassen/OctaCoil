@@ -12,14 +12,17 @@ import {
   LayoutAnimation,
   UIManager,
   Platform,
+  Switch,
+  SafeAreaView,
 } from "react-native";
 import AudioListItem from "../components/AudioListItem";
 import Screen from "../components/Screen";
 import { AudioContext, audioItems } from "../context/AudioProvider";
 import PlayerButton from "../components/PlayerButton";
 import Slider from "@react-native-community/slider";
-import Video from "react-native-video";
+// import Video from "react-native-video";
 import color from "../misc/color";
+import { Video, AVPlaybackStatus } from "expo-av";
 
 import { convertTime } from "../misc/helper";
 import TabBar from "../components/TabBar";
@@ -44,6 +47,28 @@ if (
   UIManager.setLayoutAnimationEnabledExperimental
 ) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
+}
+function secondsToTime(secs) {
+  var hours = Math.floor(secs / (60 * 60));
+
+  var divisor_for_minutes = secs % (60 * 60);
+  var minutes = Math.floor(divisor_for_minutes / 60);
+
+  var divisor_for_seconds = divisor_for_minutes % 60;
+  var seconds = Math.ceil(divisor_for_seconds);
+  var obj = {
+    h: hours,
+    m: minutes,
+    s: seconds,
+  };
+  var str = "";
+  if (obj.h > 0) {
+    str = obj.h + " hr ";
+  }
+  if (obj.m > 0) {
+    str = str + obj.m + " mins";
+  }
+  return str;
 }
 const Banner = () => (
   <LottieView
@@ -79,6 +104,8 @@ export const AudioList = (props) => {
   const [currentSong, setCurrentSong] = useState(0);
   const [duration, setDuration] = useState(0);
   const [currentTime, setcurrentTime] = useState(0);
+  const [position, setPosition] = useState(undefined);
+
   const [currentSongUrl, setCurrentSongUrl] = useState("");
   const [slidingStart, setSlidingStart] = useState(false);
   const [songLoaded, setSongLoaded] = useState(false);
@@ -87,35 +114,57 @@ export const AudioList = (props) => {
     var seconds = "0" + (time - minutes * 60);
     return minutes.substr(-2) + ":" + seconds.substr(-2);
   };
+  // TIMER
 
-  const nextButtonHandle = () => {
+  const [timer, setTimer] = useState(false);
+  const [timerModal, setTimerModal] = useState(false);
+  const [timerValue, setTimerValue] = useState(0);
+  console.log(currentTime, "yoyo");
+  const nextButtonHandle = async (index) => {
+    clearTimeout();
     console.log("audioItems.length", audioItems.length);
+    await setPlay(false);
 
     if (currentSong >= 0 && currentSong < audioItems.length - 1) {
       console.log("set current song", currentSong + 1);
-      Platform.OS === "ios"
+      (await Platform.OS) === "ios"
         ? LayoutAnimation.configureNext(LayoutAnimation.Presets.linear)
         : null;
-      setCurrentSongTempValue(0);
-      setcurrentTime(0);
+      await setCurrentSong(index ? index : currentSong + 1);
 
-      setCurrentSong(currentSong + 1);
+      await setCurrentSongTempValue(0);
+      await setcurrentTime(0);
+      await setTimerValue(0);
+
+      await setPosition(0);
     } else if (currentSong === audioItems.length - 1) {
-      setCurrentSongTempValue(0);
-      setcurrentTime(0);
-      setCurrentSong(0);
+      await setCurrentSong(0);
+
+      await setCurrentSongTempValue(0);
+      await setcurrentTime(0);
+      await setTimerValue(0);
+
+      await setPosition(0);
     }
+    setTimeout(async () => {
+      await setPlay(true);
+    }, 200);
   };
-  const previousButtonHandle = () => {
+  const previousButtonHandle = async () => {
+    await setPlay(false);
+
     if (currentSong >= 1) {
       console.log("set current song", currentSong + 1);
-      Platform.OS === "ios"
+      (await Platform.OS) === "ios"
         ? LayoutAnimation.configureNext(LayoutAnimation.Presets.linear)
         : null;
-      setCurrentSongTempValue(0);
-      setcurrentTime(0);
-      setCurrentSong(currentSong - 1);
+      await setCurrentSongTempValue(0);
+      await setcurrentTime(0);
+      await setPosition(0);
+
+      await setCurrentSong(currentSong - 1);
     }
+    await setPlay(true);
   };
   const audioFile = audioItems[currentSong];
   // rowRenderer = (type, item, index, extendedState) => {
@@ -132,28 +181,46 @@ export const AudioList = (props) => {
   //     />
   //   );
   // };
-  const handleItemClick = (index) => {
+  const handleItemClick = async (index) => {
     console.log("set current songfdsfs", index);
 
     if (index >= 0 && index < audioItems.length) {
       console.log("set current song", index);
-      Platform.OS === "ios"
+      (await Platform.OS) === "ios"
         ? LayoutAnimation.configureNext(LayoutAnimation.Presets.linear)
         : null;
-      setCurrentSongTempValue(0);
+      await setcurrentTime(0);
 
-      setCurrentSong(index);
-      setPlay(true);
+      await setCurrentSongTempValue(0);
+      await setPosition(0);
+      await setTimerValue(0);
+
+      await setCurrentSong(index);
     }
+    await setPlay(true);
   };
-  const repeatHandle = () => {
-    console.log("hello", playerRef.seek);
-    playerRef.seek(0);
-    setCurrentSongTempValue(0);
-    setcurrentTime(0);
+  const repeatHandle = async () => {
+    setPlay(true);
 
+    console.log("hello", playerRef.seek);
+    // playerRef.seek(0);
+    setCurrentSongTempValue(0);
+    setPosition(0);
+    setTimerValue(0);
     // setPlay(true);
   };
+  const timerRef = useRef(null);
+
+  const setTimerTimeout = (seconds) => {
+    console.log(seconds);
+    timerRef.current = setTimeout(() => {
+      console.log("setting false");
+      setTimerValue(0);
+      setPlay(false);
+      /** Your logic goes here */
+    }, seconds);
+  };
+
   return (
     <Screen>
       <View style={{ flex: 1, marginTop: verticalScale(40) }}>
@@ -167,7 +234,9 @@ export const AudioList = (props) => {
             return (
               <AudioListItem
                 key={fileExtension + index}
-                openPlayer={() => setplayerModalVisible(true)}
+                openPlayer={async () => {
+                  await setplayerModalVisible(true);
+                }}
                 fileNameExtension={fileExtension}
                 type={item.type}
                 title={item.filename}
@@ -177,36 +246,70 @@ export const AudioList = (props) => {
                 duration={item.duration}
                 activeListItem={currentSong === index}
                 isPlaying={isPlay}
-                handleItemClick={handleItemClick}
+                handleItemClick={nextButtonHandle}
                 index={index}
                 // onAudioPress={onAudioPress}
               />
             );
           }}
         />
+        {/* <Video
+        ref={video}
+        style={styles.video}
+        source={{
+          uri: 'https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4',
+        }}
+        useNativeControls
+        resizeMode="contain"
+        isLooping
+        onPlaybackStatusUpdate={status => setStatus(() => status)}
+      /> */}
         <Video
-          bufferConfig={{
-            minBufferMs: 2000,
-            maxBufferMs: 5000,
-            bufferForPlaybackMs: 2000,
-            bufferForPlaybackAfterRebufferMs: 2000,
+          // bufferConfig={{
+          //   minBufferMs: 2000,
+          //   maxBufferMs: 5000,
+          //   bufferForPlaybackMs: 2000,
+          //   bufferForPlaybackAfterRebufferMs: 2000,
+          // }}
+          progressUpdateIntervalMillis={1000}
+          isLooping={repeat}
+          // playInBackground={true}
+          shouldPlay={isPlay}
+          onError={(err) => {
+            console.log(err);
           }}
-          repeat={repeat}
-          playInBackground={true}
-          paused={!isPlay}
+          positionMillis={position}
           onLoad={(val) => {
             Platform.OS === "ios"
               ? LayoutAnimation.configureNext(LayoutAnimation.Presets.linear)
               : null;
 
-            setDuration(val.duration);
+            setDuration(val.durationMillis / 1000);
             setSongLoaded(true);
           }}
-          onProgress={(prog) => {
-            !slidingStart && setCurrentSongTempValue(prog.currentTime);
+          onPlaybackStatusUpdate={(prog) => {
+            !slidingStart &&
+              setCurrentSongTempValue(prog.positionMillis / 1000);
 
-            setcurrentTime(prog.currentTime);
+            console.log(prog.positionMillis / 1000);
+
+            setcurrentTime(prog.positionMillis / 1000);
+
+            if (
+              prog.durationMillis === prog.positionMillis &&
+              prog.durationMillis > 0 &&
+              prog.positionMillis > 0
+            ) {
+              console.log(
+                currentTime === duration && duration > 0 && currentTime > 0,
+                duration,
+                currentTime
+              );
+              repeat ? repeatHandle() : nextButtonHandle();
+              return;
+            }
           }}
+          useNativeControls={true}
           audioOnly={true}
           onLoadStart={() => {
             Platform.OS === "ios"
@@ -218,7 +321,7 @@ export const AudioList = (props) => {
             setcurrentTime(0);
             setCurrentSongTempValue(0);
           }}
-          onEnd={() => (repeat ? repeatHandle() : nextButtonHandle())}
+          // one={() => (repeat ? repeatHandle() : nextButtonHandle())}
           // source={{
           //   uri: audioItems[currentSong].urlIOS,
           // }} // Can be a URL or a local file.
@@ -234,146 +337,251 @@ export const AudioList = (props) => {
           handlePlayerPress={() => setplayerModalVisible(true)}
           onAboutUsPress={() => props.navigation.navigate("AboutUs")}
         />
+
         <Modal
           animationType="slide"
           transparent={true}
           visible={playerModalVisible}
         >
-          <View
-            style={{
-              flex: 1,
-              backgroundColor: "rgba(0,0,0,0.9)",
-              padding: moderateScale(20),
-            }}
-          >
-            <TouchableOpacity
-              onPress={() => {
-                setplayerModalVisible(false);
-              }}
-              style={{
-                paddingTop: moderateScale(50),
-                alignItems: "center",
-                flex: 1,
-              }}
-              activeOpacity={1}
-            >
-              <FontAwesome5
-                name="chevron-down"
-                size={moderateScale(28)}
-                color={"white"}
-              />
-              <Banner />
-            </TouchableOpacity>
+          {!timerModal ? (
             <View
               style={{
                 flex: 1,
-                justifyContent: "flex-end",
+                backgroundColor: "rgba(0,0,0,0.9)",
+                padding: moderateScale(20),
               }}
             >
-              {!songLoaded ? (
-                <Text numberOfLines={1} style={styles.loadingText}>
-                  Loading high quality sound...
-                </Text>
-              ) : null}
-              <Text numberOfLines={1} style={styles.audioTitle}>
-                {audioFile.filename}
-              </Text>
-              <Text style={styles.audioSubTitle}>
-                <Text style={{ fontWeight: "bold" }}>Tag: </Text>{" "}
-                {audioFile.type},
-                <Text style={{ fontWeight: "bold" }}> Song: </Text>{" "}
-                {audioFile.filename}
-              </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setplayerModalVisible(false);
+                }}
+                style={{
+                  paddingTop: moderateScale(50),
+                  alignItems: "center",
+                  flex: 1,
+                }}
+                activeOpacity={1}
+              >
+                <FontAwesome5
+                  name="chevron-down"
+                  size={moderateScale(28)}
+                  color={"white"}
+                />
+                <Banner />
+              </TouchableOpacity>
               <View
                 style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  paddingHorizontal: 15,
+                  flex: 1,
+                  justifyContent: "flex-end",
                 }}
               >
-                <Text style={{ color: "#fff" }}>
-                  {convertTime(currentTime)}
+                {!songLoaded ? (
+                  <Text numberOfLines={1} style={styles.loadingText}>
+                    Loading high quality sound...
+                  </Text>
+                ) : null}
+                <Text numberOfLines={1} style={styles.audioTitle}>
+                  {audioFile.filename}
                 </Text>
-                <Text style={{ color: "#fff" }}>{convertTime(duration)}</Text>
-              </View>
-
-              <Slider
-                style={{ height: 40 }}
-                minimumValue={0}
-                maximumValue={1}
-                value={
-                  currentSongTempValue && duration
-                    ? currentSongTempValue / duration
-                    : 0
-                }
-                onSlidingStart={() => setSlidingStart(true)}
-                minimumTrackTintColor={color.FONT_MEDIUM}
-                maximumTrackTintColor={color.ACTIVE_BG}
-                onValueChange={(val) => setcurrentTime(duration * val)}
-                onSlidingComplete={(val) => {
-                  setSlidingStart(false);
-
-                  setCurrentSongTempValue(duration * val);
-                  currentTime && duration
-                    ? playerRef.seek(duration * val)
-                    : null;
-                }}
-              />
-              <View style={styles.audioControllers}>
+                <Text style={styles.audioSubTitle}>
+                  <Text style={{ fontWeight: "bold" }}>Tag: </Text>{" "}
+                  {audioFile.type},
+                  <Text style={{ fontWeight: "bold" }}> Song: </Text>{" "}
+                  {audioFile.filename}
+                </Text>
                 <View
                   style={{
-                    width: scale(100),
-                    backgroundColor: "red",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                ></View>
-                <PlayerButton
-                  iconType="PREV"
-                  onPress={() => previousButtonHandle()}
-                />
-                <View
-                  style={{
-                    width: 100,
-                    justifyContent: "center",
-                    alignItems: "center",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    paddingHorizontal: 15,
                   }}
                 >
-                  {!songLoaded ? (
-                    <ActivityIndicator size="small" color="#fff" />
-                  ) : (
-                    <PlayerButton
-                      onPress={() => {
-                        setPlay(!isPlay);
-                      }}
-                      style={{ marginHorizontal: 25 }}
-                      iconType={isPlay ? "PLAY" : "PAUSE"}
-                    />
-                  )}
+                  <Text style={{ color: "#fff" }}>
+                    {convertTime(currentTime)}
+                  </Text>
+                  <Text style={{ color: "#fff" }}>{convertTime(duration)}</Text>
                 </View>
 
-                <PlayerButton
-                  iconType="NEXT"
-                  onPress={() => nextButtonHandle()}
-                />
-                <TouchableOpacity
-                  style={{
-                    width: scale(100),
+                <Slider
+                  style={{ height: 40 }}
+                  minimumValue={0}
+                  maximumValue={duration}
+                  value={currentTime || 0}
+                  // onSlidingStart={() => setSlidingStart(true)}
+                  minimumTrackTintColor={color.FONT_MEDIUM}
+                  maximumTrackTintColor={color.ACTIVE_BG}
+                  // onValueChange={(val) => setPosition(Math.round(val * 1000))}
+                  onSlidingComplete={async (val) => {
+                    // console.log(val, "___");
 
-                    justifyContent: "center",
-                    alignItems: "center",
+                    setPosition(val * 1000);
+
+                    setcurrentTime(val * 1000);
+                    // setSlidingStart(false);
+                    // setCurrentSongTempValue(Math.round(val * 1000));
+                    // currentTime && duration
+                    //   ? playerRef.seek(duration * val)
+                    //   : null;
                   }}
-                  onPress={() => setRepeat(!repeat)}
-                >
-                  <MaterialIcons
-                    name="repeat"
-                    size={scale(30)}
-                    color={repeat ? color.ACTIVE_BG : color.FONT_MEDIUM}
+                />
+                <View style={styles.audioControllers}>
+                  <TouchableOpacity
+                    onPress={() => setTimerModal(true)}
+                    style={{
+                      width: scale(100),
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <MaterialIcons
+                      name="timer"
+                      size={scale(30)}
+                      color={color.FONT_MEDIUM}
+                    />
+                  </TouchableOpacity>
+                  <PlayerButton
+                    iconType="PREV"
+                    onPress={() => previousButtonHandle()}
                   />
-                </TouchableOpacity>
+                  <View
+                    style={{
+                      width: 100,
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    {!songLoaded ? (
+                      <ActivityIndicator size="small" color="#fff" />
+                    ) : (
+                      <PlayerButton
+                        onPress={() => {
+                          setPosition(currentTime * 1000);
+                          setPlay(!isPlay);
+                        }}
+                        style={{ marginHorizontal: 25 }}
+                        iconType={isPlay ? "PLAY" : "PAUSE"}
+                      />
+                    )}
+                  </View>
+
+                  <PlayerButton
+                    iconType="NEXT"
+                    onPress={() => nextButtonHandle()}
+                  />
+                  <TouchableOpacity
+                    style={{
+                      width: scale(100),
+
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                    onPress={() => setRepeat(!repeat)}
+                  >
+                    <MaterialIcons
+                      name="repeat"
+                      size={scale(30)}
+                      color={repeat ? color.ACTIVE_BG : color.FONT_MEDIUM}
+                    />
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
-          </View>
+          ) : (
+            <View
+              style={{
+                flex: 1,
+                backgroundColor: "rgba(0,0,0,0.9)",
+                padding: moderateScale(20),
+              }}
+            >
+              <SafeAreaView
+                style={{ flex: 1, justifyContent: "space-between" }}
+              >
+                <Text
+                  style={{
+                    fontWeight: "500",
+                    color: "white",
+                    alignSelf: "center",
+                    fontSize: 20,
+                    paddingVertical: 10,
+                  }}
+                >
+                  Set Sleep Timer:
+                </Text>
+                <View style={{ minHeight: 100 }}>
+                  <Text
+                    style={{
+                      fontWeight: "500",
+                      color: "white",
+                      alignSelf: "center",
+                      fontSize: 40,
+                    }}
+                  >
+                    {secondsToTime(timerValue) || "Off"}
+                  </Text>
+                  <Slider
+                    style={{ height: 40 }}
+                    minimumValue={0}
+                    maximumValue={43200}
+                    step={60}
+                    value={timerValue}
+                    // onSlidingStart={() => setSlidingStart(true)}
+                    minimumTrackTintColor={color.FONT_MEDIUM}
+                    maximumTrackTintColor={color.ACTIVE_BG}
+                    onValueChange={setTimerValue}
+                  />
+                </View>
+                <View>
+                  <TouchableOpacity
+                    style={{
+                      backgroundColor: color.ACTIVE_BG,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      padding: 14,
+                      borderRadius: 5,
+                    }}
+                    onPress={() => {
+                      if (timerValue < 60) {
+                        setTimerModal(false);
+
+                        return;
+                      }
+                      if (timerRef.current) {
+                        clearTimeout(timerRef.current);
+                      }
+                      setTimerModal(false);
+
+                      setTimerTimeout(timerValue * 1000);
+                    }}
+                  >
+                    <Text style={{ color: "white", fontWeight: "bold" }}>
+                      CONFIRM
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setTimerModal(false);
+                    }}
+                    style={{
+                      justifyContent: "center",
+                      alignItems: "center",
+                      padding: 14,
+                      borderRadius: 5,
+                      marginTop: 8,
+                      borderWidth: 2,
+                      backgroundColor: "white",
+                    }}
+                  >
+                    <Text
+                      style={{ color: color.ACTIVE_BG, fontWeight: "bold" }}
+                    >
+                      CANCEL
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </SafeAreaView>
+            </View>
+          )}
         </Modal>
       </View>
     </Screen>
