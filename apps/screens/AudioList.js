@@ -1,4 +1,4 @@
-import React, { useContext, useState, useRef } from "react";
+import React, { useContext, useState, useRef, useEffect } from "react";
 import {
   StyleSheet,
   Dimensions,
@@ -39,6 +39,7 @@ import {
   SimpleLineIcons,
 } from "@expo/vector-icons";
 import LottieView from "lottie-react-native";
+import moment from "moment";
 
 const { width, height } = Dimensions.get("window");
 const yoga = require("../../assets/yoga.png");
@@ -105,6 +106,7 @@ export const AudioList = (props) => {
   const [duration, setDuration] = useState(0);
   const [currentTime, setcurrentTime] = useState(0);
   const [position, setPosition] = useState(undefined);
+  const [timerVal, setTimerVal] = useState(null);
 
   const [currentSongUrl, setCurrentSongUrl] = useState("");
   const [slidingStart, setSlidingStart] = useState(false);
@@ -115,7 +117,7 @@ export const AudioList = (props) => {
     return minutes.substr(-2) + ":" + seconds.substr(-2);
   };
   // TIMER
-
+  var timerNo = null;
   const [timer, setTimer] = useState(false);
   const [timerModal, setTimerModal] = useState(false);
   const [timerValue, setTimerValue] = useState(0);
@@ -210,17 +212,27 @@ export const AudioList = (props) => {
     // setPlay(true);
   };
   const timerRef = useRef(null);
+  const timerCRef = useRef(null);
 
-  const setTimerTimeout = (seconds) => {
-    console.log(seconds);
+  const setTimerTimeout = async (seconds) => {
+    timerNo = seconds;
+    timerCRef.current = setInterval(() => {
+      if (timerNo > 0) {
+        timerNo = timerNo - 1000;
+        setTimerVal(timerNo);
+      }
+    }, 1000);
     timerRef.current = setTimeout(() => {
       console.log("setting false");
       setTimerValue(0);
+      setTimerVal(0);
       setPlay(false);
+      clearInterval(timerCRef);
       /** Your logic goes here */
     }, seconds);
   };
 
+  console.log(timerVal);
   return (
     <Screen>
       <View style={{ flex: 1, marginTop: verticalScale(40) }}>
@@ -433,11 +445,17 @@ export const AudioList = (props) => {
                       alignItems: "center",
                     }}
                   >
-                    <MaterialIcons
-                      name="timer"
-                      size={scale(30)}
-                      color={color.FONT_MEDIUM}
-                    />
+                    {timerVal ? (
+                      <Text style={{ color: color.ACTIVE_BG }}>
+                        {moment.utc(timerVal).format("HH:mm:ss")}
+                      </Text>
+                    ) : (
+                      <MaterialIcons
+                        name="timer"
+                        size={scale(30)}
+                        color={color.FONT_MEDIUM}
+                      />
+                    )}
                   </TouchableOpacity>
                   <PlayerButton
                     iconType="PREV"
@@ -543,11 +561,14 @@ export const AudioList = (props) => {
                     onPress={() => {
                       if (timerValue < 60) {
                         setTimerModal(false);
-
+                        clearTimeout(timerRef.current);
+                        clearInterval(timerCRef.current);
+                        setTimerVal(0);
                         return;
                       }
                       if (timerRef.current) {
                         clearTimeout(timerRef.current);
+                        clearInterval(timerCRef.current);
                       }
                       setTimerModal(false);
 
